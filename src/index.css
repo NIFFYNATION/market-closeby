@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+
+body {
+  background: #F9F9F9;
+  
+}
+
+
+@theme {
+
+  
+  --font-display: "poppins", "sans-serif";
+
+  /* Light mode colors (default) */
+ 
+  --color-primary: #130C76;           /* Deep Blue */
+  --color-primary-light: #2c2678;     /* Light-Blue */
+  --color-secondary: #FFAC24;         /* Yellow-800 */
+  --color-secondary-light: #fcc262;   /* Light-Yellow */
+  --color-danger: #FF0000;            /* Red */
+  --color-danger-light: #FFDCDC;      /* Light-Red */
+  --color-success: #00AB3F;           /* Green */
+  --color-success-light: ##B2FFB4;      /* Light-Green */
+
+  /* Text colors */
+  --color-text-primary: #000000;      /* Black */
+  --color-text-secondary: #454545;    /* Deep grey */
+  --color-text-grey: #737373;         /*  Grey */
+  --color-text-grey-light: #F4F4F4;   /* Light Grey */
+
+  
+  
+  /* Background colors */
+  --color-background: #FFFFFF;        /* Slate-50 */
+  --color-background-alt: #e0e7ef;    /* Light blue-gray */
+  
+  
+
+  /* Dark mode colors - Updated for better visibility */
+  --color-dark-primary: #3b82f6;           /* Blue-500 */
+  --color-dark-secondary: #1e40af;         /* Blue-800 */
+  --color-dark-text-primary: #f1f5f9;      /* Slate-100 */
+  --color-dark-text-secondary: #94a3b8;    /* Slate-400 */
+  --color-dark-background: #0f172a;        /* Slate-900 */
+  --color-dark-background-alt: #1e293b;    /* Slate-800 */
+  --color-dark-accent: #38bdf8;            /* Sky-400 */
+  --color-dark-accent-light: #7dd3fc;      /* Sky-300 */
+}
+
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
