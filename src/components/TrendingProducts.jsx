@@ -107,23 +107,19 @@ const StarRating = ({ rating, reviews }) => {
 // Product card component
 const ProductCard = ({ product }) => {
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+    <div className="bg-white  rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
       <Link to={`/product/${product.id}`}>
         <div className="relative">
           {product.verified && (
-            <div className="absolute top-2 right-2 z-10">
-              <div className="bg-secondary rounded-full w-6 h-6 flex items-center justify-center">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
+            <div className="absolute top-4 right-4 z-10">
+             <img src="/icons/verified-user.svg" alt="Verified User" />
             </div>
           )}
           <div className="p-4">
             <img src={product.image} alt={product.name} className="w-full h-40 object-contain" />
           </div>
         </div>
-        <div className="p-4">
+        <div className="p-6">
           <div className="font-bold text-primary text-lg mb-2">{product.price}</div>
           <h3 className="text-sm font-medium text-text-grey mb-3">{product.name}</h3>
           <div className="flex items-center mb-2 gap-1 text-text-primary">
