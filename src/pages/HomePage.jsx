@@ -1,6 +1,7 @@
 import React from 'react'
 import CategoryBrowser from '../components/common/CategoryBrowser'
 import TrendingProducts from '../components/TrendingProducts'
+import SameDayDelivery from '../components/SameDayDelivery'
 
 function HomePage() {
   return (
@@ -50,7 +51,10 @@ function HomePage() {
       <CategoryBrowser />
       
       {/* Trending Products Section */}
+      
       <TrendingProducts />
+      {/* Same Day Delivery */}
+      <SameDayDelivery />
       
       {/* Additional content */}
       <div className='container mx-auto py-8 px-4'>

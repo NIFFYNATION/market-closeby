@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import CategoryMenu from '../common/CategoryMenu';
-import NationwideModal from '../NationwideModal';
 import DropdownMenu from '../common/DropdownMenu';
 import { Button } from '../common/Button';
 import SearchBar from '../common/SearchBar';

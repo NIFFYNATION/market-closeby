@@ -1,6 +1,6 @@
 // src/components/common/NationwideModal.jsx
 import React, { useState, useRef, useEffect } from "react";
-import { statesAndCities } from "./common/locationsData";
+import { statesAndCities } from "../common/locationsData";
 
 
 function groupByFirstLetter(items, key = null) {

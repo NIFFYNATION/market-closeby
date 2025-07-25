@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { categories } from '../categoryData'
+import ScrollControlButtons from '../common/ScrollControlButtons';
 
 const CategoryBrowser = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
@@ -15,6 +16,8 @@ const CategoryBrowser = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const [activeBtn, setActiveBtn] = useState(null);
+
   // Scroll handlers
   const scrollByAmount = (amount) => {
     if (scrollRef.current) {
@@ -22,11 +25,15 @@ const CategoryBrowser = () => {
     }
   };
 
+  // Helper for icon color (SVG filter for white/primary)
+  const iconFilter = (direction) =>
+    activeBtn === direction ? 'invert brightness-200' : 'filter-none';
+
   return (
     <div className="bg-primary py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6 lg:px-10 w-full">
       <div className="mx-auto">
         {/* Header with view options */}
-        <div className="block md:flex  sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 space-y-2 sm:space-y-0">
+        <div className="block md:flex sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 space-y-2 sm:space-y-0">
           <div className="flex justify-between items-center gap-4">
             <div>
               <h2 className="text-white text-lg sm:text-xl font-medium">Browse Category</h2>
@@ -37,13 +44,11 @@ const CategoryBrowser = () => {
             </div>
           </div>
           {/* View toggle buttons */}
-          <div className="hidden md:flex items-center ml-4 space-x-2">
-            <button className="bg-white p-1 rounded" onClick={() => scrollByAmount(-250)}>
-              <img src='/icons/arrow-left.svg' className="w-4 h-4"/>
-            </button>
-            <button className="bg-secondary p-1 rounded" onClick={() => scrollByAmount(250)}>
-              <img src='/icons/arrow-right.svg' className="w-4 h-4"/>
-            </button>
+          <div className="hidden md:flex items-center ml-4">
+            <ScrollControlButtons
+              onLeft={() => scrollByAmount(-350)}
+              onRight={() => scrollByAmount(350)}
+            />
           </div>
         </div>
         {/* Category grid */}

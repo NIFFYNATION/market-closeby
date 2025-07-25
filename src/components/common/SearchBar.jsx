@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import NationwideModal from '../NationwideModal'
+import NationwideModal from '../modal/NationwideModal'
 
 
 // Utility function for truncation
