@@ -23,7 +23,8 @@ const brands = [
 const conditions = ["Brand New", "Refurbished", "Used"];
 const discounts = ["Show All", "With Discount", "Without Discount"];
 
-export default function FilterSidebar({ filters, setFilters }) {
+// Update the function signature to accept currentCategory
+export default function FilterSidebar({ filters, setFilters, currentCategory }) {
   // Accordion state
   const [open, setOpen] = useState({
     category: true,
@@ -77,7 +78,7 @@ export default function FilterSidebar({ filters, setFilters }) {
         onClick={() => handleAccordion("category")}
         icon={open.category ? "/icons/arrow-up.svg" : "/icons/arrow-down.svg"}
       >
-        <p className="px-6 pb-5 text-text-grey text-sm">Home and Kitchen</p>
+        <p className="px-6 pb-5 text-text-grey text-sm">{currentCategory || 'All Categories'}</p>
       </Section>
       {/* LOCATION */}
       <Section

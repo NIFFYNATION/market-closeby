@@ -40,7 +40,7 @@ const ProductsCard = ({ product }) => {
           </div>
         </div>
         <div className="p-4">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex flex-col-1 items-center gap-2 mb-1">
             <span className="font-bold text-primary text-lg">{product.price}</span>
             {product.oldPrice && (
               <span className="text-gray-400 line-through text-sm">{product.oldPrice}</span>

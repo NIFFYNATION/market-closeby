@@ -60,7 +60,7 @@ const CategoryBrowser = () => {
           {categories.slice(0, 5).map((category) => (
             <Link 
               key={category.name} 
-              to={`/category/${category.name.toLowerCase()}`}
+              to={`/search?category=${encodeURIComponent(category.name)}`}
               className="bg-white rounded-lg p-2 sm:p-3 md:p-4 flex flex-col items-center justify-center hover:shadow-lg transition-shadow duration-300"
             >
               <div className="w-30 h-20 sm:w-20 sm:h-20 md:w-54 md:h-24 flex items-center justify-center mb-2 sm:mb-3 md:mb-4">
