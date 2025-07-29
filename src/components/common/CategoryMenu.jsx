@@ -1,6 +1,6 @@
 // src/components/common/CategoryMenu.jsx
 import React, { useState, useRef, useEffect } from "react";
-import { categories } from "../categoryData";
+import { categories } from "./categoryData";
 import '../../styles/scrollbar.css'; // Import the global scrollbar CSS
 
 
@@ -22,7 +22,7 @@ export default function CategoryMenu() {
   
 
   return (
-    <div className=" hidden md:block relative w-full shadow-md z-30">
+    <div className=" hidden md:block relative w-full shadow-md">
       {/* Top Bar */}
       <div className="flex flex-wrap items-center bg-background px-4 md:px-6 lg:px-10 py-2">
         <button onClick={() => setIsNavOpen(!isNavOpen)} className={`flex items-center px-3 sm:px-6 py-2 sm:py-4 font-medium ${isNavOpen ? 'bg-secondary text-white' : 'bg-background text-text-primary'}`}>

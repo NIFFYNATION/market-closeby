@@ -1,0 +1,105 @@
+.orange-range-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  background: transparent;
+  border-radius: 4px;
+  outline: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Track with dynamic gradient */
+.orange-range-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  background: linear-gradient(to right, #FFAC24 0%, #FFAC24 var(--value-percent, 0%), #E5E5E5 var(--value-percent, 0%), #E5E5E5 100%);
+  border-radius: 4px;
+}
+
+/* Firefox track */
+.orange-range-slider::-moz-range-track {
+  height: 8px;
+  background: #E5E5E5;
+  border-radius: 4px;
+}
+
+/* Firefox progress (filled part) */
+.orange-range-slider::-moz-range-progress {
+  background: #FFAC24;
+  height: 8px;
+  border-radius: 4px;
+}
+
+/* IE/Edge */
+.orange-range-slider::-ms-fill-lower {
+  background: #FFAC24;
+  border-radius: 4px;
+}
+
+.orange-range-slider::-ms-fill-upper {
+  background: #E5E5E5;
+  border-radius: 4px;
+}
+
+/* Thumb */
+.orange-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  background: #FFAC24;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 0;
+  margin-top: -8px;
+  box-shadow: 0 0 2px rgba(0,0,0,0.08);
+  transition: background 0.2s;
+}
+
+.orange-range-slider:focus::-webkit-slider-thumb {
+  outline: 2px solid #FFAC24;
+}
+
+.orange-range-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  background: #FFAC24;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 0;
+  box-shadow: 0 0 2px rgba(0,0,0,0.08);
+  transition: background 0.2s;
+}
+
+.orange-range-slider:focus::-moz-range-thumb {
+  outline: 2px solid #FFAC24;
+}
+
+.orange-range-slider::-ms-thumb {
+  width: 24px;
+  height: 24px;
+  background: #FFAC24;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 0;
+  box-shadow: 0 0 2px rgba(0,0,0,0.08);
+  transition: background 0.2s;
+}
+
+.orange-range-slider:focus::-ms-thumb {
+  outline: 2px solid #FFAC24;
+}
+
+/* Remove default outline and background for Firefox */
+.orange-range-slider:focus {
+  outline: none;
+}
+
+.orange-range-slider::-ms-tooltip {
+  display: none;
+}
+
+/* For Firefox */
+.orange-range-slider {
+  background: transparent;
+}

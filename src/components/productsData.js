@@ -6,11 +6,14 @@ export const productsData = [
     price: '₦1,300,000',
     oldPrice: '₦1,400,000',
     discount: '-10%',
+    condition: 'New',
+    brand: 'kenwood',
     image: '/imgs/iphone.svg',
     location: 'Lagos, Nigeria',
     rating: 1,
     reviews: 1,
-    verified: true
+    verified: true,
+    category: 'Gadgets',
   },
   {
     id: 2,
@@ -20,7 +23,8 @@ export const productsData = [
     location: 'Oyo, Nigeria',
     rating: 2,
     reviews: 0,
-    verified: false
+    verified: false,
+    category: 'Electronics',
   },
   {
     id: 3,
@@ -30,56 +34,83 @@ export const productsData = [
     location: 'Lagos, Nigeria',
     rating: 5,
     reviews: 100,
-    verified: true
+    verified: true,
+    category: 'Electronics',
   },
   {
     id: 4,
     name: 'Yam Pounder - 8L - 2500w',
-    price: '₦1,4,000,000',
+    price: '₦1,000,000',
+    oldPrice: '₦1,600,000',
+    discount: '-30%',
+    condition: 'used',
+    brand: 'Pinnacle',
     image: '/imgs/yam-pounder.svg',
     location: 'Lagos, Nigeria',
     rating: 1,
     reviews: 1,
-    verified: false
+    verified: false,
+    category: 'Home and Kitchen',
   },
   {
     id: 5,
     name: 'Lexus 2021 RX350 White',
-    price: '₦1,400,000',
+    price: '₦14, 000,000',
+    oldPrice: '₦24,000,000',
+    discount: '-10%',
+    condition: 'New',
+    brand: 'Lexus',
     image: '/imgs/lexus.svg',
     location: 'Lagos, Nigeria',
-    rating: 1,
+    rating: 5,
     reviews: 1,
-    verified: true
+    verified: false,
+    category: 'Vehicles',
   },
   {
     id: 6,
     name: 'LG Thick Table Top Glass Gas Cooker with Two Hobs',
     price: '₦34,000',
-    image: '/imgs/blender.svg', // Using existing image as placeholder
+    image: '/imgs/blender.svg', 
     location: 'Oyo, Nigeria',
     rating: 2,
     reviews: 0,
-    verified: false
+    verified: false,
+    category: 'Home and Kitchen',
   },
   {
     id: 7,
     name: 'New Age 50000 MAh FC50P POWER BANK FAST CHARGE',
     price: '₦58,500',
-    image: '/imgs/gadgets.svg', // Using existing image as placeholder
+    image: '/imgs/gadgets.svg',  
     location: 'Lagos, Nigeria',
     rating: 5,
     reviews: 100,
-    verified: true
+    verified: true,
+    category: 'Electronics',
   },
   {
     id: 8,
     name: 'Yam Pounder - 8L - 2500w',
     price: '₦1,4,000,000',
-    image: '/imgs/blender.svg', // Using existing image as placeholder
+    image: '/imgs/blender.svg', 
     location: 'Lagos, Nigeria',
     rating: 1,
     reviews: 1,
-    verified: false
-  }
+    verified: false,
+    category: 'Home and Kitchen',
+
+  },
+  {id: 9,
+    name: 'Venza 2021',
+    price: '₦14, 000,000',
+    condition: 'used',
+    brand: 'Lexus',
+    image: '/imgs/lexus.svg',
+    location: 'Lagos, Nigeria',
+    rating: 3,
+    reviews: 1,
+    verified: true,
+    category: 'Vehicles',
+  },
 ];

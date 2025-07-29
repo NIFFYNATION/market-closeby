@@ -1,0 +1,23 @@
+/* Custom orange checkbox with white background and orange border */
+.custom-radio {
+  
+  appearance: none;
+  width: 1em;
+  height: 1em;
+  padding: 4px;
+  border: 1px solid grey; /* orange border */
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.2s, background 0.2s;
+  outline: none;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.custom-radio:checked {
+  background: #FFAC24;
+  border-color: #FFAC24;
+}
+
