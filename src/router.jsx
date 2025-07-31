@@ -4,6 +4,7 @@ import App from './App';
 import Layout from './components/layout/layout';
 import HomePage from './pages/HomePage';
 import SearchResultsPage from './pages/SearchResultsPage'; 
+import ProductDetailsPage from './pages/ProductDetailsPage'; // Create this file
 
 export const router = createBrowserRouter([
   {
@@ -15,7 +16,8 @@ export const router = createBrowserRouter([
         element: <Layout />,
         children: [
           { path: '/', element: <HomePage /> },
-          { path: '/search', element: <SearchResultsPage /> }, 
+          { path: '/search', element: <SearchResultsPage /> },
+          { path: '/product/:id', element: <ProductDetailsPage /> }, // <-- Add this
         ],
       },
     ],

@@ -9,6 +9,11 @@ export const productsData = [
     condition: 'New',
     brand: 'kenwood',
     image: '/imgs/iphone.svg',
+    images: [
+      '/imgs/iphone.svg',
+      '/imgs/gadgets.svg',
+      '/imgs/power-bank.svg'
+    ],
     location: 'Lagos, Nigeria',
     rating: 1,
     reviews: 1,
@@ -20,6 +25,11 @@ export const productsData = [
     name: 'LG Thick Table Top Glass Gas Cooker with Two Hobs',
     price: '₦34,000',
     image: '/imgs/gas-cooker.svg', 
+    images: [
+      '/imgs/gas-cooker.svg',
+      '/imgs/blender.svg',
+      '/imgs/yam-pounder.svg'
+    ],
     location: 'Oyo, Nigeria',
     rating: 2,
     reviews: 0,
@@ -30,8 +40,16 @@ export const productsData = [
     id: 3,
     name: 'New Age 50000 MAh FC50P POWER BANK FAST CHARGE',
     price: '₦58,500',
+    oldPrice: '₦1,400,000',
+    discount: '-10%',
     image: '/imgs/power-bank.svg', 
+    images: [
+      '/imgs/power-bank.svg',
+      '/imgs/gadgets.svg',
+      '/imgs/iphone.svg'
+    ],
     location: 'Lagos, Nigeria',
+    brand: 'New Age',
     rating: 5,
     reviews: 100,
     verified: true,
@@ -46,6 +64,11 @@ export const productsData = [
     condition: 'used',
     brand: 'Pinnacle',
     image: '/imgs/yam-pounder.svg',
+    images: [
+      '/imgs/yam-pounder.svg',
+      '/imgs/blender.svg',
+      '/imgs/gas-cooker.svg'
+    ],
     location: 'Lagos, Nigeria',
     rating: 1,
     reviews: 1,
@@ -61,6 +84,11 @@ export const productsData = [
     condition: 'New',
     brand: 'Lexus',
     image: '/imgs/lexus.svg',
+    images: [
+      '/imgs/lexus.svg',
+      '/imgs/vehicles.svg',
+      '/imgs/vehicle-sales.svg'
+    ],
     location: 'Lagos, Nigeria',
     rating: 5,
     reviews: 1,
