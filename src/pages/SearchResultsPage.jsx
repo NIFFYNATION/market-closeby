@@ -88,7 +88,7 @@ const SearchResultsPage = () => {
         <span className="text-xs px-0 md:px-7">1–30 of {filteredProducts.length} results</span>
       </div>
       
-      {/* Title and sort */}
+      {/* Heading and sort */}
       <div className="flex flex-col lg:flex-row lg:items-center md:justify-between gap-2 px-6">
         <h2 className="text-xl md:text-2xl font-bold text-primary mb-2 md:mb-0">
           {filters.category ? `${filters.category}` : ''}

@@ -63,12 +63,16 @@ body {
 /* Add these styles to your existing index.css */
 
 /* Icon filters for mobile tab menu */
-.filter-primary {
+/* .filter-primary {
   filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
-}
+} */
 
 .filter-gray {
   filter: brightness(0) saturate(100%) invert(60%) sepia(8%) saturate(872%) hue-rotate(169deg) brightness(99%) contrast(86%);
+}
+
+.filter-white {
+  filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
 }
 
 /* Ensure mobile tab menu doesn't interfere with content */

@@ -4,7 +4,8 @@ import App from './App';
 import Layout from './components/layout/layout';
 import HomePage from './pages/HomePage';
 import SearchResultsPage from './pages/SearchResultsPage'; 
-import ProductDetailsPage from './pages/ProductDetailsPage'; // Create this file
+import ProductDetailsPage from './pages/ProductDetailsPage';
+import HelpCenter from './pages/HelpCenter';
 
 export const router = createBrowserRouter([
   {
@@ -17,7 +18,8 @@ export const router = createBrowserRouter([
         children: [
           { path: '/', element: <HomePage /> },
           { path: '/search', element: <SearchResultsPage /> },
-          { path: '/product/:id', element: <ProductDetailsPage /> }, // <-- Add this
+          { path: '/product/:id', element: <ProductDetailsPage /> },
+          { path: '/help', element: <HelpCenter /> },
         ],
       },
     ],
