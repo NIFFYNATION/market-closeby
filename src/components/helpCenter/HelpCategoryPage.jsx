@@ -2,8 +2,15 @@ import React from 'react';
 import PageHeader from '../common/PageHeader';
 import MarketClosebyDescription from '../MarketClosebyDescription';
 import HelpContact from '../../pages/HelpCenter/HelpContact';
+import { helpCenterData } from '../data/helpCenterData';
 
-const HelpCategoryPage = ({ categoryData }) => {
+const HelpCategoryPage = ({ categoryKey }) => {
+  const categoryData = helpCenterData.helpCategoriesData[categoryKey];
+  
+  if (!categoryData) {
+    return <div>Category not found</div>;
+  }
+
   const { title, description, breadcrumbs, sections } = categoryData;
 
   return (
@@ -45,7 +52,7 @@ const HelpCategoryPage = ({ categoryData }) => {
                       <div key={index} className="flex items-start space-x-3">
                         {/* Numbered Bullet Point */}
                         <div className="flex-shrink-0 mt-1">
-                          <div className="w-5 h-5 bg-secondary rounded-xs flex items-center justify-center">
+                          <div className="w-5 h-5 bg-secondary rounded-sm flex items-center justify-center">
                             <span className="text-white text-sm font-semibold">{index + 1}</span>
                           </div>
                         </div>

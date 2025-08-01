@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PageHeader from '../../components/common/PageHeader';
 import MarketClosebyDescription from '../../components/MarketClosebyDescription';
 import HelpContact from './HelpContact';
+import { helpCenterData } from '../../components/data/helpCenterData';
 
 const FAQ = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,116 +14,7 @@ const FAQ = () => {
     { label: 'FAQs', active: true }
   ];
 
-  const faqCategories = [
-    {
-      id: 'orders-payments',
-      title: 'Orders & Payments',
-      faqs: [
-        {
-          id: 1,
-          question: 'How do I place an order?',
-          answer: 'Simply browse products, add items to your cart, and proceed to checkout. Select a payment method and confirm your order.'
-        },
-        {
-          id: 2,
-          question: 'Can I return or exchange a product?',
-          answer: 'Yes, most products can be returned or exchanged within our return policy timeframe. Check the specific product page for details.'
-        },
-        {
-          id: 3,
-          question: 'How do I track my order?',
-          answer: 'Log into your account, go to "My Orders" section, and click on the order you want to track for detailed information.'
-        },
-        {
-          id: 4,
-          question: 'How do I place an order?',
-          answer: 'Browse products, add to cart, proceed to checkout, enter shipping details, and complete payment to place your order.'
-        },
-        {
-          id: 5,
-          question: 'What payment options are available?',
-          answer: 'We accept credit/debit cards, bank transfers, mobile money, and cash on delivery for eligible locations.'
-        },
-        {
-          id: 6,
-          question: 'How long does delivery take?',
-          answer: 'Delivery times vary by location. Local deliveries typically take 1-3 business days, while nationwide deliveries may take 3-7 business days.'
-        }
-      ]
-    },
-    {
-      id: 'shipping-delivery',
-      title: 'Shipping & Delivery',
-      faqs: [
-        {
-          id: 7,
-          question: 'How long does delivery take?',
-          answer: 'Delivery time depends on your location and the shipping method chosen. Standard shipping takes 3-7 business days, while express options are faster.'
-        },
-        {
-          id: 8,
-          question: 'Can I return or exchange a product?',
-          answer: 'Yes, most products can be returned or exchanged within our return policy timeframe. Please check the specific product page for eligibility details.'
-        },
-        {
-          id: 9,
-          question: 'How do I track my order?',
-          answer: 'You can track your order by logging into your account, going to "My Orders" section, and clicking on the specific order for tracking details.'
-        },
-        {
-          id: 10,
-          question: 'How do I place an order?',
-          answer: 'Browse our products, add desired items to your cart, proceed to checkout, enter shipping information, and complete your payment.'
-        },
-        {
-          id: 11,
-          question: 'What payment options are available?',
-          answer: 'We accept various payment methods including credit/debit cards, bank transfers, mobile money, and cash on delivery for eligible areas.'
-        },
-        {
-          id: 12,
-          question: 'How long does delivery take?',
-          answer: 'Delivery times vary based on your location and selected shipping method. You will receive an estimated delivery date during checkout.'
-        }
-      ]
-    },
-    {
-      id: 'returns-refunds',
-      title: 'Returns & Refunds',
-      faqs: [
-        {
-          id: 13,
-          question: 'What is your return policy?',
-          answer: 'You can return eligible items within 7-30 days of delivery. Items must be in their original condition with all packaging and accessories.'
-        },
-        {
-          id: 14,
-          question: 'Can I return or exchange a product?',
-          answer: 'Yes, most products can be returned or exchanged within our return policy timeframe. Please check the specific product page for eligibility details.'
-        },
-        {
-          id: 15,
-          question: 'How do I track my order?',
-          answer: 'You can track your order by logging into your account, navigating to "My Orders" section, and selecting the order you want to track.'
-        },
-        {
-          id: 16,
-          question: 'How do I place an order?',
-          answer: 'Browse products, add items to your cart, proceed to checkout, enter your shipping details, and complete the payment process.'
-        },
-        {
-          id: 17,
-          question: 'What payment options are available?',
-          answer: 'We offer multiple payment options including credit/debit cards, bank transfers, mobile money, and cash on delivery where available.'
-        },
-        {
-          id: 18,
-          question: 'How long does delivery take?',
-          answer: 'Delivery times depend on your location and chosen shipping method. Standard delivery typically takes 3-7 business days.'
-        }
-      ]
-    }
-  ];
+  const { faqCategories } = helpCenterData;
 
   const handleSearch = (e) => {
     e.preventDefault();

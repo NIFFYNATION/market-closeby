@@ -1,87 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { helpCenterData } from '../data/helpCenterData';
 
 const HelpMain = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [openFaqId, setOpenFaqId] = useState(null);
 
-  const helpCategories = [
-    {
-      id: 1,
-      title: 'ORDERS & PAYMENTS',
-      description: 'Learn how to place orders, make secure payments, and manage your purchases.',
-      icon: '/icons/payment-help.svg',
-      link: '/help/orders-payments'
-    },
-    {
-      id: 2,
-      title: 'SHIPPING & DELIVERY',
-      description: 'Get information on delivery times, shipping costs, and order tracking.',
-      icon: '/icons/shipping-outline-help.svg',
-      link: '/help/shipping-delivery'
-    },
-    {
-      id: 3,
-      title: 'RETURN & REFUNDS',
-      description: 'Understand our return policy, refund process, and how to request an exchange.',
-      icon: '/icons/truck-return-help.svg',
-      link: '/help/returns-refunds'
-    },
-    {
-      id: 4,
-      title: 'ACCOUNT SETTINGS',
-      description: 'Manage your account details, passwords, and preferences.',
-      icon: '/icons/settings-help.svg',
-      link: '/help/account-settings'
-    },
-    {
-      id: 5,
-      title: 'BUYERS & SELLERS SUPPORT',
-      description: 'Get assistance with buying, selling, and marketplace transactions.',
-      icon: '/icons/person-support-help.svg',
-      link: '/help/buyers-sellers'
-    },
-    {
-      id: 6,
-      title: 'CUSTOMERS SUPPORT',
-      description: 'Reach out for help with orders, complaints, or general inquiries.',
-      icon: '/icons/customer-support-help.svg',
-      link: '/help/customer-support'
-    }
-  ];
-
-  const faqItems = [
-    {
-      id: 1,
-      question: 'How do I place an order?',
-      answer: 'To place an order, browse our products, select the items you want, add them to your cart, and proceed to checkout. Follow the instructions to enter your shipping and payment information to complete your purchase.'
-    },
-    {
-      id: 2,
-      question: 'What payment options are available?',
-      answer: 'We accept various payment methods including credit/debit cards, bank transfers, mobile money, and payment on delivery for eligible locations.'
-    },
-    {
-      id: 3,
-      question: 'How long does delivery take?',
-      answer: 'Delivery times vary depending on your location and the seller. Typically, local deliveries take 1-3 business days, while nationwide deliveries may take 3-7 business days.'
-    },
-    {
-      id: 4,
-      question: 'Can I return or exchange a product?',
-      answer: 'Yes, most products can be returned or exchanged within 7 days of delivery. Please check our return policy or the specific product page for eligibility details.'
-    },
-    {
-      id: 5,
-      question: 'How do I track my order?',
-      answer: 'You can track your order by logging into your account, navigating to "My Orders" section, and clicking on the specific order you want to track.'
-    },
-    {
-      id: 6,
-      question: 'How do I contact customer support?',
-      answer: 'You can contact our customer support team through the "Contact Us" section on our website, via email at support@marketcloseby.com, or by calling our customer service line at +234-800-MARKET.'
-    }
-  ];
+  const { helpCategories, mainFaqItems } = helpCenterData;
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -91,7 +16,6 @@ const HelpMain = () => {
   const toggleFaq = (id) => {
     setOpenFaqId(openFaqId === id ? null : id);
   };
-
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -169,7 +93,7 @@ const HelpMain = () => {
           </h2>
           
           <div className="space-y-4">
-            {faqItems.map((faq) => (
+            {mainFaqItems.map((faq) => (
               <div 
                 key={faq.id} 
                 className="bg-white rounded-lg shadow-sm overflow-hidden"
@@ -200,9 +124,6 @@ const HelpMain = () => {
             ))}
           </div>
         </div>
-
-       
-        
       </div>
     </div>
   );
