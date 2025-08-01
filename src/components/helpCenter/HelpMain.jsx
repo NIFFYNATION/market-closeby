@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import PageHeader from '../components/common/PageHeader';
 
-const HelpCenter = () => {
+const HelpMain = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [openFaqId, setOpenFaqId] = useState(null);
 
   const helpCategories = [
     {
@@ -50,26 +50,51 @@ const HelpCenter = () => {
     }
   ];
 
+  const faqItems = [
+    {
+      id: 1,
+      question: 'How do I place an order?',
+      answer: 'To place an order, browse our products, select the items you want, add them to your cart, and proceed to checkout. Follow the instructions to enter your shipping and payment information to complete your purchase.'
+    },
+    {
+      id: 2,
+      question: 'What payment options are available?',
+      answer: 'We accept various payment methods including credit/debit cards, bank transfers, mobile money, and payment on delivery for eligible locations.'
+    },
+    {
+      id: 3,
+      question: 'How long does delivery take?',
+      answer: 'Delivery times vary depending on your location and the seller. Typically, local deliveries take 1-3 business days, while nationwide deliveries may take 3-7 business days.'
+    },
+    {
+      id: 4,
+      question: 'Can I return or exchange a product?',
+      answer: 'Yes, most products can be returned or exchanged within 7 days of delivery. Please check our return policy or the specific product page for eligibility details.'
+    },
+    {
+      id: 5,
+      question: 'How do I track my order?',
+      answer: 'You can track your order by logging into your account, navigating to "My Orders" section, and clicking on the specific order you want to track.'
+    },
+    {
+      id: 6,
+      question: 'How do I contact customer support?',
+      answer: 'You can contact our customer support team through the "Contact Us" section on our website, via email at support@marketcloseby.com, or by calling our customer service line at +234-800-MARKET.'
+    }
+  ];
+
   const handleSearch = (e) => {
     e.preventDefault();
     console.log('Searching for:', searchQuery);
   };
 
-  const breadcrumbs = [
-    { label: 'Market CloseBy', link: '/' },
-    { label: 'Help Center', active: true }
-  ];
+  const toggleFaq = (id) => {
+    setOpenFaqId(openFaqId === id ? null : id);
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Page Header */}
-      <PageHeader
-        breadcrumbs={breadcrumbs}
-        title="Market CloseBy Help Center"
-        containerStyle="shadow"
-        titleSize="medium"
-      />
-      
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-10 py-8">
         {/* Help Section */}
         <div className="p-8 md:p-12 mb-12">
@@ -136,9 +161,51 @@ const HelpCenter = () => {
             ))}
           </div>
         </div>
+
+        {/* FAQ Section */}
+        <div className="max-w-4xl mx-auto mb-16">
+          <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-10">
+            Frequently Asked Questions (FAQs)
+          </h2>
+          
+          <div className="space-y-4">
+            {faqItems.map((faq) => (
+              <div 
+                key={faq.id} 
+                className="bg-white rounded-lg shadow-sm overflow-hidden"
+              >
+                <button
+                  onClick={() => toggleFaq(faq.id)}
+                  className="w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"
+                  aria-expanded={openFaqId === faq.id}
+                  aria-controls={`faq-content-${faq.id}`}
+                >
+                  <span className="font-medium text-gray-800">{faq.question}</span>
+                  <img 
+                    src="/icons/arrow-down.svg" 
+                    alt="Toggle" 
+                    className={`w-5 h-5 transition-transform duration-300 ${openFaqId === faq.id ? 'transform rotate-180' : ''}`}
+                  />
+                </button>
+                
+                {openFaqId === faq.id && (
+                  <div 
+                    id={`faq-content-${faq.id}`}
+                    className="px-6 py-4 border-t border-gray-100"
+                  >
+                    <p className="text-text-grey">{faq.answer}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+       
+        
       </div>
     </div>
   );
 };
 
-export default HelpCenter;
+export default HelpMain;

@@ -21,7 +21,7 @@ function Header() {
     { label: "Contact Us", to: "/contact" },
     { label: "Track My Order", to: "/track" },
     { label: "Return & Refund Policy", to: "/refund" },
-    { label: "FAQs", to: "/faqs" },
+    { label: "FAQs", to: "/help/faqs" },
   ];
   const accountHeader = (
     <Button
