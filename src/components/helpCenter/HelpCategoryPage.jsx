@@ -16,7 +16,7 @@ const HelpCategoryPage = ({ categoryData }) => {
         titleSize="medium"
       />
       
-      <div className="max-w-4xl mx-auto px-4 md:px-6 lg:px-10 py-8">
+      <div className="max-w-4xl mx-auto px-0 md:px-6 lg:px-10 py-8">
         {/* Main Content */}
         <div className=" p-8 mb-12">
           {/* Section Title */}
@@ -43,9 +43,11 @@ const HelpCategoryPage = ({ categoryData }) => {
                   <div className="space-y-4">
                     {section.steps.map((step, index) => (
                       <div key={index} className="flex items-start space-x-3">
-                        {/* Orange Bullet Point */}
+                        {/* Numbered Bullet Point */}
                         <div className="flex-shrink-0 mt-1">
-                          <div className="w-3 h-3 bg-[#FF8A24] rounded-sm"></div>
+                          <div className="w-5 h-5 bg-secondary rounded-xs flex items-center justify-center">
+                            <span className="text-white text-sm font-semibold">{index + 1}</span>
+                          </div>
                         </div>
                         {/* Step Text */}
                         <p className="text-gray-700 leading-relaxed">{step}</p>
