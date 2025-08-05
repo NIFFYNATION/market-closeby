@@ -75,7 +75,28 @@ export const helpCenterData = {
     {
       id: 6,
       question: 'How do I contact customer support?',
-      answer: 'You can contact our customer support team through the "Contact Us" section on our website, via email at support@marketcloseby.com, or by calling our customer service line at +234-800-MARKET.'
+      answer: {
+        contactMethods: [
+          {
+            type: 'email',
+            icon: '/icons/email-grey.svg',
+            title: 'Email',
+            details: 'support@marketcloseby.com'
+          },
+          {
+            type: 'phone',
+            icon: '/icons/phone-grey.svg',
+            title: 'Call',
+            details: '+234 XXX XXXX XXX (Mon-Sat, 8 AM - 6 PM)'
+          },
+          {
+            type: 'chat',
+            icon: '/icons/chat-grey.svg',
+            title: 'Live Chat',
+            details: 'Available on our website & app'
+          }
+        ]
+      }
     }
   ],
 

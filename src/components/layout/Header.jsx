@@ -19,7 +19,7 @@ function Header() {
   const helpMenu = [
     { label: "Help Center", to: "/help" },
     { label: "Contact Us", to: "/contact" },
-    { label: "Track My Order", to: "/track" },
+    { label: "Track My Order", to: "/help/track-order" },
     { label: "Return & Refund Policy", to: "/refund" },
     { label: "FAQs", to: "/help/faqs" },
   ];

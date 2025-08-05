@@ -5,6 +5,7 @@ import Layout from './components/layout/layout';
 import HomePage from './pages/HomePage';
 import SearchResultsPage from './pages/SearchResultsPage'; 
 import ProductDetailsPage from './pages/ProductDetailsPage';
+import ContactUs from './pages/ContactUs';
 
 // Help Center imports
 import HelpCenter from './pages/HelpCenter/HelpCenter';
@@ -15,6 +16,7 @@ import ReturnsRefunds from './pages/HelpCenter/ReturnsRefunds';
 import AccountSettings from './pages/HelpCenter/AccountSettings';
 import BuyersSellers from './pages/HelpCenter/BuyersSellers';
 import CustomerSupport from './pages/HelpCenter/CustomerSupport';
+import TrackOrder from './pages/HelpCenter/TrackOrder';
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +30,8 @@ export const router = createBrowserRouter([
           { path: '/', element: <HomePage /> },
           { path: '/search', element: <SearchResultsPage /> },
           { path: '/product/:id', element: <ProductDetailsPage /> },
+          { path: '/contact', element: <ContactUs /> },
+          
           
           // Help Center routes
           { path: '/help', element: <HelpCenter /> },
@@ -38,6 +42,7 @@ export const router = createBrowserRouter([
           { path: '/help/account-settings', element: <AccountSettings /> },
           { path: '/help/buyers-sellers', element: <BuyersSellers /> },
           { path: '/help/customer-support', element: <CustomerSupport /> },
+          { path: '/help/track-order', element: <TrackOrder /> },
         ],
       },
     ],
