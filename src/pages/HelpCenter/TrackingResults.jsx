@@ -2,6 +2,8 @@ import React from 'react';
 import PageHeader from '../../components/common/PageHeader';
 import MarketClosebyDescription from '../../components/MarketClosebyDescription';
 import HelpContact from './HelpContact';
+import TrackPackageSection from '../../components/helpCenter/TrackPackageSection';
+
 
 const TrackingResults = ({ 
   breadcrumbs, 
@@ -23,69 +25,13 @@ const TrackingResults = ({
       <div className="mx-auto px-4 md:px-6 lg:px-10 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Side - Track Package */}
-          <div className="p-8">
-            <div className="py-16">
-              <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-12">
-                TRACK A PACKAGE
-              </h2>
-              
-              {/* Tracking Input */}
-              <div className="max-w-xl mx-auto mb-8">
-                <div className="flex gap-3 relative bg-background rounded-lg py-2 px-6 shadow-lg">
-                  <input
-                    type="text"
-                    value={trackingData.trackingNumber}
-                    readOnly
-                    className="flex-1 px-4 py-3 rounded-lg focus:outline-none text-gray-700 bg-transparent"
-                  />
-                  <button
-                    onClick={onNewSearch}
-                    className="bg-secondary hover:bg-secondary-light absolute right-6 text-white px-6 py-3 rounded-full font-semibold transition-colors duration-200 whitespace-nowrap"
-                  >
-                    New Search
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Delivery Time Table */}
-            <div className="bg-white shadow-lg rounded-lg p-6 overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr>
-                    <th className="border-r border-gray-300 p-0 w-60">
-                      {/* Empty header cell for regions */}
-                    </th>
-                    {shippingTypes.map((type, index) => (
-                      <th key={index} className="border-l border-gray-300 px-4 py-3 text-center text-sm font-bold text-primary">
-                        {type}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {deliveryData.map((region, regionIndex) => (
-                    <tr key={regionIndex}>
-                      <td className={`border-r border-t border-gray-300 px-5`}>
-                        <div className={`bg-secondary px-6 md:px-4 py-6 rounded-lg text-center text-background font-semibold text-sm h-full flex items-center justify-center`}>
-                          <div className="flex items-center gap-4 px-3">
-                            <img src="/icons/shipping-filled.svg" alt="Truck" className="w-5 h-5 filter brightness-0 invert" />
-                            {region.region}
-                          </div>
-                        </div>
-                      </td>
-                      {shippingTypes.map((_, typeIndex) => (
-                        <td key={typeIndex} className="border-t border-l border-gray-300 px-4 py-6 text-center">
-                          <div className="text-lg font-semibold text-gray-800 mb-1">2 - 4</div>
-                          <div className="text-sm text-gray-600">Business Days</div>
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <TrackPackageSection
+            trackingNumber={trackingData.trackingNumber}
+            onNewSearch={onNewSearch}
+            deliveryData={deliveryData}
+            shippingTypes={shippingTypes}
+            isReadOnly={true}
+          />
 
           {/* Right Side - Tracking Results */}
           <div className="space-y-4">
@@ -94,7 +40,7 @@ const TrackingResults = ({
               {/* Tracking Number Header */}
               <div className="border-b border-gray-200 p-4">
                 <div className="flex items-center gap-4 justify-between md:justify-start">
-                  <div className="flex items-center gap-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-2">
                     <span className="text-sm font-semibold text-gray-900">Tracking Number:</span>
                     <span className="font- text-gray-700">{trackingData.trackingNumber}</span>
                   </div>
@@ -181,7 +127,7 @@ const TrackingResults = ({
               <div className="space-y-4">
                 {trackingData.shippingStatus.map((status, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <div className="flex flex-col items-center mt-1">
+                    <div className="flex flex-col items-center">
                       <div className={`w-2.5 h-2.5 rounded-full ${
                         status.completed ? 'bg-primary' : 'bg-gray-300'
                       }`}></div>
