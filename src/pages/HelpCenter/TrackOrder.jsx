@@ -39,12 +39,12 @@ const TrackOrder = () => {
     email: 'example@email.com',
     shippingStatus: [
       {
-        status: 'Order Submitted',
+        status: 'Order Shipped',
         date: 'March 13, 2012, 12:38 am',
         completed: true
       },
       {
-        status: 'Order Paid Successfully',
+        status: 'Awaiting Shipment',
         date: 'March 13, 2012, 12:38 am',
         completed: true
       },
@@ -54,12 +54,12 @@ const TrackOrder = () => {
         completed: true
       },
       {
-        status: 'Awaiting Shipment',
+        status: 'Order Paid Successfuly',
         date: 'March 13, 2012, 12:38 am',
         completed: false
       },
       {
-        status: 'Order Shipped',
+        status: 'Order Submitted',
         date: 'March 13, 2012, 12:38 am',
         completed: false
       }

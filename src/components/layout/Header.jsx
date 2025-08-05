@@ -20,7 +20,7 @@ function Header() {
     { label: "Help Center", to: "/help" },
     { label: "Contact Us", to: "/contact" },
     { label: "Track My Order", to: "/help/track-order" },
-    { label: "Return & Refund Policy", to: "/refund" },
+    { label: "Return & Refund Policy", to: "/help/returns-refunds" },
     { label: "FAQs", to: "/help/faqs" },
   ];
   const accountHeader = (
