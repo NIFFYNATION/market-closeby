@@ -143,7 +143,7 @@ const TrackingResults = ({
                       }`}>
                         {status.status}
                       </h4>
-                      <p className="text-xs text-text-grey">{status.date}</p>
+                      <p className="text-xs text-text-grey-l">{status.date}</p>
                     </div>
                   </div>
                 ))}

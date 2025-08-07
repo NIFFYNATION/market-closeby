@@ -18,6 +18,9 @@ import BuyersSellers from './pages/HelpCenter/BuyersSellers';
 import CustomerSupport from './pages/HelpCenter/CustomerSupport';
 import TrackOrder from './pages/HelpCenter/TrackOrder';
 
+// My Account imports
+// import MyAccount from './pages/MyAccount/MyAccount';
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -32,6 +35,8 @@ export const router = createBrowserRouter([
           { path: '/product/:id', element: <ProductDetailsPage /> },
           { path: '/contact', element: <ContactUs /> },
           
+          // My Account routes
+          // { path: '/account', element: <MyAccount /> },
           
           // Help Center routes
           { path: '/help', element: <HelpCenter /> },
