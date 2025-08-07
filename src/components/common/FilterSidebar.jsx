@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import OrangeRangeSlider from "./OrangeRangeSlider";
-import   "../../styles/customRadio.css";
 
 const priceRanges = [
   { label: "Under ₦2000", min: 0, max: 2000 },
@@ -148,17 +147,28 @@ export default function FilterSidebar({ filters, setFilters, currentCategory }) 
           {/* Price ranges */}
           <div className="flex flex-col gap-1">
             {priceRanges.map((range, i) => (
-              <label key={i} className="flex items-center gap-3 text-[#404040] text-sm py-2">
-                <input
-                  type="radio"
-                  name="price"
-                  className="custom-radio"
-                  checked={
-                    filters.price?.min === range.min &&
-                    filters.price?.max === range.max
-                  }
-                  onChange={() => handlePriceRange(range)}
-                />
+              <label key={i} className="flex items-center gap-3 text-[#404040] text-sm py-2 cursor-pointer">
+                <div className="relative">
+                  <input
+                    type="radio"
+                    name="price"
+                    checked={
+                      filters.price?.min === range.min &&
+                      filters.price?.max === range.max
+                    }
+                    onChange={() => handlePriceRange(range)}
+                    className="sr-only"
+                  />
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    filters.price?.min === range.min && filters.price?.max === range.max ? 'border-secondary' : 'border-gray-300'
+                  }`}>
+                    {filters.price?.min === range.min && filters.price?.max === range.max && (
+                      <div className="w-3 h-3 rounded-full bg-background border border-secondary flex items-center justify-center">
+                        <div className="w-3 h-3 rounded-full bg-secondary"></div>
+                      </div>
+                    )}
+                  </div>
+                </div>
                 {range.label}
               </label>
             ))}
@@ -187,14 +197,25 @@ export default function FilterSidebar({ filters, setFilters, currentCategory }) 
             {brands
               .filter(b => b.toLowerCase().includes(brandSearch.toLowerCase()))
               .map((brand, i) => (
-                <label key={i} className="flex items-center gap-2 text-sm py-1">
-                  <input
-                    type="radio"
-                    name="brand"
-                    className="custom-radio"
-                    checked={filters.brand === brand}
-                    onChange={() => handleBrand(brand)}
-                  />
+                <label key={i} className="flex items-center gap-2 text-sm py-1 cursor-pointer">
+                  <div className="relative">
+                    <input
+                      type="radio"
+                      name="brand"
+                      checked={filters.brand === brand}
+                      onChange={() => handleBrand(brand)}
+                      className="sr-only"
+                    />
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                      filters.brand === brand ? 'border-secondary' : 'border-gray-300'
+                    }`}>
+                      {filters.brand === brand && (
+                        <div className="w-3 h-3 rounded-full bg-background border border-secondary flex items-center justify-center">
+                          <div className="w-3 h-3 rounded-full bg-secondary"></div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   {brand}
                 </label>
               ))}
@@ -211,14 +232,25 @@ export default function FilterSidebar({ filters, setFilters, currentCategory }) 
         <div className="px-6 pb-4">
           <div className="flex flex-col gap-1">
             {conditions.map((cond, i) => (
-              <label key={i} className="flex items-center gap-2 text-sm py-1">
-                <input
-                  type="radio"
-                  name="condition"
-                  className="custom-radio"
-                  checked={filters.condition === cond}
-                  onChange={() => handleCondition(cond)}
-                />
+              <label key={i} className="flex items-center gap-2 text-sm py-1 cursor-pointer">
+                <div className="relative">
+                  <input
+                    type="radio"
+                    name="condition"
+                    checked={filters.condition === cond}
+                    onChange={() => handleCondition(cond)}
+                    className="sr-only"
+                  />
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    filters.condition === cond ? 'border-secondary' : 'border-gray-300'
+                  }`}>
+                    {filters.condition === cond && (
+                      <div className="w-3 h-3 rounded-full bg-background border border-secondary flex items-center justify-center">
+                        <div className="w-3 h-3 rounded-full bg-secondary"></div>
+                      </div>
+                    )}
+                  </div>
+                </div>
                 {cond}
               </label>
             ))}
@@ -235,14 +267,25 @@ export default function FilterSidebar({ filters, setFilters, currentCategory }) 
         <div className="px-6 pb-4">
           <div className="flex flex-col gap-1">
             {discounts.map((d, i) => (
-              <label key={i} className="flex items-center gap-2 text-sm py-1">
-                <input
-                  type="radio"
-                  name="discount"
-                  className="custom-radio"
-                  checked={filters.discount === d}
-                  onChange={() => handleDiscount(d)}
-                />
+              <label key={i} className="flex items-center gap-2 text-sm py-1 cursor-pointer">
+                <div className="relative">
+                  <input
+                    type="radio"
+                    name="discount"
+                    checked={filters.discount === d}
+                    onChange={() => handleDiscount(d)}
+                    className="sr-only"
+                  />
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    filters.discount === d ? 'border-secondary' : 'border-gray-300'
+                  }`}>
+                    {filters.discount === d && (
+                      <div className="w-3 h-3 rounded-full bg-background border border-secondary flex items-center justify-center">
+                        <div className="w-3 h-3 rounded-full bg-secondary"></div>
+                      </div>
+                    )}
+                  </div>
+                </div>
                 {d}
               </label>
             ))}

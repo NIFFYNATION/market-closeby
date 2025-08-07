@@ -108,7 +108,7 @@ const MyAccount = () => {
         <div className="lg:hidden mb-4">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="w-full bg-primary text-white px-4 py-3 rounded-lg flex items-center justify-between"
+            className="w-full bg-primary text-background px-4 py-3 rounded-lg flex items-center justify-between"
           >
             <span className="font-medium">Account Menu</span>
             <img 
@@ -131,8 +131,8 @@ const MyAccount = () => {
                   onClick={() => setActiveSection(item.id)}
                   className={`w-full items-center px-6 py-4 text-center transition-colors duration-200 ${
                     activeSection === item.id
-                      ? 'bg-white text-primary'
-                      : 'text-white hover:bg-primary-light'
+                      ? 'bg-background text-primary'
+                      : 'text-background hover:bg-primary-light'
                   }`}
                 >
                   <img 
@@ -347,7 +347,7 @@ const MyAccount = () => {
                   <div className="">
                     <div className="space-y-6">
                       {/* Description */}
-                      <p className="text-gray-700 text-base leading-relaxed">
+                      <p className="text-text-primary  text-base leading-relaxed">
                         Customize what updates you receive from Market CloseBy, so you only get what matters most to you.
                       </p>
 
@@ -363,15 +363,17 @@ const MyAccount = () => {
                               onChange={() => handleNewsletterChange('newListings', true)}
                               className="sr-only"
                             />
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                              newsletterData.newListings ? 'border-orange-500 bg-orange-500' : 'border-gray-300'
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                              newsletterData.newListings ? 'border-secondary' : 'border-gray-300'
                             }`}>
                               {newsletterData.newListings && (
-                                <div className="w-2 h-2 rounded-full bg-white"></div>
+                                <div className="w-4 h-4 rounded-full bg-background border border-secondary flex items-center justify-center">
+                                  <div className="w-4 h-4 rounded-full bg-secondary"></div>
+                                </div>
                               )}
                             </div>
                           </div>
-                          <span className="text-gray-700 text-base">New listings near me</span>
+                          <span className="text-text-primary text-base">New listings near me</span>
                         </label>
 
                         {/* Exclusive deals & discounts */}
@@ -384,15 +386,17 @@ const MyAccount = () => {
                               onChange={() => handleNewsletterChange('exclusiveDeals', true)}
                               className="sr-only"
                             />
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                              newsletterData.exclusiveDeals ? 'border-orange-500 bg-orange-500' : 'border-gray-300'
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                              newsletterData.exclusiveDeals ? 'border-secondary' : 'border-gray-300'
                             }`}>
                               {newsletterData.exclusiveDeals && (
-                                <div className="w-2 h-2 rounded-full bg-white"></div>
+                                <div className="w-4 h-4 rounded-full bg-background border border-secondary flex items-center justify-center">
+                                  <div className="w-4 h-4 rounded-full bg-secondary"></div>
+                                </div>
                               )}
                             </div>
                           </div>
-                          <span className="text-gray-700 text-base">Exclusive deals & discounts</span>
+                          <span className="text-text-primary text-base">Exclusive deals & discounts</span>
                         </label>
 
                         {/* Updates from sellers I follow */}
@@ -405,15 +409,17 @@ const MyAccount = () => {
                               onChange={() => handleNewsletterChange('sellerUpdates', true)}
                               className="sr-only"
                             />
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                              newsletterData.sellerUpdates ? 'border-orange-500 bg-orange-500' : 'border-gray-300'
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                              newsletterData.sellerUpdates ? 'border-secondary' : 'border-gray-300'
                             }`}>
                               {newsletterData.sellerUpdates && (
-                                <div className="w-2 h-2 rounded-full bg-white"></div>
+                                <div className="w-4 h-4 rounded-full bg-background border border-secondary flex items-center justify-center">
+                                  <div className="w-4 h-4 rounded-full bg-secondary"></div>
+                                </div>
                               )}
                             </div>
                           </div>
-                          <span className="text-gray-700 text-base">Updates from sellers I follow</span>
+                          <span className="text-text-primary text-base">Updates from sellers I follow</span>
                         </label>
 
                         {/* Marketplace news & announcements */}
@@ -426,15 +432,17 @@ const MyAccount = () => {
                               onChange={() => handleNewsletterChange('marketplaceNews', true)}
                               className="sr-only"
                             />
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                              newsletterData.marketplaceNews ? 'border-orange-500 bg-orange-500' : 'border-gray-300'
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                              newsletterData.marketplaceNews ? 'border-secondary' : 'border-gray-300'
                             }`}>
                               {newsletterData.marketplaceNews && (
-                                <div className="w-2 h-2 rounded-full bg-white"></div>
+                                <div className="w-4 h-4 rounded-full bg-background border border-secondary flex items-center justify-center">
+                                  <div className="w-4 h-4 rounded-full bg-secondary"></div>
+                                </div>
                               )}
                             </div>
                           </div>
-                          <span className="text-gray-700 text-base">Marketplace news & announcements</span>
+                          <span className="text-text-primary text-base">Marketplace news & announcements</span>
                         </label>
 
                         {/* I don't want to receive promotional emails */}
@@ -447,15 +455,17 @@ const MyAccount = () => {
                               onChange={() => handleNewsletterChange('noPromotionalEmails', true)}
                               className="sr-only"
                             />
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                              newsletterData.noPromotionalEmails ? 'border-gray-300 bg-white' : 'border-gray-300'
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                              newsletterData.noPromotionalEmails ? 'border-gray-400' : 'border-gray-300'
                             }`}>
                               {newsletterData.noPromotionalEmails && (
-                                <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+                                <div className="w-4 h-4 rounded-full bg-background border border-gray-400 flex items-center justify-center">
+                                  <div className="w-4 h-4 rounded-full bg-gray-400"></div>
+                                </div>
                               )}
                             </div>
                           </div>
-                          <span className="text-gray-700 text-base">I don't want to receive promotional emails</span>
+                          <span className="text-text-primary text-base">I don't want to receive promotional emails</span>
                         </label>
                       </div>
 
@@ -470,18 +480,18 @@ const MyAccount = () => {
                               className="sr-only"
                             />
                             <div className={`w-5 h-5 border-2 rounded flex items-center justify-center ${
-                              newsletterData.agreeToPolicy ? 'border-gray-400 bg-white' : 'border-gray-300'
+                              newsletterData.agreeToPolicy ? 'border-secondary bg-background' : 'border-gray-300'
                             }`}>
                               {newsletterData.agreeToPolicy && (
-                                <svg className="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                <svg className="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 20 20">
                                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                 </svg>
                               )}
                             </div>
                           </div>
-                          <span className="text-gray-700 text-base leading-relaxed">
+                          <span className="text-text-primary text-base leading-relaxed">
                             I agree to Market CloseBy's{' '}
-                            <span className="text-orange-500 underline">Privacy and Cookie Policy</span>.
+                            <span className="text-secondary underline">Privacy and Cookie Policy</span>.
                             You can unsubscribe from updates at any time.
                           </span>
                         </label>
@@ -508,12 +518,12 @@ const MyAccount = () => {
                       {/* Personal Information Section */}
                       <div className="shadow-2xl rounded-lg overflow-hidden">
                         <div className="relative">
-                          <h2 className="text-base sm:text-lg font-semibold text-white bg-primary px-4 sm:px-6 py-3">
+                          <h2 className="text-base sm:text-lg font-semibold text-background bg-primary px-4 sm:px-6 py-3">
                             PERSONAL INFORMATION
                           </h2>
                           <button 
                             onClick={() => setIsEditingProfile(!isEditingProfile)}
-                            className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-secondary hover:bg-secondary-light text-white p-1.5 rounded-full transition-colors duration-200"
+                            className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-secondary hover:bg-secondary-light text-background p-1.5 rounded-full transition-colors duration-200"
                           >
                             <img src="/icons/edit-bold.svg" alt="Edit" className="w-3 h-3 sm:w-4 sm:h-4" />
                           </button>
@@ -571,12 +581,12 @@ const MyAccount = () => {
                       {/* Delivery Address Section */}
                       <div className="shadow-2xl rounded-lg overflow-hidden">
                         <div className="relative">
-                          <h2 className="text-base sm:text-lg font-semibold text-white bg-primary px-4 sm:px-6 py-3">
+                          <h2 className="text-base sm:text-lg font-semibold text-background bg-primary px-4 sm:px-6 py-3">
                             DELIVERY ADDRESS
                           </h2>
                           <button 
                             onClick={() => setIsEditingAddress(!isEditingAddress)}
-                            className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-secondary hover:bg-secondary-light text-white p-1.5 rounded-full transition-colors duration-200"
+                            className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-secondary hover:bg-secondary-light text-background p-1.5 rounded-full transition-colors duration-200"
                           >
                             <img src="/icons/edit-bold.svg" alt="Edit" className="w-3 h-3 sm:w-4 sm:h-4" />
                           </button>
@@ -635,19 +645,19 @@ const MyAccount = () => {
                     {/* Newsletter Preferences Section - Full Width */}
                     <div className="shadow-lg rounded-lg overflow-hidden">
                       <div className="relative">
-                        <h2 className="text-base sm:text-lg font-semibold text-white bg-primary px-4 sm:px-6 py-3">
+                        <h2 className="text-base sm:text-lg font-semibold text-background bg-primary px-4 sm:px-6 py-3">
                           NEWSLETTER PREFERENCES
                         </h2>
                         <button 
                           onClick={() => setIsEditingNewsletter(!isEditingNewsletter)}
-                          className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-secondary hover:bg-secondary-light text-white p-1.5 rounded-full transition-colors duration-200"
+                          className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-secondary hover:bg-secondary-light text-background p-1.5 rounded-full transition-colors duration-200"
                         >
                           <img src="/icons/edit-bold.svg" alt="Edit" className="w-3 h-3 sm:w-4 sm:h-4" />
                         </button>
                       </div>
                       
                       <div className="p-4 sm:p-6">
-                        <p className="text-gray-700 text-sm leading-relaxed mb-4 sm:mb-6">
+                        <p className="text-text-primary text-sm leading-relaxed mb-4 sm:mb-6">
                           Manage your Market CloseBy notifications to stay informed about the latest deals, updates, and nearby offers.
                         </p>
                         
