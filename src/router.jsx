@@ -19,7 +19,7 @@ import CustomerSupport from './pages/HelpCenter/CustomerSupport';
 import TrackOrder from './pages/HelpCenter/TrackOrder';
 
 // My Account imports
-// import MyAccount from './pages/MyAccount/MyAccount';
+import MyAccount from './pages/MyAccount/MyAccount';
 
 export const router = createBrowserRouter([
   {
@@ -36,7 +36,7 @@ export const router = createBrowserRouter([
           { path: '/contact', element: <ContactUs /> },
           
           // My Account routes
-          // { path: '/account', element: <MyAccount /> },
+          { path: '/account', element: <MyAccount /> },
           
           // Help Center routes
           { path: '/help', element: <HelpCenter /> },

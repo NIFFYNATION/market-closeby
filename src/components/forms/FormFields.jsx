@@ -10,12 +10,13 @@ export const TextInput = ({
   placeholder,
   required = false,
   type = 'text',
+  disabled = false,
   className = ''
 }) => {
   return (
     <div className={className}>
       {label && (
-        <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor={id} className="block text-sm font-medium text-text-primary mb-2">
           {label}
         </label>
       )}
@@ -26,7 +27,10 @@ export const TextInput = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent text-gray-700 placeholder-gray-400 bg-gray-50"
+        disabled={disabled}
+        className={`w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent text-text-grey placeholder-gray-400 ${
+          disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-gray-50'
+        }`}
         required={required}
       />
     </div>
@@ -42,6 +46,7 @@ export const SelectInput = ({
   onChange,
   options,
   required = false,
+  disabled = false,
   className = ''
 }) => {
   return (
@@ -57,7 +62,10 @@ export const SelectInput = ({
           name={name}
           value={value}
           onChange={onChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent text-gray-700 bg-gray-50 appearance-none cursor-pointer"
+          disabled={disabled}
+          className={`w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent text-text-grey appearance-none cursor-pointer ${
+            disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-gray-50'
+          }`}
           required={required}
         >
           {options.map((option) => (
@@ -89,7 +97,7 @@ export const TextareaInput = ({
   return (
     <div className={className}>
       {label && (
-        <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor={id} className="block text-sm font-medium text-text-primary mb-2">
           {label}
         </label>
       )}
