@@ -7,6 +7,10 @@ import SearchResultsPage from './pages/SearchResultsPage';
 import ProductDetailsPage from './pages/ProductDetailsPage';
 import ContactUs from './pages/ContactUs';
 
+// Auth imports
+import Auth from './pages/Auth/Auth';
+import Verification from './pages/Auth/Verification';
+
 // Help Center imports
 import HelpCenter from './pages/HelpCenter/HelpCenter';
 import FAQ from './pages/HelpCenter/FAQ';
@@ -26,6 +30,13 @@ export const router = createBrowserRouter([
     path: '/',
     element: <App />,
     children: [
+      // Auth routes - WITHOUT Layout (no header/footer)
+      { path: '/auth', element: <Auth /> },
+      { path: '/login', element: <Auth /> },
+      { path: '/signup', element: <Auth /> },
+      { path: '/verification', element: <Verification />},
+      
+      // Main app routes - WITH Layout (includes header/footer)
       {
         path: '/',
         element: <Layout />,
@@ -53,3 +64,5 @@ export const router = createBrowserRouter([
     ],
   },
 ]);
+
+

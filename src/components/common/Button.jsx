@@ -8,7 +8,7 @@ const BUTTON_VARIANTS = {
   outline: "bg-transparent border border-primary text-primary hover:bg-primary hover:text-background",
   ghost: "bg-background text-primary hover:bg-[#D9700A]",
   danger: "bg-red-500 text-background hover:bg-red-600",
-  social: "bg-background border border-secondary text-text-primary hover:bg-background-alt",
+  social: "bg-background text-text-primary hover:bg-background-alt",
   success: "bg-[#FFF4ED] text-[#FF6B00] font-semibold",
   textPrimary: "text-gray-600 hover:text-primary",
   textDanger: "text-gray-600 hover:text-danger",
@@ -116,8 +116,9 @@ export const SocialButton = ({
     <Button
       variant="social"
       size="md"
+
       icon={icon}
-      className="shadow-sm"
+      className="shadow-[-1px_1px_10px_10px_rgba(0,0,0,0.04)]"
       {...props}
     >
       {children}

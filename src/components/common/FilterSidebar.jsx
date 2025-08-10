@@ -112,7 +112,7 @@ export default function FilterSidebar({ filters, setFilters, currentCategory }) 
           <div className="items-center gap-2 mb-3">
             <button
               className="w-full bg-background border border-secondary text-secondary text-sm px-4 py-2 rounded my-4 font-semibold"
-              onClick={() => {}} // You can add apply logic if needed
+              onClick={() => {}}
             >
               APPLY
             </button>

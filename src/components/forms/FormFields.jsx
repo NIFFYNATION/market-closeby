@@ -33,6 +33,18 @@ export const TextInput = ({
         }`}
         required={required}
       />
+      <p className="text-sm text-text-grey pt-2">
+
+        {type === 'password' ? '(Password must be at least 8 characters long)' : ''}
+
+
+      </p>
+      <p className="text-sm text-text-grey pt-2">
+
+        {type === 'confirmPassword' ? '(Re-enter to confirm password)' : ''}
+
+
+      </p>
     </div>
   );
 };

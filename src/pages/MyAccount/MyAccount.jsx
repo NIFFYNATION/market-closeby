@@ -3,6 +3,7 @@ import { Button } from '../../components/common/Button';
 import { TextInput, SelectInput } from '../../components/forms/FormFields';
 import PageHeader from '../../components/common/PageHeader';
 import MarketClosebyDescription from '../../components/MarketClosebyDescription';
+import MyOrders from '../../components/myAccount/MyOrders';
 
 const MyAccount = () => {
   const [activeSection, setActiveSection] = useState('profile');
@@ -189,12 +190,17 @@ const MyAccount = () => {
                 <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
                   {isEditingProfile ? 'Edit Personal Information' : 
                    isEditingAddress ? 'Edit Delivery Address' :
-                   isEditingNewsletter ? 'Edit Newsletter Preferences' : 'Account Overview'}
+                   isEditingNewsletter ? 'Edit Newsletter Preferences' : 
+                   activeSection === 'orders' ? 'Order History' :
+                   'Account Overview'}
                 </h1>
               </div>
 
               <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
-                {isEditingProfile ? (
+                {activeSection === 'orders' ? (
+                  /* My Orders Section */
+                  <MyOrders />
+                ) : isEditingProfile ? (
                   /* Edit Profile Form */
                   <div className="shadow-xl p-4 sm:p-6 lg:p-8">
                     <div className="space-y-6">
