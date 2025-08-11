@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; // Add these imports
 import { Button } from '../../components/common/Button';
 import AuthHeader from '../../components/common/AuthHeader';
+import AuthFooter from '../../components/common/AuthFooter';
 
 const Verification = () => {
   const location = useLocation();
@@ -96,7 +97,7 @@ const Verification = () => {
       
       // On successful verification, navigate to dashboard or home
       alert('Verification successful!');
-      navigate('/'); // or wherever you want to redirect after verification
+      navigate('/passkey-security'); // or wherever you want to redirect after verification
       
     } catch (error) {
       console.error('Verification failed:', error);
@@ -237,15 +238,7 @@ const Verification = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="mt-auto">
-        <div className="w-full h-20 bg-primary flex items-center justify-center">
-          <p className="text-sm text-background">
-            Copyright © 2025. All Right Reserved -{' '}
-            <span className="text-secondary font-medium">Market Closeby</span>
-          </p>
-        </div>
-      </div>
+      <AuthFooter />
     </div>
   );
 };

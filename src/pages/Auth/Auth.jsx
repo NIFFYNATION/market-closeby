@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { TextInput } from '../../components/forms/FormFields';
 import { Button, SocialButton } from '../../components/common/Button';
 import AuthHeader from '../../components/common/AuthHeader';
+import AuthFooter from '../../components/common/AuthFooter';
 
 const Auth = () => {
   const navigate = useNavigate(); 
@@ -206,14 +207,8 @@ const Auth = () => {
       </div>
 
       {/* Footer */}
-      <div className="mt-auto">
-        <div className="w-full h-20 bg-primary flex items-center justify-center">
-          <p className="text-sm text-background">
-            Copyright © 2025. All Right Reserved -{' '}
-            <span className="text-secondary font-medium">Market Closeby</span>
-          </p>
-        </div>
-      </div>
+      <AuthFooter />
+
     </div>
   );
 };

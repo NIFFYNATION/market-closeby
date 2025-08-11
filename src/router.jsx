@@ -10,6 +10,8 @@ import ContactUs from './pages/ContactUs';
 // Auth imports
 import Auth from './pages/Auth/Auth';
 import Verification from './pages/Auth/Verification';
+import PasskeySecurity from './pages/Auth/PasskeySecurity';
+import AccountComplete from './pages/Auth/AccountComplete';
 
 // Help Center imports
 import HelpCenter from './pages/HelpCenter/HelpCenter';
@@ -35,6 +37,8 @@ export const router = createBrowserRouter([
       { path: '/login', element: <Auth /> },
       { path: '/signup', element: <Auth /> },
       { path: '/verification', element: <Verification />},
+      { path: '/passkey-security', element: <PasskeySecurity /> },
+      { path: '/account-complete', element: <AccountComplete />},
       
       // Main app routes - WITH Layout (includes header/footer)
       {

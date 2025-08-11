@@ -30,10 +30,10 @@ const AuthHeader = ({
       </Link>
       
       {/* Title and Subtitle */}
-      <h1 className="text-2xl font-semibold text-text-primary mb-2">
+      <h1 className="text-2xl font-semibold text-text-primary">
         {title}
       </h1>
-      <p className="text-text-grey text-sm">
+      <p className="text-text-grey text-sm py-4">
         {subtitle}
       </p>
     </div>
