@@ -6,12 +6,16 @@ import HomePage from './pages/HomePage';
 import SearchResultsPage from './pages/SearchResultsPage'; 
 import ProductDetailsPage from './pages/ProductDetailsPage';
 import ContactUs from './pages/ContactUs';
+import StoreImageUpload from './pages/StoreSetup/StoreImageUpload';
 
 // Auth imports
 import Auth from './pages/Auth/Auth';
 import Verification from './pages/Auth/Verification';
 import PasskeySecurity from './pages/Auth/PasskeySecurity';
 import AccountComplete from './pages/Auth/AccountComplete';
+
+// Store Setup imports
+import StoreInfo from './pages/StoreSetup/StoreInfo';
 
 // Help Center imports
 import HelpCenter from './pages/HelpCenter/HelpCenter';
@@ -39,6 +43,11 @@ export const router = createBrowserRouter([
       { path: '/verification', element: <Verification />},
       { path: '/passkey-security', element: <PasskeySecurity /> },
       { path: '/account-complete', element: <AccountComplete />},
+      
+      // Store Setup routes - WITHOUT Layout
+      { path: '/store-setup', element: <StoreInfo /> },
+      // Add this route in your routes configuration
+      { path: '/store-image-upload', element: <StoreImageUpload />},
       
       // Main app routes - WITH Layout (includes header/footer)
       {

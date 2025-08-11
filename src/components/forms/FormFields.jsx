@@ -11,12 +11,14 @@ export const TextInput = ({
   required = false,
   type = 'text',
   disabled = false,
-  className = ''
+  className = '',
+  inputClassName = '',
+  labelClassName = ''
 }) => {
   return (
     <div className={className}>
       {label && (
-        <label htmlFor={id} className="block text-sm font-medium text-text-primary mb-2">
+        <label htmlFor={id} className={`block text-sm font-medium text-text-primary mb-2 ${labelClassName}`}>
           {label}
         </label>
       )}
@@ -30,20 +32,14 @@ export const TextInput = ({
         disabled={disabled}
         className={`w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent text-text-grey placeholder-gray-400 ${
           disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-gray-50'
-        }`}
+        } ${inputClassName}`}
         required={required}
       />
       <p className="text-sm text-text-grey pt-2">
-
         {type === 'password' ? '(Password must be at least 8 characters long)' : ''}
-
-
       </p>
       <p className="text-sm text-text-grey pt-2">
-
         {type === 'confirmPassword' ? '(Re-enter to confirm password)' : ''}
-
-
       </p>
     </div>
   );
@@ -59,12 +55,14 @@ export const SelectInput = ({
   options,
   required = false,
   disabled = false,
-  className = ''
+  className = '',
+  inputClassName = '',
+  labelClassName = ''
 }) => {
   return (
     <div className={className}>
       {label && (
-        <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor={id} className={`block text-sm font-medium text-gray-700 mb-2 ${labelClassName}`}>
           {label}
         </label>
       )}
@@ -77,7 +75,7 @@ export const SelectInput = ({
           disabled={disabled}
           className={`w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent text-text-grey appearance-none cursor-pointer ${
             disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-gray-50'
-          }`}
+          } ${inputClassName}`}
           required={required}
         >
           {options.map((option) => (
@@ -104,12 +102,14 @@ export const TextareaInput = ({
   placeholder,
   rows = 5,
   required = false,
-  className = ''
+  className = '',
+  inputClassName = '',
+  labelClassName = ''
 }) => {
   return (
     <div className={className}>
       {label && (
-        <label htmlFor={id} className="block text-sm font-medium text-text-primary mb-2">
+        <label htmlFor={id} className={`block text-sm font-medium text-text-primary mb-2 ${labelClassName}`}>
           {label}
         </label>
       )}
@@ -120,7 +120,7 @@ export const TextareaInput = ({
         onChange={onChange}
         placeholder={placeholder}
         rows={rows}
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent text-gray-700 placeholder-gray-400 bg-gray-50 resize-vertical"
+        className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent text-gray-700 placeholder-gray-400 bg-gray-50 resize-vertical ${inputClassName}`}
         required={required}
       />
     </div>
