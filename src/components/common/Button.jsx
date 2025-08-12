@@ -6,7 +6,10 @@ const BUTTON_VARIANTS = {
   primary: "bg-primary text-background hover:bg-primary-light",
   secondary: "bg-secondary text-background hover:bg-secondary-light",
   outline: "bg-transparent border border-primary text-primary hover:bg-primary hover:text-background",
-  ghost: "bg-background text-primary hover:bg-[#D9700A]",
+  ghost: "px-15 bg-[#D5CFC6] hover:bg-gray-300 border-none text-background ",
+
+
+
   danger: "bg-red-500 text-background hover:bg-red-600",
   social: "bg-background text-text-primary hover:bg-background-alt",
   success: "bg-[#FFF4ED] text-[#FF6B00] font-semibold",

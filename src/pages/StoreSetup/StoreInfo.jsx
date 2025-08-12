@@ -63,7 +63,7 @@ function StoreInfo() {
   };
 
   return (
-    <div className="min-h-screen bg-white py-10">
+    <div className="min-h-screen bg-white py-15">
       {/* Header */}
       <AuthHeader 
         title="Store Information"
