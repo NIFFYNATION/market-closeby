@@ -36,6 +36,8 @@ import TrackOrder from "./pages/HelpCenter/TrackOrder";
 // My Account imports
 import MyAccount from "./pages/MyAccount/MyAccount";
 
+import Dashboard from "./pages/SellerDashboard/Dashboard";
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -58,6 +60,9 @@ export const router = createBrowserRouter([
       { path: '/confirm-business-id', element: <ConfirmBusinessId /> },
       { path: '/delivery-shipping', element: <DeliveryAndShipping /> },
       { path: '/bank-details', element: <BankDetails /> },
+
+
+      { path: '/dashboard', element: <Dashboard />},
 
       // Main app routes - WITH Layout (includes header/footer)
       {
