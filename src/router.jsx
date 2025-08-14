@@ -1,5 +1,8 @@
-import { createBrowserRouter } from "react-router-dom";
-
+import { createBrowserRouter } from 'react-router-dom';
+import DashboardLayout from './pages/SellerDashboard/DashboardLayout';
+import DashboardHome from './pages/SellerDashboard/DashboardHome';
+import AddProduct from './pages/SellerDashboard/AddProduct';
+import Products from './pages/SellerDashboard/Products';
 import App from "./App";
 import Layout from "./components/layout/layout";
 import HomePage from "./pages/HomePage";
@@ -38,7 +41,7 @@ import MyAccount from "./pages/MyAccount/MyAccount";
 
 import Dashboard from "./pages/SellerDashboard/Dashboard";
 
-export const router = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
@@ -91,4 +94,36 @@ export const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: '/seller-dashboard',
+    element: <DashboardLayout />,
+    children: [
+      {
+        index: true,
+        element: <DashboardHome />
+      },
+      {
+        path: 'products',
+        element: <Products />
+      },
+      {
+        path: 'add-product',
+        element: <AddProduct />
+      },
+      {
+        path: 'orders',
+        element: <div className="text-center py-12"><h2 className="text-2xl font-semibold">Orders Page - Coming Soon</h2></div>
+      },
+      {
+        path: 'wallet',
+        element: <div className="text-center py-12"><h2 className="text-2xl font-semibold">Wallet Page - Coming Soon</h2></div>
+      },
+      {
+        path: 'settings',
+        element: <div className="text-center py-12"><h2 className="text-2xl font-semibold">Settings Page - Coming Soon</h2></div>
+      }
+    ]
+  },
 ]);
+
+export default router;
