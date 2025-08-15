@@ -187,3 +187,25 @@ export const categories = [
     ]
   }
 ];
+
+// Delivery Options Data
+export const deliveryDayOptions = [
+  { value: "same-day", label: "Same Day Delivery" },
+  { value: "next-day", label: "Next Day Delivery" },
+  { value: "2-3-days", label: "2-3 Days" },
+  { value: "3-5-days", label: "3-5 Days" },
+  { value: "5-7-days", label: "5-7 Days" },
+  { value: "1-2-weeks", label: "1-2 Weeks" },
+  { value: "2-4-weeks", label: "2-4 Weeks" },
+  { value: "pickup-only", label: "Pickup Only" }
+];
+
+export const productConditionOptions = [
+  { value: "new", label: "New" },
+  { value: "like-new", label: "Like New" },
+  { value: "excellent", label: "Excellent" },
+  { value: "good", label: "Good" },
+  { value: "fair", label: "Fair" },
+  { value: "poor", label: "Poor" },
+  { value: "for-parts", label: "For Parts/Not Working" }
+];

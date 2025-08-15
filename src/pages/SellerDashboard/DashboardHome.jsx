@@ -8,7 +8,7 @@ const DashboardHome = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('Last 7 days');
   
   // Seller verification status - you can modify this based on your authentication logic
-  const [isVerified, setIsVerified] = useState(false);
+  const [isVerified, setIsVerified] = useState(true);
 
   // Chart data
   const chartData = [
@@ -309,32 +309,65 @@ const DashboardHome = () => {
           </div>
          </div>
 
-             {/* Setup Storefront Card - Only shown for unverified sellers */}
-      {!isVerified && (
-        <div className="mt-8">
-          <div className="bg-[url('/imgs/mask.png')] bg-cover p-6 rounded-xl  shadow-sm relative overflow-hidden">
+       {/* Setup Storefront Card - Only shown for unverified sellers */}
+{!isVerified && (
+  <div className="mt-8">
+    <div className="bg-[url('/imgs/mask.png')] bg-cover p-6 rounded-xl shadow-sm relative overflow-hidden">
 
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Setup your storefront</h3>
-                <p className="text-gray-600 mb-4">Complete this process</p>
-                <Button
-                  variant="primary"
-                  onClick={() => navigate('/store-setup')}
-                  className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark transition-colors"
-                >
-                  Complete this process →
-                </Button>
-              </div>
-              <div className="relative">
-                <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-white text-2xl font-bold">10%</span>
-                </div>
-              </div>
+      <div className="flex items-center justify-between">
+        <div className="flex-1">
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Setup your</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-3">storefront</h3>
+          <div className="flex items-center space-x-2">
+            <button 
+              onClick={() => navigate('/store-setup')}
+              className="flex items-center space-x-2 text-gray-700 font-medium hover:text-gray-900 transition-colors duration-200 cursor-pointer"
+            >
+              <span>Complete this process</span>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div className="relative flex items-center justify-center">
+          {/* Circular Progress Background */}
+          <div className="w-20 h-20 relative">
+            {/* Background Circle */}
+            <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 80 80">
+              <circle
+                cx="40"
+                cy="40"
+                r="32"
+                stroke="white"
+                strokeWidth="6"
+                fill="none"
+                opacity="0.6"
+              />
+              {/* Progress Circle */}
+              <circle
+                cx="40"
+                cy="40"
+                r="32"
+                stroke="#1e40af"
+                strokeWidth="6"
+                fill="none"
+                strokeDasharray={`${2 * Math.PI * 32}`}
+                strokeDashoffset={`${2 * Math.PI * 32 * (1 - 0.1)}`}
+                strokeLinecap="round"
+                className="transition-all duration-300"
+              />
+            </svg>
+            {/* Percentage Text */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-2xl font-bold text-gray-900">10%</span>
             </div>
           </div>
         </div>
-      )}
+      </div>
+    </div>
+  </div>
+)}
         </div>
       </div>
     </>

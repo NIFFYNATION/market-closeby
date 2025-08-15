@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, Outlet } from 'react-router-dom';
+import { Line } from 'recharts';
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const DashboardLayout = () => {
               onClick={toggleSidebar}
               className="w-6 h-6 block lg:hidden"
             >
-              <img src="./icons/menu-white.svg" alt="Menu" className="w-6 h-6" /> 
+              <img src="/icons/menu-white.svg" alt="Menu" className="w-6 h-6" /> 
             </button>
           </div>
           <div className="flex items-center space-x-4">
@@ -41,7 +42,9 @@ const DashboardLayout = () => {
               <img src="/icons/bell.svg" alt="Notifications" className="w-6 h-6 text-gray-400" />
               <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
             </div>
+            <Link to="/help">
             <img src="/icons/help.svg" alt="Help" className="w-6 h-6 text-gray-400" />
+            </Link>
             <div className="w-10 h-10 rounded-full flex items-center justify-center">
               <img src="/icons/profile-avatar.svg" alt="Profile" className="w-10 h-10 text-gray-400" />
             </div>

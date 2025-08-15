@@ -46,6 +46,7 @@ export const TextInput = ({
 };
 
 // Select Dropdown Component
+// Select Dropdown Component
 export const SelectInput = ({
   id,
   name,
@@ -77,9 +78,23 @@ export const SelectInput = ({
             disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-gray-50'
           } ${inputClassName}`}
           required={required}
+          style={{
+            backgroundImage: 'none'
+          }}
         >
           {options.map((option) => (
-            <option key={option} value={option}>
+            <option 
+              key={option} 
+              value={option}
+              className="py-3 px-4 text-gray-700 hover:bg-gray-50 focus:bg-gray-50 bg-white"
+              style={{
+                padding: '12px 16px',
+                fontSize: '14px',
+                lineHeight: '1.5',
+                color: '#374151',
+                backgroundColor: '#ffffff'
+              }}
+            >
               {option}
             </option>
           ))}
