@@ -256,7 +256,7 @@ const AddProduct = () => {
 
       <form className="space-y-8">
         {/* Product Information Section - Always visible */}
-        <div className="bg-white p-4 md:p-8 rounded-lg">
+        <div className="bg-background p-4 md:p-8 rounded-lg">
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-text-primary mb-2">
               Product information
@@ -347,7 +347,7 @@ const AddProduct = () => {
                               e.stopPropagation();
                               removeImage(image.id);
                             }}
-                            className="absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-background rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                           >
                             <img src="/icons/cancel-black.svg" alt="Cancel" />
                           </button>
@@ -478,7 +478,7 @@ const AddProduct = () => {
                                 e.stopPropagation();
                                 removeImage(image.id);
                               }}
-                              className="absolute -top-1 -right-1 w-5 h-5 bg-black text-white rounded-full flex items-center justify-center text-xs hover:bg-gray-800 transition-colors duration-200"
+                              className="absolute -top-1 -right-1 w-5 h-5 bg-black text-background rounded-full flex items-center justify-center text-xs hover:bg-gray-800 transition-colors duration-200"
                             >
                               <svg
                                 className="w-3 h-3"
@@ -521,7 +521,7 @@ const AddProduct = () => {
                 onChange={handleInputChange}
                 placeholder="Eg. Cooker"
                 required
-                inputClassName="rounded-lg bg-white border-gray-300"
+                inputClassName="rounded-lg bg-background border-gray-300"
               />
 
               {/* Category and Sub Category Row */}
@@ -534,7 +534,7 @@ const AddProduct = () => {
                   onChange={handleInputChange}
                   options={categoryOptions}
                   required
-                  inputClassName="rounded-lg bg-white border-gray-300"
+                  inputClassName="rounded-lg bg-background border-gray-300"
                 />
                 <SelectInput
                   id="subCategory"
@@ -544,7 +544,7 @@ const AddProduct = () => {
                   onChange={handleInputChange}
                   options={subCategoryOptions}
                   required
-                  inputClassName="rounded-lg bg-white border-gray-300"
+                  inputClassName="rounded-lg bg-background border-gray-300"
                 />
               </div>
 
@@ -558,7 +558,7 @@ const AddProduct = () => {
                   onChange={handleInputChange}
                   options={stateOptions}
                   required
-                  inputClassName="rounded-lg bg-white border-gray-300"
+                  inputClassName="rounded-lg bg-background border-gray-300"
                 />
                 <SelectInput
                   id="lga"
@@ -568,7 +568,7 @@ const AddProduct = () => {
                   onChange={handleInputChange}
                   options={lgaOptions}
                   required
-                  inputClassName="rounded-lg bg-white border-gray-300"
+                  inputClassName="rounded-lg bg-background border-gray-300"
                 />
               </div>
 
@@ -582,7 +582,7 @@ const AddProduct = () => {
                   onChange={handleInputChange}
                   placeholder="Eg. ₦10,000"
                   required
-                  inputClassName="rounded-lg bg-white border-gray-300"
+                  inputClassName="rounded-lg bg-background border-gray-300"
                 />
                 <SelectInput
                   id="tags"
@@ -591,7 +591,7 @@ const AddProduct = () => {
                   value={formData.tags}
                   onChange={handleInputChange}
                   options={tagsOptions}
-                  inputClassName="rounded-lg bg-white border-gray-300"
+                  inputClassName="rounded-lg bg-background border-gray-300"
                 />
               </div>
 
@@ -605,7 +605,7 @@ const AddProduct = () => {
                 placeholder="Provide details about your service"
                 rows={6}
                 required
-                inputClassName="rounded-lg bg-white border-gray-300"
+                inputClassName="rounded-lg bg-background border-gray-300"
               />
             </div>
           ) : (
@@ -625,7 +625,7 @@ const AddProduct = () => {
                   onChange={handleInputChange}
                   options={deliveryDaySelectOptions}
                   required
-                  inputClassName="rounded-lg bg-white border-gray-300"
+                  inputClassName="rounded-lg bg-background border-gray-300"
                 />
                 <SelectInput
                   id="shippingRegion"
@@ -635,7 +635,7 @@ const AddProduct = () => {
                   onChange={handleInputChange}
                   options={shippingRegionSelectOptions}
                   required
-                  inputClassName="rounded-lg bg-white border-gray-300"
+                  inputClassName="rounded-lg bg-background border-gray-300"
                 />
               </div>
 
@@ -649,7 +649,7 @@ const AddProduct = () => {
                   onChange={handleInputChange}
                   placeholder="Eg. ₦10,000"
                   required
-                  inputClassName="rounded-lg bg-white border-gray-300"
+                  inputClassName="rounded-lg bg-background border-gray-300"
                 />
                 <SelectInput
                   id="productCondition"
@@ -659,7 +659,7 @@ const AddProduct = () => {
                   onChange={handleInputChange}
                   options={productConditionSelectOptions}
                   required
-                  inputClassName="rounded-lg bg-white border-gray-300"
+                  inputClassName="rounded-lg bg-background border-gray-300"
                 />
               </div>
             </div>
@@ -673,7 +673,7 @@ const AddProduct = () => {
               type="button"
               variant="outline"
               onClick={handlePrevious}
-              className="px-8 py-3 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-lg font-medium"
+              className="px-8 py-3 border border-gray-300 text-gray-700 bg-background hover:bg-gray-50 rounded-lg font-medium"
             >
               Previous
             </Button>
@@ -683,7 +683,7 @@ const AddProduct = () => {
               type="button"
               variant="outline"
               onClick={handleCancel}
-              className="px-8 py-3 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-lg font-medium"
+              className="px-8 py-3 border border-gray-300 text-gray-700 bg-background hover:bg-gray-50 rounded-lg font-medium"
             >
               Cancel
             </Button>
@@ -693,13 +693,13 @@ const AddProduct = () => {
             variant="secondary"
             disabled={loading}
             onClick={handleProceed}
-            className="px-8 py-3 bg-secondary text-white hover:bg-secondary-light rounded-lg font-medium disabled:opacity-50"
+            className="px-8 py-3 bg-secondary text-background hover:bg-secondary-light rounded-lg font-medium disabled:opacity-50"
           >
             {loading
               ? "Processing..."
               : currentStep === 1
               ? "Proceed"
-              : "Continue"}
+              : "Post Product"}
           </Button>
         </div>
       </form>

@@ -29,7 +29,7 @@ const DashboardLayout = () => {
       <div className="bg-primary fixed w-full z-10 px-8 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <img src="./icons/Logo.svg" alt="" /> 
+            <img src="/icons/Logo.svg" alt="" /> 
             <button 
               onClick={toggleSidebar}
               className="w-6 h-6 block lg:hidden"
