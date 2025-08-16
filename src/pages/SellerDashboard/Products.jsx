@@ -12,7 +12,7 @@ const Products = () => {
   );
 
   return (
-    <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
+    <div className="p-0 md:p-6 bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="mb-4 md:mb-6">
         <h1 className="text-xl md:text-2xl font-semibold text-text-primary mb-4 md:mb-6">All Products</h1>
@@ -55,7 +55,7 @@ const Products = () => {
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
         {filteredProducts.map((product) => (
           <div key={product.id} className="bg-background rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
             {/* Stock Status Badge */}
