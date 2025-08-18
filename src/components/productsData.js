@@ -253,3 +253,115 @@ export const productsData = [
     status: 'Out of Stock'
   }
 ];
+
+// Orders data
+export const ordersData = [
+  {
+    id: 1,
+    orderNumber: '#103526',
+    date: '04/17/23',
+    customer: 'John Fortune',
+    price: '₦20.00',
+    status: 'Completed',
+    image: '/imgs/yam-pounder.svg'
+  },
+  {
+    id: 2,
+    orderNumber: '#103527',
+    date: '04/17/23',
+    customer: 'Sarah Johnson',
+    price: '₦1,300.00',
+    status: 'Completed',
+    image: '/imgs/iphone.svg'
+  },
+  {
+    id: 3,
+    orderNumber: '#103528',
+    date: '04/16/23',
+    customer: 'Mike Davis',
+    price: '₦34.00',
+    status: 'Pending',
+    image: '/imgs/gas-cooker.svg'
+  },
+  {
+    id: 4,
+    orderNumber: '#103529',
+    date: '04/16/23',
+    customer: 'Emily Wilson',
+    price: '₦58.50',
+    status: 'Completed',
+    image: '/imgs/power-bank.svg'
+  },
+  {
+    id: 5,
+    orderNumber: '#103530',
+    date: '04/15/23',
+    customer: 'David Brown',
+    price: '₦20.00',
+    status: 'Cancelled',
+    image: '/imgs/yam-pounder.svg'
+  },
+  {
+    id: 6,
+    orderNumber: '#103531',
+    date: '04/15/23',
+    customer: 'Lisa Anderson',
+    price: '₦14,000.00',
+    status: 'Completed',
+    image: '/imgs/lexus.svg'
+  },
+  {
+    id: 7,
+    orderNumber: '#103532',
+    date: '04/14/23',
+    customer: 'James Miller',
+    price: '₦20.00',
+    status: 'Cancelled',
+    image: '/imgs/yam-pounder.svg'
+  },
+  {
+    id: 8,
+    orderNumber: '#103533',
+    date: '04/14/23',
+    customer: 'Maria Garcia',
+    price: '₦20.00',
+    status: 'Completed',
+    image: '/imgs/yam-pounder.svg'
+  },
+  {
+    id: 9,
+    orderNumber: '#103534',
+    date: '04/13/23',
+    customer: 'Robert Taylor',
+    price: '₦34.00',
+    status: 'Pending',
+    image: '/imgs/gas-cooker.svg'
+  },
+  {
+    id: 10,
+    orderNumber: '#103535',
+    date: '04/13/23',
+    customer: 'Jennifer White',
+    price: '₦58.50',
+    status: 'Completed',
+    image: '/imgs/power-bank.svg'
+  },
+  {
+    id: 11,
+    orderNumber: '#103536',
+    date: '04/12/23',
+    customer: 'Michael Johnson',
+    price: '₦1,300.00',
+    status: 'Cancelled',
+    image: '/imgs/iphone.svg'
+  },
+  {
+    id: 12,
+    orderNumber: '#103537',
+    date: '04/12/23',
+    customer: 'Amanda Clark',
+    price: '₦20.00',
+    status: 'Completed',
+    image: '/imgs/yam-pounder.svg'
+  }
+];

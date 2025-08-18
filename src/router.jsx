@@ -40,6 +40,7 @@ import TrackOrder from "./pages/HelpCenter/TrackOrder";
 import MyAccount from "./pages/MyAccount/MyAccount";
 
 import Dashboard from "./pages/SellerDashboard/Dashboard";
+import Orders from './pages/SellerDashboard/Orders';
 
 const router = createBrowserRouter([
   {
@@ -112,7 +113,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'orders',
-        element: <div className="text-center py-12"><h2 className="text-2xl font-semibold">Orders Page - Coming Soon</h2></div>
+        element: <Orders />
       },
       {
         path: 'wallet',

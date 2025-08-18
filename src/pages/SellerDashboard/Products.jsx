@@ -1,15 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Button } from '../../components/common/Button';
 import { useNavigate } from 'react-router-dom';
 import { productsData } from '../../components/productsData';
+import SearchAndActionsDashboard from '../../components/common/SearchAndActionsDashBoard';
+import PaginationDashboard from '../../components/common/PaginationDashboard';
 
 const Products = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const dropdownRef = useRef(null);
+  const itemsPerPage = 10;
 
-  const filteredProducts = productsData.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter products based on search term
+  const filteredProducts = useMemo(() => {
+    return productsData.filter(product =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm]);
+
+  // Calculate pagination values
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProducts = filteredProducts.slice(startIndex, endIndex);
+
+  // Reset to first page when search changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Pagination handlers
+  const handlePreviousPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  };
+
+  const handlePageClick = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Dropdown handlers
+  const toggleDropdown = (productId) => {
+    setOpenDropdown(openDropdown === productId ? null : productId);
+  };
+
+  const handleEditProduct = (productId) => {
+    console.log('Edit product:', productId);
+    navigate(`/seller-dashboard/edit-product/${productId}`);
+    setOpenDropdown(null);
+  };
+
+  const handleDeleteProduct = (productId) => {
+    console.log('Delete product:', productId);
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      // Delete logic here
+    }
+    setOpenDropdown(null);
+  };
 
   return (
     <div className="p-0 md:p-6 bg-gray-50 min-h-screen">
@@ -18,45 +84,21 @@ const Products = () => {
         <h1 className="text-xl md:text-2xl font-semibold text-text-primary mb-4 md:mb-6">All Products</h1>
         
         {/* Search and Actions Bar */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 md:gap-4 mb-4 md:mb-6 font-sans">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 flex-1">
-            <div className="relative flex-1 max-w-full sm:max-w-md">
-              <img 
-                src="/icons/search-bold.svg" 
-                alt="Search" 
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
-              />
-              <input
-                type="text"
-                placeholder="Search by product name"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-4 pr-10 py-2 md:py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-              />
-            </div>
-       
-          </div>
-               <Button 
-              size="md" 
-              shape="roundedLg"
-              className="border !border-text-grey text-text-secondary !font-bold !bg-background !hover:bg-gray-50 px-4 py-2 md:py-2.5 whitespace-nowrap"
-            >
-              Filter
-              <img src="/icons/filter.svg" alt="Filter" className="w-5 h-5 md:w-6 md:h-6 ml-2 md:ml-3" />
-            </Button>
-          <Button
-            variant="secondary"
-            onClick={() => navigate('/seller-dashboard/add-product')}
-            className="!font-semibold whitespace-nowrap mt-2 sm:mt-0"
-          >
-            Add New Product
-          </Button>
-        </div>
+        <SearchAndActionsDashboard
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          searchPlaceholder="Search by product name"
+          primaryAction={{
+            label: 'Add New Product',
+            onClick: () => navigate('/seller-dashboard/add-product'),
+            variant: 'secondary'
+          }}
+        />
       </div>
 
       {/* Products Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
-        {filteredProducts.map((product) => (
+        {currentProducts.map((product) => (
           <div key={product.id} className="bg-background rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
             {/* Stock Status Badge */}
             <div className="relative">
@@ -74,9 +116,36 @@ const Products = () => {
               }`}>
                 {product.status}
               </div>
-              <button className="absolute top-2 right-2 p-1 hover:bg-text-grey-light rounded-full">
-                <img src="/icons/options-bold.svg" alt="Options" className="w-6 h-6 md:w-8 md:h-8" />
-              </button>
+              
+              {/* Options Button with Dropdown */}
+              <div className="absolute top-2 right-2" ref={openDropdown === product.id ? dropdownRef : null}>
+                <button 
+                  onClick={() => toggleDropdown(product.id)}
+                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <img src="/icons/options-bold.svg" alt="Options" className="w-6 h-6 md:w-8 md:h-8" />
+                </button>
+                
+                {/* Dropdown Menu */}
+                {openDropdown === product.id && (
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
+                    <button
+                      onClick={() => handleEditProduct(product.id)}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center"
+                    >
+                      <img src="/icons/edit-bold.svg" alt="Edit" className="w-4 h-4 mr-3" />
+                      Edit product details
+                    </button>
+                    <button
+                      onClick={() => handleDeleteProduct(product.id)}
+                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center"
+                    >
+                      <img src="/icons/trash-bold.svg" alt="Delete" className="w-4 h-4 mr-3" />
+                      Delete product
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
             
             {/* Product Info */}
@@ -104,23 +173,21 @@ const Products = () => {
       </div>
 
       {/* Pagination */}
-      <div className="flex flex-col sm:flex-row items-center justify-between mt-6 md:mt-8 gap-4 sm:gap-2">
-        <button className="flex items-center p-2 bg-background ring ring-text-grey rounded-lg text-gray-400 hover:text-gray-600 order-2 sm:order-1">
-          <img src="/icons/arrow-left.svg" alt="Previous" className="w-4 h-4 md:w-5 md:h-5" />
-          <span className="text-sm text-text-grey mx-2">Previous</span>
-        </button>
-        
-        <div className="flex space-x-1 order-1 sm:order-2">
-          <button className="w-8 h-8 rounded text-sm text-gray-400 bg-background ring ring-secondary font-medium">
-            4
-          </button>
+      <PaginationDashboard
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageClick}
+        onPreviousPage={handlePreviousPage}
+        onNextPage={handleNextPage}
+        className="mt-20"
+      />
+
+      {/* Results Info */}
+      {filteredProducts.length > 0 && (
+        <div className="text-center mt-4 text-sm text-gray-500">
+          Showing {startIndex + 1}-{Math.min(endIndex, filteredProducts.length)} of {filteredProducts.length} products
         </div>
-        
-        <button className="flex items-center bg-background ring ring-text-grey rounded-lg p-2 text-gray-600 hover:text-gray-800 order-3">
-          <span className="text-sm text-text-grey mx-2">Next</span>
-          <img src="/icons/arrow-right-bold.svg" alt="Next" className="w-4 h-4 md:w-5 md:h-5" />
-        </button>
-      </div>
+      )}
 
       {filteredProducts.length === 0 && (
         <div className="text-center py-12">
