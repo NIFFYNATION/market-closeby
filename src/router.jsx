@@ -41,6 +41,8 @@ import MyAccount from "./pages/MyAccount/MyAccount";
 
 import Dashboard from "./pages/SellerDashboard/Dashboard";
 import Orders from './pages/SellerDashboard/Orders';
+import Wallet from './pages/SellerDashboard/Wallet';
+import Settings from './pages/SellerDashboard/Settings';
 
 const router = createBrowserRouter([
   {
@@ -117,11 +119,11 @@ const router = createBrowserRouter([
       },
       {
         path: 'wallet',
-        element: <div className="text-center py-12"><h2 className="text-2xl font-semibold">Wallet Page - Coming Soon</h2></div>
+        element: <Wallet />
       },
       {
         path: 'settings',
-        element: <div className="text-center py-12"><h2 className="text-2xl font-semibold">Settings Page - Coming Soon</h2></div>
+        element: <Settings />
       }
     ]
   },
