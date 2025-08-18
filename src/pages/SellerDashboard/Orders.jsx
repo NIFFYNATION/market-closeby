@@ -95,8 +95,8 @@ const Orders = () => {
         />
 
         {/* Orders Table */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="min-w-400 overflow-x-auto">
+        <div className="bg-white rounded-2xl shadow-sm overflow-x-auto">
+          <div className="w-full ">
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>

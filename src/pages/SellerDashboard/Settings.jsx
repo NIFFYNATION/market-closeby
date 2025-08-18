@@ -435,7 +435,7 @@ const Settings = () => {
   const headerText = getHeaderText();
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen p-0 md:p-6">
       <div className="mx-auto">
         {/* Header */}
         <div className="mb-8">
