@@ -25,7 +25,7 @@ const AuthHeader = ({
       )}
       
       {/* Logo */}
-      <Link to="/" className="inline-block mb-8">
+      <Link to="/" className="inline-block mb-6">
         <img src={logo} alt="Market Closeby Logo" className={logoWidth} />
       </Link>
       

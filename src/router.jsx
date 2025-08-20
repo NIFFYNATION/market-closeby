@@ -11,7 +11,8 @@ import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ContactUs from "./pages/ContactUs";
 
 // Auth imports
-import Auth from "./pages/Auth/Auth";
+import SignUp from './pages/Auth/SignUp';
+import SignIn from './pages/Auth/SignIn';
 import Verification from "./pages/Auth/Verification";
 import PasskeySecurity from "./pages/Auth/PasskeySecurity";
 import AccountComplete from "./pages/Auth/AccountComplete";
@@ -50,9 +51,8 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       // Auth routes - WITHOUT Layout (no header/footer)
-      { path: "/auth", element: <Auth /> },
-      { path: "/login", element: <Auth /> },
-      { path: "/signup", element: <Auth /> },
+      { path: "/signup", element: <SignUp /> },
+      { path: "/signin", element: <SignIn /> },
       { path: "/verification", element: <Verification /> },
       { path: "/passkey-security", element: <PasskeySecurity /> },
       { path: "/account-complete", element: <AccountComplete /> },
