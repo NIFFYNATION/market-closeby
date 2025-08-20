@@ -1,8 +1,10 @@
-import { createBrowserRouter } from 'react-router-dom';
-import DashboardLayout from './pages/SellerDashboard/DashboardLayout';
-import DashboardHome from './pages/SellerDashboard/DashboardHome';
-import AddProduct from './pages/SellerDashboard/AddProduct';
-import Products from './pages/SellerDashboard/Products';
+import { createBrowserRouter } from "react-router-dom";
+import DashboardLayout from "./pages/SellerDashboard/DashboardLayout";
+import DashboardHome from "./pages/SellerDashboard/DashboardHome";
+import SellerLandingPage from "./pages/SellerLandingPage";
+
+import AddProduct from "./pages/SellerDashboard/AddProduct";
+import Products from "./pages/SellerDashboard/Products";
 import App from "./App";
 import Layout from "./components/layout/layout";
 import HomePage from "./pages/HomePage";
@@ -11,8 +13,8 @@ import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ContactUs from "./pages/ContactUs";
 
 // Auth imports
-import SignUp from './pages/Auth/SignUp';
-import SignIn from './pages/Auth/SignIn';
+import SignUp from "./pages/Auth/SignUp";
+import SignIn from "./pages/Auth/SignIn";
 import Verification from "./pages/Auth/Verification";
 import PasskeySecurity from "./pages/Auth/PasskeySecurity";
 import AccountComplete from "./pages/Auth/AccountComplete";
@@ -21,10 +23,10 @@ import AccountComplete from "./pages/Auth/AccountComplete";
 import StoreInfo from "./pages/StoreSetup/StoreInfo";
 import StoreImageUpload from "./pages/StoreSetup/StoreImageUpload";
 import Kyc from "./pages/StoreSetup/Kyc";
-import LocationInfo from './pages/StoreSetup/LocationInfo';
-import ConfirmBusinessId from './pages/StoreSetup/ConfirmBusinessId';
-import DeliveryAndShipping from './pages/StoreSetup/DeliveryAndShipping';
-import BankDetails from './pages/StoreSetup/BankDetails';
+import LocationInfo from "./pages/StoreSetup/LocationInfo";
+import ConfirmBusinessId from "./pages/StoreSetup/ConfirmBusinessId";
+import DeliveryAndShipping from "./pages/StoreSetup/DeliveryAndShipping";
+import BankDetails from "./pages/StoreSetup/BankDetails";
 
 // Help Center imports
 import HelpCenter from "./pages/HelpCenter/HelpCenter";
@@ -41,9 +43,9 @@ import TrackOrder from "./pages/HelpCenter/TrackOrder";
 import MyAccount from "./pages/MyAccount/MyAccount";
 
 import Dashboard from "./pages/SellerDashboard/Dashboard";
-import Orders from './pages/SellerDashboard/Orders';
-import Wallet from './pages/SellerDashboard/Wallet';
-import Settings from './pages/SellerDashboard/Settings';
+import Orders from "./pages/SellerDashboard/Orders";
+import Wallet from "./pages/SellerDashboard/Wallet";
+import Settings from "./pages/SellerDashboard/Settings";
 
 const router = createBrowserRouter([
   {
@@ -61,14 +63,13 @@ const router = createBrowserRouter([
       { path: "/store-setup", element: <StoreInfo /> },
       // Add this route in your routes configuration
       { path: "/store-image-upload", element: <StoreImageUpload /> },
-      { path: "/kyc", element: <Kyc />, },
-      { path: '/location-info', element: <LocationInfo /> },
-      { path: '/confirm-business-id', element: <ConfirmBusinessId /> },
-      { path: '/delivery-shipping', element: <DeliveryAndShipping /> },
-      { path: '/bank-details', element: <BankDetails /> },
+      { path: "/kyc", element: <Kyc /> },
+      { path: "/location-info", element: <LocationInfo /> },
+      { path: "/confirm-business-id", element: <ConfirmBusinessId /> },
+      { path: "/delivery-shipping", element: <DeliveryAndShipping /> },
+      { path: "/bank-details", element: <BankDetails /> },
 
-
-      { path: '/dashboard', element: <Dashboard />},
+      { path: "/dashboard", element: <Dashboard /> },
 
       // Main app routes - WITH Layout (includes header/footer)
       {
@@ -76,6 +77,7 @@ const router = createBrowserRouter([
         element: <Layout />,
         children: [
           { path: "/", element: <HomePage /> },
+          { path: "/seller-landing-page", element: <SellerLandingPage /> },
           { path: "/search", element: <SearchResultsPage /> },
           { path: "/product/:id", element: <ProductDetailsPage /> },
           { path: "/contact", element: <ContactUs /> },
@@ -98,34 +100,34 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: '/seller-dashboard',
+    path: "/seller-dashboard",
     element: <DashboardLayout />,
     children: [
       {
         index: true,
-        element: <DashboardHome />
+        element: <DashboardHome />,
       },
       {
-        path: 'products',
-        element: <Products />
+        path: "products",
+        element: <Products />,
       },
       {
-        path: 'add-product',
-        element: <AddProduct />
+        path: "add-product",
+        element: <AddProduct />,
       },
       {
-        path: 'orders',
-        element: <Orders />
+        path: "orders",
+        element: <Orders />,
       },
       {
-        path: 'wallet',
-        element: <Wallet />
+        path: "wallet",
+        element: <Wallet />,
       },
       {
-        path: 'settings',
-        element: <Settings />
-      }
-    ]
+        path: "settings",
+        element: <Settings />,
+      },
+    ],
   },
 ]);
 
