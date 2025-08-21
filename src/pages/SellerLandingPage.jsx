@@ -490,6 +490,24 @@ function SellerLandingPage() {
             </Button>
           </div>
         </div>
+
+        <div className="md:mt-35 py-8 mt-8  md:py-[170px] text-center items-center  bg-[url('/imgs/passion-profit.svg')] bg-center bg-cover">
+            {/* Main Heading */}
+            <h1 className="text-2xl md:text-5xl lg:text-6xl max-w-3xl mx-auto font-bold text-background mb-6 leading-tight">
+             Turn Your Passion Into Profit. Start Selling Today.
+             
+            </h1>
+
+            {/* Subheading */}
+            <p className="text-lg md:text-xl text-background mb-8 max-w-2xl mx-auto">
+              Sell online without the stress
+            </p>
+
+            {/* CTA Button */}
+            <Button variant="secondary" className="mb-10">
+              Join the Marketplace
+            </Button>
+          </div>
       </section>
     </div>
   );
