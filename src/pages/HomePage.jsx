@@ -1,18 +1,8 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
 import CategoryBrowser from '../components/common/CategoryBrowser'
 import TrendingProducts from '../components/TrendingProducts'
-import SameDayDelivery from '../components/SameDayDelivery'
-import FeatureCardsCarousel from '../components/FeatureCardsCarousel'
-import MarketClosebyDescription from '../components/MarketClosebyDescription'
-import { Button } from '../components/common/Button'
 
 function HomePage() {
-    const navigate = useNavigate();
-
-  const handleSellOnMarketCloseby = () => {
-    navigate('/store-setup');
-  };
   return (
     <div className='w-full pt-[210px] md:pt-[250px]'>
       {/* Hero Section */}
@@ -41,9 +31,9 @@ function HomePage() {
                   </h2>
                 </div>
               </div>
-              <Button type='submit'  variant='secondary' onClick={handleSellOnMarketCloseby}>
+              <button className="bg-secondary hover:bg-secondary-light text-white px-6 py-3 my-4 md:my-16  rounded-full font-medium transition-colors duration-300">
                 Sell on Market Closeby
-              </Button>
+              </button>
             </div>
             
             
@@ -60,18 +50,14 @@ function HomePage() {
       <CategoryBrowser />
       
       {/* Trending Products Section */}
-
       <TrendingProducts />
-      {/* Same Day Delivery */}
-      <SameDayDelivery />
-
-      {/* Features Carousel */}
-      <FeatureCardsCarousel />
       
       {/* Additional content */}
-     <MarketClosebyDescription />
+      <div className='container mx-auto py-8 px-4'>
+        {/* Your existing content */}
+      </div>
     </div>
   )
 }
 
-export default (HomePage)
+export default HomePage

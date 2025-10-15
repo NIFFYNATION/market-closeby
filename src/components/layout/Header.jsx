@@ -117,8 +117,8 @@ function Header() {
     <>
       <header className="fixed w-full z-50">
         <div className="bg-primary py-5 px-4 md:px-6 lg:px-10 w-full top-0 z-50">
-          <div className=" mx-auto flex items-center justify-between">
-            {/* Mobile Menu Button - Visible only on mobile */}
+      <div className=" mx-auto flex items-center justify-between">
+        {/* Mobile Menu Button - Visible only on mobile */}
             <button 
               className="lg:hidden pr-4"
               onClick={toggleMobileMenu}
@@ -126,26 +126,26 @@ function Header() {
               <img src="/icons/menu-white.svg" alt="Menu" className="w-8 h-8" />
             </button>
             
-            {/* Logo */}
-            <Link to="/" className="flex-shrink-0">
-              <img src="/icons/Logo.svg" alt="Market Closeby" className="w-[120px] md:w-full" />
-            </Link>
+        {/* Logo */}
+        <Link to="/" className="flex-shrink-0">
+          <img src="/icons/Logo.svg" alt="Market Closeby" className="w-[120px] md:w-full" />
+        </Link>
 
-            {/* Search and Navigation */}
-            <div className="flex-1 flex items-center justify-end lg:justify-between ml-4  ">
-              {/* Search Bar - Hidden on mobile */}
+        {/* Search and Navigation */}
+        <div className="flex-1 flex items-center justify-end lg:justify-between ml-4  ">
+          {/* Search Bar - Hidden on mobile */}
               <div className='max-w-[900px] hidden lg:flex'>
                 <SearchBar />
-              </div>
+          </div>
 
-              {/* Navigation Items */}
+          {/* Navigation Items */}
               <div className="flex items-center space-x-2 md:space-x-4">
                 {/* Help Dropdown */}
                 <DropdownMenu
                   buttonContent={
                     <>
                       {helpIcon}
-                      <span className="ml-1 hidden md:inline">Help</span>
+              <span className="ml-1 hidden md:inline">Help</span>
                       {arrowDown}
                     </>
                   }
@@ -154,11 +154,11 @@ function Header() {
                   buttonClass="text-white p-4  hidden lg:flex"
                 />
 
-                {/* Cart Button */}
+            {/* Cart Button */}
                 <button className="text-white p-0 md:p-4 flex items-center">
-                  <img src="/icons/cart.svg" alt="Cart" className="w-6 h-6" />
-                  <span className="ml-1 hidden md:inline">My Cart</span>
-                </button>
+              <img src="/icons/cart.svg" alt="Cart" className="w-6 h-6" />
+              <span className="ml-1 hidden md:inline">My Cart</span>
+            </button>
 
                 {/* Account Dropdown */}
                 <DropdownMenu
@@ -174,16 +174,16 @@ function Header() {
                   buttonClass="text-white flex px-4 items-center"
                 />
 
-                {/* User shop */}
-                <button className="text-white flex items-center block md:hidden">
-                  <img src="/icons/shop.svg" alt="shop" className="w-6 h-6" />
-                  <img src="/icons/arrow-down-white.svg" alt="Dropdown" className="ml-1 w-4 h-4 hidden md:inline" />
-                </button>
+            {/* User shop */}
+            <button className="text-white flex items-center block md:hidden">
+              <img src="/icons/shop.svg" alt="shop" className="w-6 h-6" />
+              <img src="/icons/arrow-down-white.svg" alt="Dropdown" className="ml-1 w-4 h-4 hidden md:inline" />
+            </button>
 
-                {/* Sell Button */}
-                <button className="bg-secondary text-white px-4 py-2 rounded-full text-sm font-medium hidden md:block hover:bg-secondary-light">
-                  Sell on Market Closeby
-                </button>
+            {/* Sell Button */}
+            <button className="bg-secondary text-white px-4 py-2 rounded-full text-sm font-medium hidden md:block hover:bg-secondary-light">
+              Sell on Market Closeby
+            </button>
               </div>
             </div>
           </div>

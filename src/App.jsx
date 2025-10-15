@@ -1,20 +1,12 @@
-import {  useEffect } from 'react';
-import { Outlet } from 'react-router-dom'
-
-
-
+import { useEffect } from "react";
+import { Outlet } from "react-router-dom";
 
 function App() {
-  
   return (
-    
     <div className="min-h-screen ">
-           
-
-            <Outlet />
-           
-          </div>
-  )
+      <Outlet />
+    </div>
+  );
 }
 
-export default App
+export default App;
