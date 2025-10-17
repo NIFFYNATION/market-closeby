@@ -25,7 +25,7 @@ function HeroCoverflow({ images = defaultImages, className = '' }) {
         modules={[Autoplay, Navigation, Pagination]}
         className="w-full"
         loop
-        centeredSlides
+        loopAdditionalSlides={1}
         autoplay={{ delay: 2500, disableOnInteraction: false }}
         speed={650}
         spaceBetween={24}
@@ -71,17 +71,23 @@ function HeroCoverflow({ images = defaultImages, className = '' }) {
         pagination={{ clickable: true }}
         navigation
       >
-        {slides.map((src, idx) => (
-          <SwiperSlide key={idx}>
-            <div className="w-full h-[220px] sm:h-[260px] md:h-[320px] lg:h-[360px] xl:h-[420px] rounded-3xl overflow-hidden">
-              <img
-                src={src}
-                alt={`banner-${idx + 1}`}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </SwiperSlide>
-        ))}
+     {slides.map((item, idx) => {
+  const slide = typeof item === 'string' ? { src: item } : item;
+  const wrapperClass = slide.wrapperClass || "w-full h-[220px] sm:h-[260px] md:h-[320px] lg:h-[360px] xl:h-[420px]";
+  const imgClass = slide.imgClass || "w-full h-full object-cover";
+  return (
+    <SwiperSlide key={idx}>
+      <div className={`${wrapperClass} rounded-2xl overflow-hidden`}>
+        <img
+          src={slide.src}
+          alt={`banner-${idx + 1}`}
+          className={imgClass}
+          style={slide.style}
+        />
+      </div>
+    </SwiperSlide>
+  );
+})}
       </Swiper>
     </div>
   );
