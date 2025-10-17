@@ -48,7 +48,7 @@ function HomePage() {
 
         {/* Banner */}
             <div className="relative overflow-hidden">
-              <div className="absolute h-10 w-full rounded-b-[600px] bg-blue-500 top-0 left-0 ">
+              <div className="absolute h-15 w-full rounded-b-[3000px] bg-blue-500 top- left-0 ">
    
               </div>
   <svg
