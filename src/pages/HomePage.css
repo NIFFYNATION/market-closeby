@@ -1,0 +1,29 @@
+.curve {
+  height: 50px;
+  position: relative;
+  overflow: hidden;
+}
+
+.curve::after {
+  content: '';
+  display: block;
+  width: 250%;
+  height: 900px;
+  background: coral;
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.top_curve {
+  top: 50px;
+}
+
+.top_curve::after{
+  top: -857px;
+}
+
+.bottom_curve {
+  bottom: 60px;
+}

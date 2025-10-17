@@ -1,5 +1,7 @@
 import React from 'react'
 import CategoryBrowser from '../components/common/CategoryBrowser'
+import './HomePage.css'
+ 
 
 function HomePage() {
   return (
@@ -34,22 +36,17 @@ function HomePage() {
                 Sell on Market Closeby
               </button>
             </div>
-            
-            
         </div>
-        {/* <div class=" w-full h-full ">
-  <svg width="100%" height="10px" viewBox="0 0 1440 490" xmlns="http://www.w3.org/2000/svg">
-    <path d="M 0,500 L 0,187 C 160.53333333333336,161.53333333333333 321.0666666666667,136.06666666666666 485,121 C 648.9333333333333,105.93333333333332 816.2666666666667,101.26666666666667 976,114 C 1135.7333333333333,126.73333333333333 1287.8666666666668,156.86666666666667 1440,187 L 1440,500 L 0,500 Z"
-    fill="#abb8c3" transform="rotate(-180 720 250)"></path>
-  </svg>
-</div> */}
+
+
+
+
 
 
 
         {/* Banner */}
             <div className="relative overflow-hidden">
-              <div className="absolute h-15 w-full rounded-b-[3000px] bg-blue-500 top- left-0 ">
-   
+              {/* <div className="absolute h-15 w-full rounded-b-[3000px] bg-blue-500 top- left-0 ">
               </div>
   <svg
     class="absolute -top-0 left-0 w-full   "
@@ -60,15 +57,23 @@ function HomePage() {
       fill="#ffff00"
       d="M0,224 C180,350 960,350 1440,224 L1440,320 L0,320 Z"
     />
-  </svg>
+  </svg> */}
 
 
-              <div className="flex z-1 b  space-x-4 overflow-x-auto pb-4 scrollbar-hide">
-                <img src="/imgs/homepage-heroBanner.svg" alt="Market Closeby" className="w-full h-auto rounded-lg" />
+              <div className='curve top_curve'></div>
+
+              <div className=" flex z-1 b  space-x-4 overflow-x-auto pb-4 scrollbar-hide">
+                <img src="/imgs/banner-1.svg" alt="Market Closeby" className="w-full h- rounded-lg" />
+                <img src="/imgs/banner-2.svg" alt="Market Closeby" className="w-full h- rounded-lg" />
+                <img src="/imgs/banner-3.svg" alt="Market Closeby" className="w-full h- rounded-lg" />
+                <img src="/imgs/banner-4.svg" alt="Market Closeby" className="w-full h- rounded-lg" />
+                <img src="/imgs/banner-5.svg" alt="Market Closeby" className="w-full h- rounded-lg" />
+                <img src="/imgs/banner-6.svg" alt="Market Closeby" className="w-full h- rounded-lg" />
               </div>
 
-              <div className="absolute top-0 left-0 w-full h-full">
-              </div>
+
+              <div className='curve bottom_curve'></div>
+
              
             </div>
       </div>
