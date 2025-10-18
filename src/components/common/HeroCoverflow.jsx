@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-// Reusable: pass any image list you want
 const defaultImages = [
   '/imgs/banner-1.svg',
   '/imgs/banner-2.svg',
@@ -16,8 +15,17 @@ const defaultImages = [
 ];
 
 function HeroCoverflow({ images = defaultImages, className = '' }) {
-  // Make sure list is unique and valid
+  const [isMobile, setIsMobile] = useState(false);
   const slides = images.filter(Boolean);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <div className={className}>
@@ -28,37 +36,64 @@ function HeroCoverflow({ images = defaultImages, className = '' }) {
         loopAdditionalSlides={1}
         autoplay={{ delay: 2500, disableOnInteraction: false }}
         speed={650}
-        spaceBetween={24}
-        slidesPerView={1.2}
+        spaceBetween={isMobile ? 16 : 24}
+        slidesPerView={isMobile ? 1.4 : 1.2}
         breakpoints={{
-          640: { slidesPerView: 1.6, spaceBetween: 28 },
-          768: { slidesPerView: 2.2, spaceBetween: 32 },
-          1024: { slidesPerView: 3.2, spaceBetween: 36 },
-          1280: { slidesPerView: 3.6, spaceBetween: 40 },
+          640: { 
+            slidesPerView: isMobile ? 1.6 : 1.6, 
+            spaceBetween: isMobile ? 20 : 28 
+          },
+          768: { 
+            slidesPerView: 2.2, 
+            spaceBetween: 32 
+          },
+          1024: { 
+            slidesPerView: 3.2, 
+            spaceBetween: 36 
+          },
+          1280: { 
+            slidesPerView: 3.6, 
+            spaceBetween: 40 
+          },
         }}
         watchSlidesProgress
         onProgress={(swiper, progress) => {
-          // custom 3D coverflow effect:
-          // - center is slightly smaller (scale ~0.9)
-          // - sides are slightly larger (scale up to ~1.1)
           swiper.slides.forEach((slideEl) => {
-            const p = slideEl.progress; // -2..2
+            const p = slideEl.progress;
             const abs = Math.abs(p);
 
-            // Scale: invert the usual coverflow (center smaller)
-            // abs 0 -> 0.9, abs 1 -> 1.1, clamp for >1
-            const scale = 0.9 + Math.min(abs, 1) * 0.2;
-
-            // Rotate and translate for subtle 3D feel
-            const rotate = p * 18; // deg
-            const translateX = p * 40; // px
-            const z = -Math.min(abs, 1) * 60; // push slightly back
-
-            slideEl.style.transform = `
-              translate3d(${translateX}px, 0, ${z}px)
-              rotateY(${rotate}deg)
-              scale(${scale})
-            `;
+            if (isMobile) {
+              // Mobile: Fan-like coverflow effect with proper layering
+              const scale = 0.75 + Math.min(abs, 1) * 0.35; // Center larger (1.1), sides smaller (0.75)
+              const rotateY = p * -30; // More dramatic rotation
+              const translateX = p * 100; // More spread
+              const translateZ = -abs * 120; // More depth separation
+              const rotateZ = p * 6; // More Z rotation for fan effect
+              
+              // Z-index: center image on top, sides behind
+              const zIndex = abs < 0.3 ? 10 : Math.max(1, 10 - Math.floor(abs * 10));
+            
+              slideEl.style.transform = `
+                translate3d(${translateX}px, 0, ${translateZ}px)
+                rotateY(${rotateY}deg)
+                rotateZ(${rotateZ}deg)
+                scale(${scale})
+              `;
+              slideEl.style.zIndex = zIndex;
+            } else {
+              // Desktop: Original subtle effect
+              const scale = 0.9 + Math.min(abs, 1) * 0.2;
+              const rotateY = p * 18;
+              const translateX = p * 40;
+              const translateZ = -Math.min(abs, 1) * 60;
+            
+              slideEl.style.transform = `
+                translate3d(${translateX}px, 0, ${translateZ}px)
+                rotateY(${rotateY}deg)
+                scale(${scale})
+              `;
+              slideEl.style.zIndex = '';
+            }
             slideEl.style.transition = 'transform 650ms ease';
             slideEl.style.willChange = 'transform';
           });
@@ -71,23 +106,28 @@ function HeroCoverflow({ images = defaultImages, className = '' }) {
         pagination={{ clickable: true }}
         navigation
       >
-     {slides.map((item, idx) => {
-  const slide = typeof item === 'string' ? { src: item } : item;
-  const wrapperClass = slide.wrapperClass || "w-full h-[220px] sm:h-[260px] md:h-[320px] lg:h-[360px] xl:h-[420px]";
-  const imgClass = slide.imgClass || "w-full h-full object-cover";
-  return (
-    <SwiperSlide key={idx}>
-      <div className={`${wrapperClass} rounded-2xl overflow-hidden`}>
-        <img
-          src={slide.src}
-          alt={`banner-${idx + 1}`}
-          className={imgClass}
-          style={slide.style}
-        />
-      </div>
-    </SwiperSlide>
-  );
-})}
+        {slides.map((item, idx) => {
+          const slide = typeof item === 'string' ? { src: item } : item;
+          const wrapperClass = slide.wrapperClass || 
+            (isMobile 
+              ? "w-full h-[180px] sm:h-[200px] rounded-3xl overflow-hidden shadow-2xl" 
+              : "w-full h-[220px] sm:h-[260px] md:h-[320px] lg:h-[360px] xl:h-[420px] rounded-2xl overflow-hidden"
+            );
+          const imgClass = slide.imgClass || "w-full h-full object-cover";
+          
+          return (
+            <SwiperSlide key={idx}>
+              <div className={wrapperClass}>
+                <img
+                  src={slide.src}
+                  alt={`banner-${idx + 1}`}
+                  className={imgClass}
+                  style={slide.style}
+                />
+              </div>
+            </SwiperSlide>
+          );
+        })}
       </Swiper>
     </div>
   );

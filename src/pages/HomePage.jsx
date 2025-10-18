@@ -61,21 +61,39 @@ function HomePage() {
   </svg> */}
 
 
-              {/* Banner */}
+{/* Banner */}
 <div className="relative overflow-hidden">
+  {/* Desktop curves */}
   <div className='hidden md:block curve top_curve'></div>
   
-  <HeroCoverflow
-    className="px-4 md:px-6 lg:px-10 py-4"
-    images={[
-      '/imgs/banner-1.svg',
-      '/imgs/banner-2.svg', 
-      '/imgs/banner-3.svg',
-      '/imgs/banner-4.svg',
-      '/imgs/banner-5.svg',
-      '/imgs/banner-6.svg',
-    ]}
-  />
+  {/* Mobile: Full coverflow, Desktop: With curves */}
+  <div className="md:hidden">
+    <HeroCoverflow
+      className="px-4 py-8"
+      images={[
+        '/imgs/banner-1.svg',
+        '/imgs/banner-2.svg', 
+        '/imgs/banner-3.svg',
+        '/imgs/banner-4.svg',
+        '/imgs/banner-5.svg',
+        '/imgs/banner-6.svg',
+      ]}
+    />
+  </div>
+
+  <div className="hidden md:block">
+    <HeroCoverflow
+      className="px-4 md:px-6 lg:px-10 py-4"
+      images={[
+        '/imgs/banner-1.svg',
+        '/imgs/banner-2.svg', 
+        '/imgs/banner-3.svg',
+        '/imgs/banner-4.svg',
+        '/imgs/banner-5.svg',
+        '/imgs/banner-6.svg',
+      ]}
+    />
+  </div>
 
   <div className='hidden md:block curve bottom_curve'></div>
 </div>
