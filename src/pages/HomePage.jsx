@@ -1,6 +1,7 @@
 import React from 'react'
 import CategoryBrowser from '../components/common/CategoryBrowser'
 import './HomePage.css'
+import HeroCoverflow from '../components/common/HeroCoverflow'
  
 
 function HomePage() {
@@ -60,19 +61,24 @@ function HomePage() {
   </svg> */}
 
 
-              <div className='curve top_curve'></div>
-
-              <div className=" flex z-1 b  space-x-4 overflow-x-auto pb-4 scrollbar-hide">
-                <img src="/imgs/banner-1.svg" alt="Market Closeby" className="w-full h- rounded-lg" />
-                <img src="/imgs/banner-2.svg" alt="Market Closeby" className="w-full h- rounded-lg" />
-                <img src="/imgs/banner-3.svg" alt="Market Closeby" className="w-full h- rounded-lg" />
-                <img src="/imgs/banner-4.svg" alt="Market Closeby" className="w-full h- rounded-lg" />
-                <img src="/imgs/banner-5.svg" alt="Market Closeby" className="w-full h- rounded-lg" />
-                <img src="/imgs/banner-6.svg" alt="Market Closeby" className="w-full h- rounded-lg" />
-              </div>
-
-
-              <div className='curve bottom_curve'></div>
+              {/* Banner */}
+<div className="relative overflow-hidden">
+  <div className='curve top_curve'></div>
+  
+  <HeroCoverflow
+    className="px-4 md:px-6 lg:px-10 py-4"
+    images={[
+      '/imgs/banner-1.svg',
+      '/imgs/banner-2.svg', 
+      '/imgs/banner-3.svg',
+      '/imgs/banner-4.svg',
+      '/imgs/banner-5.svg',
+      '/imgs/banner-6.svg',
+    ]}
+  />
+  
+  <div className='curve bottom_curve'></div>
+</div>
 
              
             </div>
