@@ -63,7 +63,7 @@ function HomePage() {
 
               {/* Banner */}
 <div className="relative overflow-hidden">
-  <div className='curve top_curve'></div>
+  <div className='hidden md:block curve top_curve'></div>
   
   <HeroCoverflow
     className="px-4 md:px-6 lg:px-10 py-4"
@@ -76,8 +76,8 @@ function HomePage() {
       '/imgs/banner-6.svg',
     ]}
   />
-  
-  <div className='curve bottom_curve'></div>
+
+  <div className='hidden md:block curve bottom_curve'></div>
 </div>
 
              
