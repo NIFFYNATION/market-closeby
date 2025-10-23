@@ -1,5 +1,6 @@
 import React from 'react'
 import CategoryBrowser from '../components/common/CategoryBrowser'
+import TrendingProducts from '../components/TrendingProducts'
 import './HomePage.css'
 import HeroCoverflow from '../components/common/HeroCoverflow'
  
@@ -107,7 +108,7 @@ function HomePage() {
       
       {/* Additional content */}
       <div className='container mx-auto py-8 px-4'>
-        {/* Your existing content */}
+        <TrendingProducts />
       </div>
     </div>
   )

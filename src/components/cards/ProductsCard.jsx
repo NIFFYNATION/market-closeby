@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import StarRating from "../common/StarRating";
 
 const ProductsCard = ({ product }) => {
-  
+  const reviewText = product.reviews <= 1 ? 'Review' : 'Reviews';
 
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow duration-300">
@@ -26,21 +26,28 @@ const ProductsCard = ({ product }) => {
           </div>
         </div>
         <div className="p-4">
-          <div className="flex flex-col-1 items-center gap-2 mb-1">
+          <div className="grid sm:grid-cols-2  mb-1">
             <span className="font-bold text-primary text-lg">{product.price}</span>
-            {product.oldPrice && (
+            <div className=" items-center">
+              {product.oldPrice && (
               <span className="text-gray-400 line-through text-sm">{product.oldPrice}</span>
             )}
             {product.discount && (
               <span className="bg-[#FFEAEA] text-[#FF4D4F] text-xs font-semibold px-2 py-1 rounded-full">{product.discount}</span>
             )}
+            </div>
           </div>
           <h3 className="text-sm font-medium text-text-grey mb-2 truncate">{product.name}</h3>
           <div className="flex items-center mb-2 gap-1 text-text-primary">
             <img src="/icons/location.svg" alt="Location" className='w-4 h-4' />
             <span className="text-xs">{product.location}</span>
           </div>
-          <StarRating rating={product.rating} reviews={product.reviews} />
+          <div className="grid sm:grid-cols-2  md:items-center">
+            <StarRating rating={product.rating} />
+            <span className="text-sm text-gray-500">
+              ({product.reviews} {reviewText})
+            </span>
+          </div>
         </div>
       </Link>
     </div>

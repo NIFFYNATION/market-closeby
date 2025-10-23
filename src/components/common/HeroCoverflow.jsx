@@ -135,7 +135,7 @@ function HeroCoverflow({ images = defaultImages, className = '' }) {
           const slide = typeof item === 'string' ? { src: item } : item;
           const wrapperClass = slide.wrapperClass || 
             (isMobile 
-              ? "w-full h-[300px] sm:h-[220px]  overflow-hidden shadow-2xl" 
+              ? "w-full h-[300px] sm:h-[220px]  overflow-hidden shadow-1xl" 
               : "w-full h-[220px] sm:h-[260px] md:h-[320px] lg:h-[360px] xl:h-[420px] rounded-2xl overflow-hidden"
             );
           const imgClass = slide.imgClass || "w-full h-full object-cover";
