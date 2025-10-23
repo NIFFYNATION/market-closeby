@@ -34,10 +34,10 @@ function HeroCoverflow({ images = defaultImages, className = '' }) {
         modules={[Autoplay, Navigation, Pagination]}
         className="w-full"
         loop
-        loopAdditionalSlides={2}
+        loopedSlides={slides.length}
         autoplay={{ delay: 3000, disableOnInteraction: false }}
         speed={800}
-        spaceBetween={isMobile ? -60 : 24} // Negative spacing for overlap
+        spaceBetween={isMobile ? -30 : 24} // Negative spacing for overlap
         slidesPerView={isMobile ? 1.8 : 1.2} // Show more slides on mobile
         centeredSlides={isMobile}
         breakpoints={{
@@ -75,7 +75,7 @@ function HeroCoverflow({ images = defaultImages, className = '' }) {
                 translateX = 0;
                 translateZ = 0;
                 zIndex = 20;
-                opacity = 1;
+                // opacity = 1;
               } else {
                 // Side slides - smaller, rotated, stacked behind
                 const side = p > 0 ? 1 : -1;
@@ -89,13 +89,13 @@ function HeroCoverflow({ images = defaultImages, className = '' }) {
                 
                 // Position: spread out horizontally
                 translateX = side * (80 + distance * 120); // 80 to 120px
-                translateZ = -distance * 100; // Push back for depth
+                translateZ = distance * 100; // Push back for depth
                 
                 // Z-index: closer to center = higher
                 zIndex = Math.max(1, 15 - Math.floor(distance * 12));
                 
                 // Opacity: sides slightly faded
-                opacity = 0.6 + (1 - distance) * 0.3; // 0.6 to 0.9
+                // opacity = 0.6 + (1 - distance) * 0.3; // 0.6 to 0.9
               }
 
               slideEl.style.transform = `
