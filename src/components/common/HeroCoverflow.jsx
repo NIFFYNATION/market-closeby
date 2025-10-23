@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+
 
 const defaultImages = [
   '/imgs/banner-1.svg',
@@ -31,7 +30,7 @@ function HeroCoverflow({ images = defaultImages, className = '' }) {
   return (
     <div className={className}>
       <Swiper
-        modules={[Autoplay, Navigation, Pagination]}
+        modules={[Autoplay]}
         className="w-full"
         loop
         loopedSlides={slides.length}
@@ -130,14 +129,13 @@ function HeroCoverflow({ images = defaultImages, className = '' }) {
             slideEl.style.transitionDuration = `${duration}ms`;
           });
         }}
-        pagination={{ clickable: true }}
-        navigation
+        
       >
         {slides.map((item, idx) => {
           const slide = typeof item === 'string' ? { src: item } : item;
           const wrapperClass = slide.wrapperClass || 
             (isMobile 
-              ? "w-full h-[200px] sm:h-[220px] rounded-2xl overflow-hidden shadow-2xl" 
+              ? "w-full h-[300px] sm:h-[220px]  overflow-hidden shadow-2xl" 
               : "w-full h-[220px] sm:h-[260px] md:h-[320px] lg:h-[360px] xl:h-[420px] rounded-2xl overflow-hidden"
             );
           const imgClass = slide.imgClass || "w-full h-full object-cover";
