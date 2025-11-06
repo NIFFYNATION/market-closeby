@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Navigation, Pagination } from 'swiper/modules';
+import { Autoplay} from 'swiper/modules';
 import 'swiper/css';
 
 
@@ -80,8 +80,8 @@ function HeroCoverflow({ images = defaultImages, className = '' }) {
                 const side = p > 0 ? 1 : -1;
                 const distance = Math.min(abs, 1);
                 
-                // Scale: center is largest, sides get progressively smaller
-                scale = 0.7 + (1 - distance) * 0.25; // 0.7 to 0.95
+                // increase images behind size range
+                scale = 0.7 + (1 - distance) * 95; // 0.7 to 0.95
                 
                 // Rotation: sides are rotated towards center
                 rotateY = side * (35 + distance * 15); // 35 to 50 degrees

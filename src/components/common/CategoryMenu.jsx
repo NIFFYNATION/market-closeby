@@ -12,7 +12,7 @@ export default function CategoryMenu() {
   return (
     <div className="relative w-full shadow-md">
       {/* Top Bar */}
-      <div className="flex items-center bg-background px-4 md:px-6 lg:px-10 py-2">
+      <div className="hidden md:flex items-center bg-background px-4 md:px-6 lg:px-10 py-2">
         <button onClick={() => setIsNavOpen(!isNavOpen)} className={`flex items-center px-6 py-4  font-medium ${isNavOpen ? 'bg-secondary text-white' : 'bg-background text-text-primary'}`}>
           {isNavOpen ? <img src="/icons/menu-white.svg" className="mr-2 w-7 h-7" alt="menu" /> : <img src="/icons/menu.svg" className="mr-2 w-7 h-7" alt="menu" />}
           SHOP BY CATEGORY

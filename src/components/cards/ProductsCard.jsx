@@ -25,7 +25,7 @@ const ProductsCard = ({ product }) => {
             <img src={product.image} alt={product.name} className="w-full h-40 object-contain" />
           </div>
         </div>
-        <div className="p-4">
+        <div className="py-4 px-3">
           <div className="grid sm:grid-cols-2  mb-1">
             <span className="font-bold text-primary text-lg">{product.price}</span>
             <div className=" items-center">

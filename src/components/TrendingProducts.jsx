@@ -20,7 +20,7 @@ const TrendingProducts = () => {
   }, []);
 
   return (
-    <div className="py-8 px-4 sm:px-6 md:px-8 lg:px-10">
+    <div className="py-8 px-0 sm:px-6 md:px-8 lg:px-10">
       <div className=" mx-auto">
         {/* Header with view options */}
         <div className="flex items-center justify-between sm:justify-start mb-6 gap-4">
@@ -34,7 +34,7 @@ const TrendingProducts = () => {
         </div>
         
         {/* Product grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
           {productsData.slice(0, isMobile ? 4 : 8).map((product) => (
             <ProductsCard key={product.id} product={product} />
           ))}
