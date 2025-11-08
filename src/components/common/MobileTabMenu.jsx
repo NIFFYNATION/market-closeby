@@ -1,9 +1,13 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useCartStore } from '../../store/cartStore';
 
 const MobileTabMenu = () => {
   const location = useLocation();
-  
+
+  const cartCount = useCartStore((state) => state.cartCount());
+  const isActive = (path) => (path === '/' ? location.pathname === '/' : location.pathname.startsWith(path));
+    
   const tabs = [
     {
       id: 'home',
@@ -46,18 +50,15 @@ const MobileTabMenu = () => {
               tab.isActive ? 'text-primary' : 'text-gray-500'
             }`}
           >
-            <div className="w-6 h-6 mb-2 flex items-center justify-center">
-              <img 
-                src={tab.icon} 
-                alt={tab.label}
-                className={`w-6 h-6 ${
-                  tab.isActive ? ' ' : ' '
-                }`}
-              />
+             <div className="w-6 h-6 mb-2 flex items-center justify-center relative">
+              <img src={tab.icon} alt={tab.label} className="w-6 h-6" />
+              {tab.id === 'cart' && cartCount > 0 && (
+                <span className="absolute -top-1 -right-2 bg-secondary text-white text-[10px] font-semibold rounded-full min-w-[1.15rem] px-1 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
             </div>
-            <span className={`text-sm font-medium ${
-              tab.isActive ? 'text-primary' : 'text-gray-500'
-            }`}>
+            <span className={`text-sm font-medium ${isActive(tab.path) ? 'text-primary' : 'text-gray-500'}`}>
               {tab.label}
             </span>
           </Link>

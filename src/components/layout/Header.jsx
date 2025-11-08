@@ -1,14 +1,17 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import CategoryMenu from '../common/CategoryMenu';
 import DropdownMenu from '../common/DropdownMenu';
 import { Button } from '../common/Button';
 import SearchBar from '../common/SearchBar';
 import { categories } from '../common/categoryData';
+import { useCartStore } from '../../store/cartStore';
 
 function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // You can manage this with your auth state
+  const navigate = useNavigate();
+  const cartCount = useCartStore((state) => state.cartCount());
 
   // Icons (replace with your own SVGs or icon components)
   const helpIcon = <img src="/icons/help.svg" alt="Help" className="w-5 h-5" />;
@@ -155,9 +158,18 @@ function Header() {
                 />
 
             {/* Cart Button */}
-                <button className="text-white p-0 md:p-4 flex items-center">
+            <button
+              onClick={() => navigate('/cart')}
+              className="relative text-white p-0 md:p-4 flex items-center hover:opacity-80 transition"
+              aria-label="Open cart"
+            >
               <img src="/icons/cart.svg" alt="Cart" className="w-6 h-6" />
               <span className="ml-1 hidden md:inline">My Cart</span>
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 md:-top-2 md:-right-2 bg-secondary text-white text-xs font-bold rounded-full h-5 min-w-[1.25rem] px-1 flex items-center justify-center animate-bounce">
+                  {cartCount}
+                </span>
+              )}
             </button>
 
                 {/* Account Dropdown */}

@@ -11,6 +11,7 @@ import HomePage from "./pages/HomePage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ContactUs from "./pages/ContactUs";
+import CartPage from "./pages/CartPage";
 
 // Auth imports
 import SignUp from "./pages/Auth/SignUp";
@@ -81,7 +82,7 @@ const router = createBrowserRouter([
           { path: "/search", element: <SearchResultsPage /> },
           { path: "/product/:id", element: <ProductDetailsPage /> },
           { path: "/contact", element: <ContactUs /> },
-
+          { path: "/cart", element: <CartPage /> },
           // My Account routes
           { path: "/account", element: <MyAccount /> },
 

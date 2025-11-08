@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { productsData } from "../components/productsData";
 import { Button } from "../components/common/Button";
 import StarRating from "../components/common/StarRating";
 import PageHeader from "../components/common/PageHeader";
+import { useCartStore } from "../store/cartStore";
+
 
 const socialIcons = [
   { icon: "/icons/facebook-filled.svg", alt: "Facebook" },
@@ -54,6 +56,9 @@ const ProductDetailsPage = () => {
     { label: product.name.split('–')[0].trim(), active: true }
   ];
 
+  const navigate = useNavigate();
+  const addItemToCart = useCartStore((state) => state.addItem);
+  
   return (
     <div className="min-h-screen py-8">
       {/* Page Header */}
@@ -165,7 +170,13 @@ const ProductDetailsPage = () => {
 
               {/* Action Buttons */}
               <div className="flex flex-col lg:flex-row gap-3 mb-6">
-                <Button variant="secondary">
+              <Button
+                  variant="secondary"
+                  onClick={() => {
+                    addItemToCart(product, quantity);
+                    navigate("/cart");
+                  }}
+                >
                   Add to Cart
                 </Button>
                 <button className="flex justify-center items-center gap-2 bg-[#130C761A] text-gray-700 px-6 py-3 rounded-full font-semibold hover:bg-gray-300 transition-colors">
