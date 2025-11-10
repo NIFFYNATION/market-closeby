@@ -9,7 +9,8 @@ import { useCartStore } from '../../store/cartStore';
 
 function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // You can manage this with your auth state
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  
   const navigate = useNavigate();
   const cartCount = useCartStore((state) => state.cartCount());
 

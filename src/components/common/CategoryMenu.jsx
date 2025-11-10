@@ -1,5 +1,6 @@
 // src/components/common/CategoryMenu.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { categories } from "./categoryData";
 import '../../styles/scrollbar.css'; // Import the global scrollbar CSS
 
@@ -7,7 +8,19 @@ import '../../styles/scrollbar.css'; // Import the global scrollbar CSS
 export default function CategoryMenu() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isNavOpen, setIsNavOpen] = useState(false);
-  
+  const navigate = useNavigate();
+
+  // Navigation handler for categories
+  const handleCategoryNavigation = (categoryName) => {
+    setIsNavOpen(false);
+    navigate(`/search?category=${encodeURIComponent(categoryName)}`);
+  };
+
+  // Navigation handler for search terms (sections and items)
+  const handleSearchNavigation = (searchTerm) => {
+    setIsNavOpen(false);
+    navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+  };
 
   return (
     <div className="relative w-full shadow-md">
@@ -21,7 +34,7 @@ export default function CategoryMenu() {
           {categories.map((cat, idx) => (
             <span
               key={cat.name}
-              onClick={() => setIsNavOpen(!isNavOpen)}
+              onClick={() => handleCategoryNavigation(cat.name)}
               className="text-sm font-medium cursor-pointer hover:text-background hover:bg-secondary whitespace-nowrap py-2 px-4"
               onMouseEnter={() => setActiveIndex(idx)}
             >
@@ -38,6 +51,7 @@ export default function CategoryMenu() {
           {categories.map((cat, idx) => (
             <div
               key={cat.name}
+              onClick={() => handleCategoryNavigation(cat.name)}
               className={`px-6 py-3 cursor-pointer text-sm font-medium ${
                 idx === activeIndex
                   ? "bg-background text-primary border-l-4 border-yellow-400"
@@ -51,14 +65,18 @@ export default function CategoryMenu() {
         </div>
         {/* Content - Added max-height and overflow-y-auto for scrollability */}
         <div className="flex-1 flex px-8 py-8 bg-background max-h-[70vh] overflow-y-auto sidebar-scrollbar">
-          <CategoryContent category={categories[activeIndex]} />
+          <CategoryContent 
+            category={categories[activeIndex]} 
+            onSectionClick={handleSearchNavigation}
+            onItemClick={handleSearchNavigation}
+          />
         </div>
       </div>
     </div>
   );
 }
 
-function CategoryContent({ category }) {
+function CategoryContent({ category, onSectionClick, onItemClick }) {
   if (!category.sections) {
     return (
       <div className="flex items-center justify-center w-full h-64 text-gray-400">
@@ -71,10 +89,19 @@ function CategoryContent({ category }) {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-8 flex-1">
         {category.sections.map((section) => (
           <div key={section.title}>
-            <h3 className="font-bold mb-2">{section.title}</h3>
+            <h3 
+              onClick={() => onSectionClick(section.title)}
+              className="font-bold mb-2 cursor-pointer hover:text-primary transition-colors"
+            >
+              {section.title}
+            </h3>
             <ul className="space-y-4">
               {section.items.map((item) => (
-                <li key={item} className="text-sm font-medium text-text-secondary hover:text-primary cursor-pointer">
+                <li 
+                  key={item} 
+                  onClick={() => onItemClick(item)}
+                  className="text-sm font-medium text-text-secondary hover:text-primary cursor-pointer transition-colors"
+                >
                   {item}
                 </li>
               ))}
