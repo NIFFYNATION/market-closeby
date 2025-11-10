@@ -80,6 +80,7 @@ const router = createBrowserRouter([
           { path: "/", element: <HomePage /> },
           { path: "/seller-landing-page", element: <SellerLandingPage /> },
           { path: "/search", element: <SearchResultsPage /> },
+          { path: "/category/:slug", element: <SearchResultsPage /> },
           { path: "/product/:id", element: <ProductDetailsPage /> },
           { path: "/contact", element: <ContactUs /> },
           { path: "/cart", element: <CartPage /> },

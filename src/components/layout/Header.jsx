@@ -270,7 +270,7 @@ function Header() {
             {categories.map((category, index) => (
               <Link
                 key={category.name}
-                to={`/category/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
+                to={`/category/${category.name.toLowerCase().replace(/&/g,'and').replace(/\s+/g, '-')}`}
                 className="flex items-center justify-between p-4 hover:bg-gray-50 border-b border-gray-100"
                 onClick={toggleMobileMenu}
               >

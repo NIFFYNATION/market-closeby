@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, useParams, Link } from 'react-router-dom';
 import { productsData } from '../components/productsData';
 import ProductsCard from '../components/cards/ProductsCard';
 import FilterSidebar from '../components/common/FilterSidebar';
@@ -11,15 +11,32 @@ function useQuery() {
 
 const SearchResultsPage = () => {
   const query = useQuery();
+  const { slug } = useParams();
   const searchTerm = query.get('q') || '';
-  const categoryParam = query.get('category') || '';
+  const categoryFromQuery = query.get('category') || '';
+
+  // Helper: normalize strings for comparison
+  const normalize = (str = '') => str.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, ' ').trim();
+
+  // If slug exists, derive display category by matching categories list; otherwise use query param
+  let categoryFromSlug = '';
+  if (slug) {
+    // convert slug back to name using categories list if possible
+    try {
+      const { categories } = require('../components/common/categoryData');
+      const match = categories.find(c => c && normalize(c.name).replace(/\s+/g, '-') === slug.toLowerCase());
+      categoryFromSlug = match ? match.name : slug.replace(/-/g, ' ');
+    } catch {}
+  }
+
+  const effectiveCategory = categoryFromSlug || categoryFromQuery;
 
   const [filters, setFilters] = useState({
     price: {},
     brand: "",
     condition: "",
     discount: "",
-    category: categoryParam,
+    category: effectiveCategory,
   });
 
   // Sort dropdown state
@@ -38,9 +55,9 @@ const SearchResultsPage = () => {
   useEffect(() => {
     setFilters(prev => ({
       ...prev,
-      category: categoryParam,
+      category: effectiveCategory,
     }));
-  }, [categoryParam]);
+  }, [effectiveCategory]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -56,7 +73,7 @@ const SearchResultsPage = () => {
   // Filter products by search term and category
   const filteredProducts = productsData.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !filters.category || product.category === filters.category;
+    const matchesCategory = !filters.category || normalize(product.category) === normalize(filters.category);
     return matchesSearch && matchesCategory;
   });
 
@@ -78,7 +95,7 @@ const SearchResultsPage = () => {
           {" / "}
           {category ? (
             <>
-              <Link to={`/search?category=${encodeURIComponent(category)}`} className="hover:underline">
+              <Link to={`/category/${normalize(category).replace(/\s+/g, '-')}`} className="hover:underline">
                 {category}
               </Link>
             </>

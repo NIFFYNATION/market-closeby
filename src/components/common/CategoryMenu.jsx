@@ -13,7 +13,11 @@ export default function CategoryMenu() {
   // Navigation handler for categories
   const handleCategoryNavigation = (categoryName) => {
     setIsNavOpen(false);
-    navigate(`/search?category=${encodeURIComponent(categoryName)}`);
+    const slug = categoryName
+      .toLowerCase()
+      .replace(/&/g, 'and')
+      .replace(/\s+/g, '-');
+    navigate(`/category/${slug}`);
   };
 
   // Navigation handler for search terms (sections and items)
