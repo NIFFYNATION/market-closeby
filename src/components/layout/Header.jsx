@@ -6,6 +6,7 @@ import { Button } from '../common/Button';
 import SearchBar from '../common/SearchBar';
 import { categories } from '../common/categoryData';
 import { useCartStore } from '../../store/cartStore';
+import { useWishlistStore } from '../../store/wishlistStore';
 
 function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -13,6 +14,7 @@ function Header() {
   
   const navigate = useNavigate();
   const cartCount = useCartStore((state) => state.cartCount());
+  const wishlistCount = useWishlistStore((state) => state.wishlistCount());
 
   // Icons (replace with your own SVGs or icon components)
   const helpIcon = <img src="/icons/help.svg" alt="Help" className="w-5 h-5" />;

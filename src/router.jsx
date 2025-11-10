@@ -12,6 +12,7 @@ import SearchResultsPage from "./pages/SearchResultsPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ContactUs from "./pages/ContactUs";
 import CartPage from "./pages/CartPage";
+import WishlistPage from "./pages/WishlistPage";
 
 // Auth imports
 import SignUp from "./pages/Auth/SignUp";
@@ -84,6 +85,7 @@ const router = createBrowserRouter([
           { path: "/product/:id", element: <ProductDetailsPage /> },
           { path: "/contact", element: <ContactUs /> },
           { path: "/cart", element: <CartPage /> },
+          { path: "/wishlist", element: <WishlistPage /> },
           // My Account routes
           { path: "/account", element: <MyAccount /> },
 

@@ -5,6 +5,8 @@ import { Button } from "../components/common/Button";
 import StarRating from "../components/common/StarRating";
 import PageHeader from "../components/common/PageHeader";
 import { useCartStore } from "../store/cartStore";
+import { useWishlistStore } from "../store/wishlistStore";
+import { useToast } from "../context/ToastContext";
 
 
 const socialIcons = [
@@ -16,6 +18,11 @@ const socialIcons = [
 const ProductDetailsPage = () => {
   const { id } = useParams();
   const product = productsData.find((p) => String(p.id) === String(id));
+  const navigate = useNavigate();
+  const addItemToCart = useCartStore((state) => state.addItem);
+  const addToWishlist = useWishlistStore((state) => state.addItem);
+  const isInWishlist = useWishlistStore((state) => state.isInWishlist(product?.id || ''));
+  const { showToast } = useToast();
 
   // For image gallery
   const [mainImage, setMainImage] = useState(product?.image);
@@ -46,18 +53,32 @@ const ProductDetailsPage = () => {
     setQuantity(prev => Math.max(1, prev + change));
   };
 
+  // Helper function to create category slug
+  const createCategorySlug = (categoryName) => {
+    if (!categoryName) return '';
+    return categoryName.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, '-');
+  };
+
   // Prepare breadcrumbs
   const breadcrumbs = [
     { label: 'Market CloseBy', link: '/' },
-    ...(product.category ? [{ 
+    ...(product?.category ? [{ 
       label: product.category, 
-      link: `/search?category=${encodeURIComponent(product.category)}` 
+      link: `/category/${createCategorySlug(product.category)}` 
     }] : []),
-    { label: product.name.split('–')[0].trim(), active: true }
+    { label: product?.name?.split('–')[0].trim() || 'Product', active: true }
   ];
 
-  const navigate = useNavigate();
-  const addItemToCart = useCartStore((state) => state.addItem);
+  const handleSaveForLater = () => {
+    if (!product) return;
+    
+    const added = addToWishlist(product);
+    if (added) {
+      showToast(`${product.name} added to wishlist!`, 'success');
+    } else {
+      showToast('Product is already in your wishlist', 'info');
+    }
+  };
   
   return (
     <div className="min-h-screen py-8">
@@ -179,11 +200,28 @@ const ProductDetailsPage = () => {
                 >
                   Add to Cart
                 </Button>
-                <button className="flex justify-center items-center gap-2 bg-[#130C761A] text-gray-700 px-6 py-3 rounded-full font-semibold hover:bg-gray-300 transition-colors">
+                <button
+                  onClick={handleSaveForLater}
+                  className={`flex justify-center items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
+                    isInWishlist
+                      ? 'bg-secondary text-white hover:bg-secondary-light'
+                      : 'bg-[#130C761A] text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
                   <div className="w-6 h-6 rounded-full flex items-center justify-center">
-                    <img src="/icons/heart-fill.svg" alt="Like" />
+                    {isInWishlist ? (
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    ) : (
+                      <img src="/icons/heart-fill.svg" alt="Like" />
+                    )}
                   </div>
-                  Save for later
+                  {isInWishlist ? 'Saved' : 'Save for later'}
                 </button>
               </div>
             </div>
