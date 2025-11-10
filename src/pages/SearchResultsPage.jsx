@@ -4,10 +4,28 @@ import { productsData } from '../components/productsData';
 import ProductsCard from '../components/cards/ProductsCard';
 import FilterSidebar from '../components/common/FilterSidebar';
 import { getCategoryForSearch } from '../utils/getCategoryForSearch';
+import { categories } from '../components/common/categoryData';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
+
+// Helper: normalize strings for comparison (handles & -> and, spaces, case)
+const normalize = (str = '') => str.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, ' ').trim();
+
+// Helper: create slug from category name
+const createSlug = (name = '') => normalize(name).replace(/\s+/g, '-');
+
+// Helper: get actual product category name that exists in productsData
+// This handles cases where categoryData has "Home & Kitchen" but productsData has "Home and Kitchen"
+const getProductCategoryName = (categoryName, productsData) => {
+  const normalizedInput = normalize(categoryName);
+  // Get unique categories from productsData
+  const productCategories = [...new Set(productsData.map(p => p.category))];
+  // Find matching category in productsData (normalized comparison)
+  const match = productCategories.find(pc => normalize(pc) === normalizedInput);
+  return match || categoryName; // Return matched name or original if not found
+};
 
 const SearchResultsPage = () => {
   const query = useQuery();
@@ -15,28 +33,19 @@ const SearchResultsPage = () => {
   const searchTerm = query.get('q') || '';
   const categoryFromQuery = query.get('category') || '';
 
-  // Helper: normalize strings for comparison
-  const normalize = (str = '') => str.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, ' ').trim();
-
-  // If slug exists, derive display category by matching categories list; otherwise use query param
-  let categoryFromSlug = '';
-  if (slug) {
-    // convert slug back to name using categories list if possible
-    try {
-      const { categories } = require('../components/common/categoryData');
-      const match = categories.find(c => c && normalize(c.name).replace(/\s+/g, '-') === slug.toLowerCase());
-      categoryFromSlug = match ? match.name : slug.replace(/-/g, ' ');
-    } catch {}
-  }
-
-  const effectiveCategory = categoryFromSlug || categoryFromQuery;
+  // State for category information
+  const [categoryInfo, setCategoryInfo] = useState({
+    categoryFromSlug: '',
+    displayCategoryName: '',
+    effectiveCategory: categoryFromQuery,
+  });
 
   const [filters, setFilters] = useState({
     price: {},
     brand: "",
     condition: "",
     discount: "",
-    category: effectiveCategory,
+    category: categoryFromQuery,
   });
 
   // Sort dropdown state
@@ -51,13 +60,45 @@ const SearchResultsPage = () => {
     'Product Rating'
   ];
 
-  // Update filters when URL parameters change
+  // Update filters and category info when URL parameters change (slug or query params)
   useEffect(() => {
+    // Recompute effective category when slug or query changes
+    let newCategoryFromSlug = '';
+    let newDisplayCategoryName = '';
+    
+    if (slug) {
+      // Find category in categoryData that matches the slug
+      const matchedCategory = categories.find(c => {
+        if (!c || !c.name) return false;
+        return createSlug(c.name) === slug.toLowerCase();
+      });
+      
+      if (matchedCategory) {
+        newCategoryFromSlug = matchedCategory.name;
+        // Get the actual category name that exists in productsData
+        newDisplayCategoryName = getProductCategoryName(matchedCategory.name, productsData);
+      } else {
+        // Fallback: try to construct category name from slug
+        newCategoryFromSlug = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        newDisplayCategoryName = getProductCategoryName(newCategoryFromSlug, productsData);
+      }
+    }
+    
+    const newEffectiveCategory = newDisplayCategoryName || newCategoryFromSlug || categoryFromQuery;
+    
+    // Update category info state
+    setCategoryInfo({
+      categoryFromSlug: newCategoryFromSlug,
+      displayCategoryName: newDisplayCategoryName,
+      effectiveCategory: newEffectiveCategory,
+    });
+    
+    // Update filters
     setFilters(prev => ({
       ...prev,
-      category: effectiveCategory,
+      category: newEffectiveCategory,
     }));
-  }, [effectiveCategory]);
+  }, [slug, categoryFromQuery]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -72,13 +113,16 @@ const SearchResultsPage = () => {
 
   // Filter products by search term and category
   const filteredProducts = productsData.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = !searchTerm || product.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = !filters.category || normalize(product.category) === normalize(filters.category);
     return matchesSearch && matchesCategory;
   });
 
-  // Get the category for the first matching product if no category filter is applied
-  const category = filters.category || getCategoryForSearch(searchTerm);
+  // Get the display category name (use categoryData name for display, but filter by product category)
+  const category = categoryInfo.effectiveCategory || getCategoryForSearch(searchTerm);
+  
+  // For display purposes, prefer the categoryData name if we have a slug match
+  const displayCategory = categoryInfo.categoryFromSlug || category;
 
   const handleSortSelect = (option) => {
     setSelectedSort(option);
@@ -93,10 +137,10 @@ const SearchResultsPage = () => {
         <div>
           <Link to="/" className="hover:underline">Market CloseBy</Link>
           {" / "}
-          {category ? (
+          {displayCategory ? (
             <>
-              <Link to={`/category/${normalize(category).replace(/\s+/g, '-')}`} className="hover:underline">
-                {category}
+              <Link to={`/category/${createSlug(displayCategory)}`} className="hover:underline">
+                {displayCategory}
               </Link>
             </>
           ) : null}
@@ -108,9 +152,9 @@ const SearchResultsPage = () => {
       {/* Heading and sort */}
       <div className="flex flex-col lg:flex-row lg:items-center md:justify-between gap-2 px-6">
         <h2 className="text-xl md:text-2xl font-bold text-primary mb-2 md:mb-0">
-          {filters.category ? `${filters.category}` : ''}
-          {searchTerm && (filters.category ? ` – ${searchTerm}` : `Search results – ${searchTerm}`)}
-          {!searchTerm && !filters.category && 'All Products'}
+          {displayCategory ? `${displayCategory}` : ''}
+          {searchTerm && (displayCategory ? ` – ${searchTerm}` : `Search results – ${searchTerm}`)}
+          {!searchTerm && !displayCategory && 'All Products'}
         </h2>
         
         <div className="relative sort-dropdown">
@@ -166,7 +210,7 @@ const SearchResultsPage = () => {
       <div className="flex px-6 py-6 gap-6">
         {/* Sidebar Filters */}
         <div className="hidden lg:block">
-          <FilterSidebar filters={filters} setFilters={setFilters} currentCategory={category} />
+          <FilterSidebar filters={filters} setFilters={setFilters} currentCategory={displayCategory} />
         </div>
         
         {/* Product Grid */}
@@ -174,7 +218,13 @@ const SearchResultsPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.length === 0 ? (
               <div className="col-span-full text-center text-text-grey py-20">
-                No products found for <span className="font-semibold">{searchTerm}</span>
+                {searchTerm ? (
+                  <>No products found for <span className="font-semibold">{searchTerm}</span></>
+                ) : displayCategory ? (
+                  <>No products found in <span className="font-semibold">{displayCategory}</span></>
+                ) : (
+                  <>No products found</>
+                )}
               </div>
             ) : (
               filteredProducts.map(product => (
