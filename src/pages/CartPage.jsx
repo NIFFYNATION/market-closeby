@@ -1,6 +1,8 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
+import { useWishlistStore } from "../store/wishlistStore";
+import { useToast } from "../context/ToastContext";
 import { Button } from "../components/common/Button";
 import PageHeader from "../components/common/PageHeader";
 
@@ -19,6 +21,27 @@ const CartPage = () => {
   const subtotal = useCartStore((state) => state.subtotal());
   const deliveryFee = useCartStore((state) => state.deliveryFee());
   const grandTotal = useCartStore((state) => state.grandTotal());
+  const addToWishlist = useWishlistStore((state) => state.addItem);
+  const { showToast } = useToast();
+
+  const handleSaveForLater = (item) => {
+    const product = {
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      image: item.image,
+      brand: item.seller,
+      category: item.category || '',
+    };
+    
+    const added = addToWishlist(product);
+    if (added) {
+      removeItem(item.id);
+      showToast(`${item.name} moved to wishlist!`, 'success');
+    } else {
+      showToast('Item is already in your wishlist', 'info');
+    }
+  };
 
   if (!items.length) {
     return (
@@ -146,9 +169,18 @@ const CartPage = () => {
                       >
                         Add one more
                       </Button>
+                      <button
+                        onClick={() => handleSaveForLater(item)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary hover:text-secondary transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        Save for later
+                      </button>
                       <Link
                         to={`/product/${item.id}`}
-                        className="text-sm text-primary  hover:underline"
+                        className="text-sm text-primary hover:underline"
                       >
                         View product details
                       </Link>
@@ -189,6 +221,7 @@ const CartPage = () => {
               shape="rounded"
               fullWidth
               className="mt-6 shadow-lg hover:shadow-xl transition duration-300"
+              onClick={() => navigate("/checkout")}
             >
               Proceed to checkout
             </Button>

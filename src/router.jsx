@@ -13,6 +13,8 @@ import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ContactUs from "./pages/ContactUs";
 import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrdersPage from "./pages/OrdersPage";
 
 // Auth imports
 import SignUp from "./pages/Auth/SignUp";
@@ -86,6 +88,9 @@ const router = createBrowserRouter([
           { path: "/contact", element: <ContactUs /> },
           { path: "/cart", element: <CartPage /> },
           { path: "/wishlist", element: <WishlistPage /> },
+          { path: "/checkout", element: <CheckoutPage /> },
+          { path: "/orders/:orderId", element: <OrdersPage /> },
+          { path: "/orders", element: <OrdersPage /> },
           // My Account routes
           { path: "/account", element: <MyAccount /> },
 
