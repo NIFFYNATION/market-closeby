@@ -72,9 +72,9 @@ const OrdersPage = () => {
                 <span
                   className={`inline-block px-4 py-2 rounded-full text-sm font-semibold mt-2 ${
                     order.status === "Pending"
-                      ? "bg-yellow-100 text-yellow-800"
+                      ? "bg-secondary text-yellow-800"
                       : order.status === "Completed"
-                      ? "bg-green-100 text-green-800"
+                      ? "bg-success text-green-800"
                       : "bg-red-100 text-red-800"
                   }`}
                 >
@@ -214,7 +214,7 @@ const OrdersPage = () => {
 
       <div className="max-w-6xl mx-auto px-4 md:px-8 lg:px-12 py-8">
         {/* Tabs */}
-        <div className="mb-6 flex gap-4 border-b">
+        <div className="mb-6 flex gap-4 border-b border-[#D9D9D9]">
           <button
             onClick={() => setActiveTab("all")}
             className={`px-4 py-3 font-medium border-b-2 transition-colors ${
@@ -291,9 +291,9 @@ const OrdersPage = () => {
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${
                           order.status === "Pending"
-                            ? "bg-yellow-100 text-yellow-800"
+                            ? "bg-secondary text-yellow-800"
                             : order.status === "Completed"
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-success text-green-800"
                             : "bg-red-100 text-red-800"
                         }`}
                       >
