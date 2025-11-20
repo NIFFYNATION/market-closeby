@@ -78,7 +78,7 @@ const InboxPage = () => {
         titleSize="large"
       />
 
-      <div className="max-w-6xl mx-auto px-4 md:px-8 lg:px-12 py-8">
+      <div className=" mx-auto px-4 md:px-8 lg:px-12 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6">
           {/* Conversations List */}
           <aside className="bg-white rounded-3xl p-4 shadow-lg h-[70vh] overflow-y-auto sidebar-scrollbar">
