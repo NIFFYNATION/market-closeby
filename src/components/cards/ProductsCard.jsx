@@ -5,7 +5,7 @@ const ProductsCard = ({ product }) => {
   const reviewText = product.reviews <= 1 ? 'Review' : 'Reviews';
 
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow duration-300">
+    <div className="bg-whiten xl:px-4 rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow duration-300">
       <Link to={`/product/${product.id}`}>
         <div className="relative">
           {product.verified && (
