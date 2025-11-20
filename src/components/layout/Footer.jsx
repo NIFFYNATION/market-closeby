@@ -90,7 +90,7 @@ function Footer() {
             <h3 className="font-bold text-lg mb-4">NEED HELP?</h3>
             <ul className="space-y-6">
               <li>
-                <Link to="/chat" className="hover:text-secondary">
+                <Link to="/contact" className="hover:text-secondary">
                   Chat with US
                 </Link>
               </li>
@@ -105,7 +105,7 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/faqs" className="hover:text-secondary">
+                <Link to="/help/faqs" className="hover:text-secondary">
                   FAQs
                 </Link>
               </li>
@@ -117,12 +117,12 @@ function Footer() {
             <h3 className="font-bold text-lg mb-4">MORE INFORMATION</h3>
             <ul className="space-y-6">
               <li>
-                <Link to="/track" className="hover:text-secondary">
+                <Link to="/help/track-order" className="hover:text-secondary">
                   Track my Order
                 </Link>
               </li>
               <li>
-                <Link to="/refund" className="hover:text-secondary">
+                <Link to="/help/returns-refunds" className="hover:text-secondary">
                   Refund & Return Policy
                 </Link>
               </li>
@@ -138,7 +138,7 @@ function Footer() {
           <div>
             <div>
               <Link
-                to="/apple"
+                to="/"
                 className="flex items-center py-2 rounded-lg hover:bg-secondary gap-2"
               >
                 <img
@@ -205,7 +205,7 @@ function Footer() {
           </div>
           <div>
             <Link
-              to="/android"
+              to="/"
               className="flex items-center rounded-lg py-2 hover:bg-secondary gap-2"
             >
               <img
