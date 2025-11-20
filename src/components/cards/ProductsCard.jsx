@@ -26,9 +26,9 @@ const ProductsCard = ({ product }) => {
           </div>
         </div>
         <div className="py-4 px-3">
-          <div className="grid sm:grid-cols-2  mb-1">
+          <div className="flex flex-col lg:flex-row  justify-between  mb-1">
             <span className="font-bold text-primary text-lg">{product.price}</span>
-            <div className=" items-center">
+            <div className=" flex gap-2 items-center">
               {product.oldPrice && (
               <span className="text-gray-400 line-through text-sm">{product.oldPrice}</span>
             )}
@@ -42,7 +42,7 @@ const ProductsCard = ({ product }) => {
             <img src="/icons/location.svg" alt="Location" className='w-4 h-4' />
             <span className="text-xs">{product.location}</span>
           </div>
-          <div className="grid sm:grid-cols-2  md:items-center">
+          <div className="flex flex-col xl:flex-row  justify-between  mb-1">
             <StarRating rating={product.rating} />
             <span className="text-sm text-gray-500">
               ({product.reviews} {reviewText})

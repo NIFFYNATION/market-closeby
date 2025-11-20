@@ -107,7 +107,7 @@ function HomePage() {
       <CategoryBrowser />
       
       {/* Additional content */}
-      <div className='container mx-auto py-8 px-4'>
+      <div className='w-full mx-auto py-8 px-4'>
         <TrendingProducts />
       </div>
     </div>

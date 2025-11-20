@@ -212,7 +212,7 @@ const OrdersPage = () => {
         titleSize="large"
       />
 
-      <div className="max-w-6xl mx-auto px-4 md:px-8 lg:px-12 py-8">
+      <div className=" mx-auto px-4 md:px-8 lg:px-12 py-8">
         {/* Tabs */}
         <div className="mb-6 flex gap-4 border-b border-[#D9D9D9]">
           <button
@@ -249,7 +249,7 @@ const OrdersPage = () => {
 
         {/* Orders List */}
         {filteredOrders.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center shadow-lg animate-fade-in-up">
+          <div className=" bg-white rounded-3xl p-12 text-center shadow-lg animate-fade-in-up">
             <div className="mb-6">
               <svg
                 className="w-24 h-24 mx-auto text-gray-300"

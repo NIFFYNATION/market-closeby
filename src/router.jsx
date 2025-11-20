@@ -15,6 +15,7 @@ import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
+import InboxPage from "./pages/InboxPage";
 
 // Auth imports
 import SignUp from "./pages/Auth/SignUp";
@@ -93,6 +94,7 @@ const router = createBrowserRouter([
           { path: "/orders", element: <OrdersPage /> },
           // My Account routes
           { path: "/account", element: <MyAccount /> },
+          { path: "/inbox", element: <InboxPage /> },
 
           // Help Center routes
           { path: "/help", element: <HelpCenter /> },

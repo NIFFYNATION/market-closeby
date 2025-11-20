@@ -1,695 +1,244 @@
-import React, { useState } from 'react';
-import { Button } from '../../components/common/Button';
-import { TextInput, SelectInput } from '../../components/forms/FormFields';
-import PageHeader from '../../components/common/PageHeader';
-import MarketClosebyDescription from '../../components/MarketClosebyDescription';
-import MyOrders from '../../components/myAccount/MyOrders';
+import React, { useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAccountStore } from "../../store/accountStore";
+import { useOrdersStore } from "../../store/ordersStore";
+import PageHeader from "../../components/common/PageHeader";
+import { Button } from "../../components/common/Button";
+
+const SectionCard = ({ title, children, right }) => (
+  <div className="bg-white rounded-3xl p-6 md:p-8 shadow-lg">
+    <div className="flex items-center justify-between mb-4">
+      <h3 className="text-xl font-semibold text-text-primary">{title}</h3>
+      {right}
+    </div>
+    {children}
+  </div>
+);
+
+const InfoRow = ({ label, value }) => (
+  <div className="flex items-start justify-between py-3 border-b last:border-b-0">
+    <span className="text-sm text-text-grey">{label}</span>
+    <span className="text-sm font-medium text-text-primary text-right ml-4">{value}</span>
+  </div>
+);
 
 const MyAccount = () => {
-  const [activeSection, setActiveSection] = useState('profile');
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [isEditingAddress, setIsEditingAddress] = useState(false);
-  const [isEditingNewsletter, setIsEditingNewsletter] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const profile = useAccountStore((s) => s.profile);
+  const orders = useOrdersStore((s) => s.orders);
 
-  const [profileData, setProfileData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'johndoe@gmail.com',
-    phone: '+234 912 413 6316',
-    gender: 'Female',
-    currentAddress: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
-
-  const [addressData, setAddressData] = useState({
-    addressLine1: '34 Anifowose Street, Somolu, Lagos.',
-    addressLine2: '',
-    country: 'Nigeria',
-    state: 'Lagos',
-    lga: 'Alimosho'
-  });
-
-  const [newsletterData, setNewsletterData] = useState({
-    newListings: true,
-    exclusiveDeals: true,
-    sellerUpdates: true,
-    marketplaceNews: true,
-    noPromotionalEmails: false,
-    agreeToPolicy: false
-  });
-
-  const sidebarItems = [
-    { id: 'profile', label: 'My Profile', icon: '/icons/user.svg', active: true },
-    { id: 'orders', label: 'My Orders', icon: '/icons/orders.svg', active: false },
-    { id: 'wallet', label: 'My Wallet', icon: '/icons/wallet-bold.svg', active: false },
-    { id: 'inbox', label: 'My Inbox', icon: '/icons/inbox-bold.svg', active: false },
-    { id: 'wishlist', label: 'Wishlist', icon: '/icons/wishlist.svg', active: false },
-    { id: 'reviews', label: 'Pending Reviews', icon: '/icons/pending-review-bold.svg', active: false },
-    { id: 'recent', label: 'Recently Viewed', icon: '/icons/history-bold.svg', active: false },
-    { id: 'delete', label: 'Delete Account', icon: '/icons/trash-bold.svg', active: false }
-  ];
-
-  const handleProfileChange = (e) => {
-    setProfileData({ ...profileData, [e.target.name]: e.target.value });
-  };
-
-  const handleAddressChange = (e) => {
-    setAddressData({ ...addressData, [e.target.name]: e.target.value });
-  };
+  const [activeTab, setActiveTab] = useState("overview");
+  const defaultAddress = useMemo(() => profile.addressBook.find((a) => a.isDefault), [profile.addressBook]);
+  const defaultPayment = useMemo(() => profile.paymentMethods.find((p) => p.isDefault), [profile.paymentMethods]);
 
   const breadcrumbs = [
-    { label: 'Market CloseBy', link: '/' },
-    { label: 'My Account', active: true }
+    { label: "Market CloseBy", link: "/" },
+    { label: "My Account", active: true },
   ];
 
-  const genderOptions = ['Male', 'Female', 'Other'];
-  const countryOptions = ['Nigeria', 'Ghana', 'Kenya', 'South Africa'];
-  const stateOptions = ['Lagos', 'Abuja', 'Kano', 'Rivers'];
-  const lgaOptions = ['Alimosho', 'Ikeja', 'Surulere', 'Victoria Island'];
-
-  const handleNewsletterChange = (name, value) => {
-    if (name === 'noPromotionalEmails' && value) {
-      // If "I don't want to receive promotional emails" is selected, uncheck all others
-      setNewsletterData({
-        newListings: false,
-        exclusiveDeals: false,
-        sellerUpdates: false,
-        marketplaceNews: false,
-        noPromotionalEmails: true,
-        agreeToPolicy: newsletterData.agreeToPolicy
-      });
-    } else if (name !== 'noPromotionalEmails' && name !== 'agreeToPolicy' && value) {
-      // If any other option is selected, uncheck "no promotional emails"
-      setNewsletterData({
-        ...newsletterData,
-        [name]: value,
-        noPromotionalEmails: false
-      });
-    } else {
-      setNewsletterData({
-        ...newsletterData,
-        [name]: value
-      });
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Breadcrumb */}
+    <section className="min-h-screen pb-20">
       <PageHeader
         breadcrumbs={breadcrumbs}
+        title="My Account"
+        subtitle="Manage your profile, orders, addresses and settings"
         containerStyle="shadow"
-        titleSize="medium"
+        titleSize="large"
       />
 
-      <div className="mx-auto px-2 sm:px-4 lg:px-8 py-4 lg:py-8">
-        {/* Mobile Menu Button */}
-        <div className="lg:hidden mb-4">
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="w-full bg-primary text-background px-4 py-3 rounded-lg flex items-center justify-between"
-          >
-            <span className="font-medium">Account Menu</span>
-            <img 
-              src="/icons/arrow-down.svg" 
-              alt="Toggle" 
-              className={`w-4 h-4 filter brightness-0 invert transition-transform duration-200 ${
-                isMobileMenuOpen ? 'rotate-180' : ''
+      <div className=" mx-auto px-4 md:px-8 lg:px-12 py-8">
+        {/* Tabs */}
+        <div className="flex flex-wrap gap-2 border-b border-[#D9D9D9] mb-6">
+          {[
+            { id: "overview", label: "Overview" },
+            { id: "orders", label: "Orders" },
+            { id: "wishlist", label: "Wishlist" },
+            { id: "addresses", label: "Addresses" },
+            { id: "payments", label: "Payment Methods" },
+            { id: "settings", label: "Settings" },
+          ].map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(t.id)}
+              className={`px-4 py-3 font-medium border-b-2 transition-colors ${
+                activeTab === t.id
+                  ? "border-secondary text-secondary"
+                  : "border-transparent text-text-grey hover:text-primary"
               }`}
-            />
-          </button>
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
 
-        <div className="flex flex-col lg:flex-row">
-          {/* Sidebar - Desktop */}
-          <div className="hidden lg:block w-45 flex-shrink-0 shadow-2xl">
-            <div className="bg-primary h-full shadow-2xl overflow-hidden">
-              {sidebarItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveSection(item.id)}
-                  className={`w-full items-center px-6 py-4 text-center transition-colors duration-200 ${
-                    activeSection === item.id
-                      ? 'bg-background text-primary'
-                      : 'text-background hover:bg-primary-light'
-                  }`}
-                >
-                  <img 
-                    src={item.icon} 
-                    alt={item.label} 
-                    className={`w-5 h-5 my-3 justify-self-center ${
-                      activeSection === item.id ? 'filter-none' : 'filter brightness-0 invert'
-                    }`}
-                  />
-                  <span className="font-medium text-sm">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Mobile Sidebar */}
-          {isMobileMenuOpen && (
-            <div className="lg:hidden mb-4">
-              <div className="bg-primary shadow-2xl overflow-hidden rounded-lg">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1">
-                  {sidebarItems.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => {
-                        setActiveSection(item.id);
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className={`flex flex-col items-center px-3 py-4 text-center transition-colors duration-200 ${
-                        activeSection === item.id
-                          ? 'bg-background text-primary'
-                          : 'text-background hover:bg-primary-light'
-                      }`}
-                    >
-                      <img 
-                        src={item.icon} 
-                        alt={item.label} 
-                        className={`w-5 h-5 mb-2 ${
-                          activeSection === item.id ? 'filter-none' : 'filter brightness-0 invert'
-                        }`}
-                      />
-                      <span className="font-medium text-xs leading-tight">{item.label}</span>
-                    </button>
-                  ))}
+        {/* Overview */}
+        {activeTab === "overview" && (
+          <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-6 animate-fade-in-up">
+            <div className="space-y-6">
+              <SectionCard title="Account Summary" right={<Link to="/account" className="text-primary text-sm">Edit</Link>}>
+                <div className="flex items-center gap-4">
+                  <img src={profile.avatar} alt={profile.name} className="w-16 h-16 rounded-full object-cover" />
+                  <div>
+                    <p className="text-lg font-semibold text-primary">{profile.name}</p>
+                    <p className="text-sm text-text-grey">{profile.email}</p>
+                  </div>
                 </div>
-              </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                  <div className="bg-background-alt rounded-xl p-4">
+                    <p className="text-sm text-text-grey">Orders</p>
+                    <p className="text-2xl font-bold text-primary">{orders.length}</p>
+                  </div>
+                  <div className="bg-background-alt rounded-xl p-4">
+                    <p className="text-sm text-text-grey">Default Address</p>
+                    <p className="text-sm font-medium text-text-primary line-clamp-2">{defaultAddress?.address || '—'}</p>
+                  </div>
+                  <div className="bg-background-alt rounded-xl p-4">
+                    <p className="text-sm text-text-grey">Payment</p>
+                    <p className="text-sm font-medium text-text-primary">{defaultPayment ? `${defaultPayment.brand} •••• ${defaultPayment.last4}` : '—'}</p>
+                  </div>
+                </div>
+              </SectionCard>
+
+              <SectionCard title="Quick Actions">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <Button variant="outline" onClick={() => navigate('/orders')}>View Orders</Button>
+                  <Button variant="outline" onClick={() => navigate('/wishlist')}>Wishlist</Button>
+                  <Button variant="outline" onClick={() => setActiveTab('addresses')}>Addresses</Button>
+                  <Button variant="outline" onClick={() => setActiveTab('payments')}>Payment Methods</Button>
+                </div>
+              </SectionCard>
+
+              <SectionCard title="Recent Orders" right={<Link to="/orders" className="text-primary text-sm">See all</Link>}>
+                {orders.length === 0 ? (
+                  <p className="text-text-grey">No recent orders</p>
+                ) : (
+                  <div className="space-y-3">
+                    {orders.slice(0, 3).map((o) => (
+                      <div key={o.id} className="flex items-center justify-between p-4 bg-background-alt rounded-xl">
+                        <div>
+                          <p className="font-semibold text-text-primary">Order {o.orderNumber}</p>
+                          <p className="text-xs text-text-grey">{new Date(o.orderDate).toLocaleString()}</p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            o.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : o.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          }`}>{o.status}</span>
+                          <Button variant="outline" size="sm" onClick={() => navigate(`/orders/${o.id}`)}>View</Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </SectionCard>
             </div>
-          )}
 
-          {/* Main Content */}
-          <div className="flex-1 min-w-0">
-            <div className="bg-background shadow-xl px-0 pb-10 md:px-10 h-full">
-              {/* Header */}
-              <div className="px-4 sm:px-6 lg:px-8 py-4 lg:py-6">
-                <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
-                  {isEditingProfile ? 'Edit Personal Information' : 
-                   isEditingAddress ? 'Edit Delivery Address' :
-                   isEditingNewsletter ? 'Edit Newsletter Preferences' : 
-                   activeSection === 'orders' ? 'Order History' :
-                   'Account Overview'}
-                </h1>
-              </div>
-
-              <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
-                {activeSection === 'orders' ? (
-                  /* My Orders Section */
-                  <MyOrders />
-                ) : isEditingProfile ? (
-                  /* Edit Profile Form */
-                  <div className="shadow-xl p-4 sm:p-6 lg:p-8">
-                    <div className="space-y-6">
-                      {/* First Name and Last Name */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <TextInput
-                          label="First Name"
-                          name="firstName"
-                          value={profileData.firstName}
-                          onChange={handleProfileChange}
-                          className="rounded-lg"
-                        />
-                        <TextInput
-                          label="Last Name"
-                          name="lastName"
-                          value={profileData.lastName}
-                          onChange={handleProfileChange}
-                          className="rounded-lg"
-                        />
-                      </div>
-
-                      {/* Email Address */}
-                      <TextInput
-                        label="Email Address"
-                        name="email"
-                        type="email"
-                        value={profileData.email}
-                        onChange={handleProfileChange}
-                        className="rounded-lg"
-                      />
-
-                      {/* Phone Number and Gender */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <TextInput
-                          label="Phone Number"
-                          name="phone"
-                          value={profileData.phone}
-                          onChange={handleProfileChange}
-                          className="rounded-lg"
-                        />
-                        <SelectInput
-                          label="Gender"
-                          name="gender"
-                          value={profileData.gender}
-                          onChange={handleProfileChange}
-                          options={genderOptions}
-                          className="rounded-lg"
-                        />
-                      </div>
-
-                      {/* Current Address */}
-                      <TextInput
-                        label="Current Address"
-                        name="currentAddress"
-                        value={profileData.currentAddress}
-                        onChange={handleProfileChange}
-                        className="rounded-lg"
-                      />
-
-                      {/* New Password */}
-                      <TextInput
-                        label="New Password"
-                        name="newPassword"
-                        type="password"
-                        value={profileData.newPassword}
-                        onChange={handleProfileChange}
-                        className="rounded-lg"
-                      />
-
-                      {/* Confirm Password */}
-                      <TextInput
-                        label="Confirm Password"
-                        name="confirmPassword"
-                        type="password"
-                        value={profileData.confirmPassword}
-                        onChange={handleProfileChange}
-                        className="rounded-lg"
-                      />
-
-                      {/* Save Changes Button */}
-                      <div className="pt-4">
-                        <Button
-                          variant="secondary"
-                          size="md"
-                          shape="rounded"
-                          onClick={() => setIsEditingProfile(false)}
-                        >
-                          Save Changes
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ) : isEditingAddress ? (
-                  /* Edit Address Form */
-                  <div className="">
-                    <div className="space-y-6">
-                      {/* Address Line 1 */}
-                      <TextInput
-                        label="Address Line 1"
-                        name="addressLine1"
-                        value={addressData.addressLine1}
-                        onChange={handleAddressChange}
-                        className="rounded-lg"
-                      />
-
-                      {/* Address Line 2 */}
-                      <TextInput
-                        label="Address Line 2"
-                        name="addressLine2"
-                        value={addressData.addressLine2}
-                        onChange={handleAddressChange}
-                        className="rounded-lg"
-                      />
-
-                      {/* State */}
-                      <SelectInput
-                        label="State"
-                        name="state"
-                        value={addressData.state}
-                        onChange={handleAddressChange}
-                        options={stateOptions}
-                        className="rounded-lg"
-                      />
-
-                      {/* L.G.A */}
-                      <SelectInput
-                        label="L.G.A"
-                        name="lga"
-                        value={addressData.lga}
-                        onChange={handleAddressChange}
-                        options={lgaOptions}
-                        className="rounded-lg"
-                      />
-
-                      {/* Save Changes Button */}
-                      <div className="pt-4">
-                        <Button
-                          variant="secondary"
-                          size="md"
-                          shape="rounded"
-                          onClick={() => setIsEditingAddress(false)}
-                        >
-                          Save Changes
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ) : isEditingNewsletter ? (
-                  /* Edit Newsletter Preferences Form */
-                  <div className="">
-                    <div className="space-y-6">
-                      {/* Description */}
-                      <p className="text-text-primary  text-base leading-relaxed">
-                        Customize what updates you receive from Market CloseBy, so you only get what matters most to you.
-                      </p>
-
-                      {/* Newsletter Options */}
-                      <div className="space-y-4">
-                        {/* New listings near me */}
-                        <label className="flex items-center space-x-3 cursor-pointer">
-                          <div className="relative">
-                            <input
-                              type="radio"
-                              name="newsletterOption"
-                              checked={newsletterData.newListings}
-                              onChange={() => handleNewsletterChange('newListings', true)}
-                              className="sr-only"
-                            />
-                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                              newsletterData.newListings ? 'border-secondary' : 'border-gray-300'
-                            }`}>
-                              {newsletterData.newListings && (
-                                <div className="w-4 h-4 rounded-full bg-background border border-secondary flex items-center justify-center">
-                                  <div className="w-4 h-4 rounded-full bg-secondary"></div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <span className="text-text-primary text-base">New listings near me</span>
-                        </label>
-
-                        {/* Exclusive deals & discounts */}
-                        <label className="flex items-center space-x-3 cursor-pointer">
-                          <div className="relative">
-                            <input
-                              type="radio"
-                              name="newsletterOption"
-                              checked={newsletterData.exclusiveDeals}
-                              onChange={() => handleNewsletterChange('exclusiveDeals', true)}
-                              className="sr-only"
-                            />
-                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                              newsletterData.exclusiveDeals ? 'border-secondary' : 'border-gray-300'
-                            }`}>
-                              {newsletterData.exclusiveDeals && (
-                                <div className="w-4 h-4 rounded-full bg-background border border-secondary flex items-center justify-center">
-                                  <div className="w-4 h-4 rounded-full bg-secondary"></div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <span className="text-text-primary text-base">Exclusive deals & discounts</span>
-                        </label>
-
-                        {/* Updates from sellers I follow */}
-                        <label className="flex items-center space-x-3 cursor-pointer">
-                          <div className="relative">
-                            <input
-                              type="radio"
-                              name="newsletterOption"
-                              checked={newsletterData.sellerUpdates}
-                              onChange={() => handleNewsletterChange('sellerUpdates', true)}
-                              className="sr-only"
-                            />
-                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                              newsletterData.sellerUpdates ? 'border-secondary' : 'border-gray-300'
-                            }`}>
-                              {newsletterData.sellerUpdates && (
-                                <div className="w-4 h-4 rounded-full bg-background border border-secondary flex items-center justify-center">
-                                  <div className="w-4 h-4 rounded-full bg-secondary"></div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <span className="text-text-primary text-base">Updates from sellers I follow</span>
-                        </label>
-
-                        {/* Marketplace news & announcements */}
-                        <label className="flex items-center space-x-3 cursor-pointer">
-                          <div className="relative">
-                            <input
-                              type="radio"
-                              name="newsletterOption"
-                              checked={newsletterData.marketplaceNews}
-                              onChange={() => handleNewsletterChange('marketplaceNews', true)}
-                              className="sr-only"
-                            />
-                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                              newsletterData.marketplaceNews ? 'border-secondary' : 'border-gray-300'
-                            }`}>
-                              {newsletterData.marketplaceNews && (
-                                <div className="w-4 h-4 rounded-full bg-background border border-secondary flex items-center justify-center">
-                                  <div className="w-4 h-4 rounded-full bg-secondary"></div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <span className="text-text-primary text-base">Marketplace news & announcements</span>
-                        </label>
-
-                        {/* I don't want to receive promotional emails */}
-                        <label className="flex items-center space-x-3 cursor-pointer">
-                          <div className="relative">
-                            <input
-                              type="radio"
-                              name="newsletterOption"
-                              checked={newsletterData.noPromotionalEmails}
-                              onChange={() => handleNewsletterChange('noPromotionalEmails', true)}
-                              className="sr-only"
-                            />
-                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                              newsletterData.noPromotionalEmails ? 'border-gray-400' : 'border-gray-300'
-                            }`}>
-                              {newsletterData.noPromotionalEmails && (
-                                <div className="w-4 h-4 rounded-full bg-background border border-gray-400 flex items-center justify-center">
-                                  <div className="w-4 h-4 rounded-full bg-gray-400"></div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <span className="text-text-primary text-base">I don't want to receive promotional emails</span>
-                        </label>
-                      </div>
-
-                      {/* Agreement Checkbox */}
-                      <div className="pt-4">
-                        <label className="flex items-start space-x-3 cursor-pointer">
-                          <div className="relative mt-1">
-                            <input
-                              type="checkbox"
-                              checked={newsletterData.agreeToPolicy}
-                              onChange={(e) => handleNewsletterChange('agreeToPolicy', e.target.checked)}
-                              className="sr-only"
-                            />
-                            <div className={`w-5 h-5 border-2 rounded flex items-center justify-center ${
-                              newsletterData.agreeToPolicy ? 'border-secondary bg-background' : 'border-gray-300'
-                            }`}>
-                              {newsletterData.agreeToPolicy && (
-                                <svg className="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                              )}
-                            </div>
-                          </div>
-                          <span className="text-text-primary text-base leading-relaxed">
-                            I agree to Market CloseBy's{' '}
-                            <span className="text-secondary underline">Privacy and Cookie Policy</span>.
-                            You can unsubscribe from updates at any time.
-                          </span>
-                        </label>
-                      </div>
-
-                      {/* Save Changes Button */}
-                      <div className="pt-4">
-                        <Button
-                          variant="secondary"
-                          size="md"
-                          shape="rounded"
-                          onClick={() => setIsEditingNewsletter(false)}
-                        >
-                          Save Changes
-                        </Button>
-                      </div>
-                    </div>
+            {/* Right side */}
+            <div className="space-y-6">
+              <SectionCard title="Default Address">
+                {defaultAddress ? (
+                  <div className="text-sm space-y-1">
+                    <p className="font-medium text-text-primary">{defaultAddress.fullName}</p>
+                    <p className="text-text-grey">{defaultAddress.address}</p>
+                    <p className="text-text-grey">{defaultAddress.city}, {defaultAddress.state} {defaultAddress.postalCode}</p>
+                    <p className="text-text-grey">{defaultAddress.phone}</p>
                   </div>
                 ) : (
-                  /* Original Account Overview */
-                  <>
-                    {/* Grid for Personal Info and Delivery Address */}
-                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
-                      {/* Personal Information Section */}
-                      <div className="shadow-2xl rounded-lg overflow-hidden">
-                        <div className="relative">
-                          <h2 className="text-base sm:text-lg font-semibold text-background bg-primary px-4 sm:px-6 py-3">
-                            PERSONAL INFORMATION
-                          </h2>
-                          <button 
-                            onClick={() => setIsEditingProfile(!isEditingProfile)}
-                            className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-secondary hover:bg-secondary-light text-background p-1.5 rounded-full transition-colors duration-200"
-                          >
-                            <img src="/icons/edit-bold.svg" alt="Edit" className="w-3 h-3 sm:w-4 sm:h-4" />
-                          </button>
-                        </div>
-                        
-                        <div className="p-4 sm:p-6 space-y-4">
-                          <TextInput
-                            label="Full Name"
-                            name="fullName"
-                            value={`${profileData.firstName} ${profileData.lastName}`}
-                            onChange={handleProfileChange}
-                            disabled={true}
-                            className="rounded-lg"
-                          />
-                          <TextInput
-                            label="Email Address"
-                            name="email"
-                            type="email"
-                            value={profileData.email}
-                            onChange={handleProfileChange}
-                            disabled={true}
-                          />
-                          <TextInput
-                            label="Phone Number"
-                            name="phone"
-                            value={profileData.phone}
-                            onChange={handleProfileChange}
-                            disabled={true}
-                          />
-                          <SelectInput
-                            label="Gender"
-                            name="gender"
-                            value={profileData.gender}
-                            onChange={handleProfileChange}
-                            options={genderOptions}
-                            disabled={true}
-                          />
-                        </div>
-                        
-                        <div className="px-4 sm:px-6 pb-4 sm:pb-6">
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            shape="rounded"
-                            fullWidth={true}
-                            className="sm:w-auto"
-                            icon={<img src="/icons/edit-bold.svg" alt="Edit" className="w-4 h-4" />}
-                            onClick={() => setIsEditingProfile(!isEditingProfile)}
-                          >
-                            Edit Profile
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* Delivery Address Section */}
-                      <div className="shadow-2xl rounded-lg overflow-hidden">
-                        <div className="relative">
-                          <h2 className="text-base sm:text-lg font-semibold text-background bg-primary px-4 sm:px-6 py-3">
-                            DELIVERY ADDRESS
-                          </h2>
-                          <button 
-                            onClick={() => setIsEditingAddress(!isEditingAddress)}
-                            className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-secondary hover:bg-secondary-light text-background p-1.5 rounded-full transition-colors duration-200"
-                          >
-                            <img src="/icons/edit-bold.svg" alt="Edit" className="w-3 h-3 sm:w-4 sm:h-4" />
-                          </button>
-                        </div>
-                        
-                        <div className="p-4 sm:p-6 space-y-4">
-                          <TextInput
-                            label="Address Line 1"
-                            name="addressLine1"
-                            value={addressData.addressLine1}
-                            onChange={handleAddressChange}
-                            disabled={true}
-                          />
-                          <SelectInput
-                            label="Country"
-                            name="country"
-                            value={addressData.country}
-                            onChange={handleAddressChange}
-                            options={countryOptions}
-                            disabled={true}
-                          />
-                          <SelectInput
-                            label="State"
-                            name="state"
-                            value={addressData.state}
-                            onChange={handleAddressChange}
-                            options={stateOptions}
-                            disabled={true}
-                          />
-                          <SelectInput
-                            label="L.G.A"
-                            name="lga"
-                            value={addressData.lga}
-                            onChange={handleAddressChange}
-                            options={lgaOptions}
-                            disabled={true}
-                          />
-                        </div>
-                        
-                        <div className="px-4 sm:px-6 pb-4 sm:pb-6">
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            shape="rounded"
-                            fullWidth={true}
-                            className="sm:w-auto"
-                            icon={<img src="/icons/edit-bold.svg" alt="Edit" className="w-4 h-4" />}
-                            onClick={() => setIsEditingAddress(!isEditingAddress)}
-                          >
-                            Edit Address
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Newsletter Preferences Section - Full Width */}
-                    <div className="shadow-lg rounded-lg overflow-hidden">
-                      <div className="relative">
-                        <h2 className="text-base sm:text-lg font-semibold text-background bg-primary px-4 sm:px-6 py-3">
-                          NEWSLETTER PREFERENCES
-                        </h2>
-                        <button 
-                          onClick={() => setIsEditingNewsletter(!isEditingNewsletter)}
-                          className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-secondary hover:bg-secondary-light text-background p-1.5 rounded-full transition-colors duration-200"
-                        >
-                          <img src="/icons/edit-bold.svg" alt="Edit" className="w-3 h-3 sm:w-4 sm:h-4" />
-                        </button>
-                      </div>
-                      
-                      <div className="p-4 sm:p-6">
-                        <p className="text-text-primary text-sm leading-relaxed mb-4 sm:mb-6">
-                          Manage your Market CloseBy notifications to stay informed about the latest deals, updates, and nearby offers.
-                        </p>
-                        
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          shape="rounded"
-                          fullWidth={true}
-                          className="sm:w-auto"
-                          icon={<img src="/icons/edit-bold.svg" alt="Edit" className="w-4 h-4" />}
-                          onClick={() => setIsEditingNewsletter(!isEditingNewsletter)}
-                        >
-                          {isEditingNewsletter ? 'Save' : 'Edit Newsletter Preferences'}
-                        </Button>
-                      </div>
-                    </div>
-                  </>
+                  <p className="text-text-grey">Add your first address</p>
                 )}
-              </div>
+              </SectionCard>
+
+              <SectionCard title="Default Payment">
+                {defaultPayment ? (
+                  <div className="text-sm space-y-1">
+                    <p className="font-medium text-text-primary">{defaultPayment.brand} •••• {defaultPayment.last4}</p>
+                    <p className="text-text-grey text-xs">Cardholder: {defaultPayment.holder}</p>
+                  </div>
+                ) : (
+                  <p className="text-text-grey">Add a payment method</p>
+                )}
+              </SectionCard>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* Addresses */}
+        {activeTab === "addresses" && (
+          <div className="animate-fade-in-up">
+            <SectionCard title="Address Book" right={<Button variant="secondary" size="sm">Add Address</Button>}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {profile.addressBook.map((a) => (
+                  <div key={a.id} className={`rounded-2xl p-4 border ${a.isDefault ? 'border-secondary' : 'border-gray-200'}`}>
+                    <p className="font-semibold text-text-primary">{a.label}</p>
+                    <p className="text-sm text-text-grey">{a.fullName}</p>
+                    <p className="text-sm text-text-grey">{a.address}</p>
+                    <p className="text-sm text-text-grey">{a.city}, {a.state} {a.postalCode}</p>
+                    <div className="flex gap-2 mt-3">
+                      {!a.isDefault && <Button variant="outline" size="sm">Make Default</Button>}
+                      <Button variant="textDanger" size="sm">Remove</Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </SectionCard>
+          </div>
+        )}
+
+        {/* Payments */}
+        {activeTab === "payments" && (
+          <div className="animate-fade-in-up">
+            <SectionCard title="Payment Methods" right={<Button variant="secondary" size="sm">Add Card</Button>}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {profile.paymentMethods.map((p) => (
+                  <div key={p.id} className={`rounded-2xl p-4 border ${p.isDefault ? 'border-secondary' : 'border-gray-200'}`}>
+                    <InfoRow label="Type" value={p.type} />
+                    <InfoRow label="Brand" value={p.brand} />
+                    <InfoRow label="Last 4" value={p.last4} />
+                    <InfoRow label="Cardholder" value={p.holder} />
+                    <div className="flex gap-2 mt-3">
+                      {!p.isDefault && <Button variant="outline" size="sm">Make Default</Button>}
+                      <Button variant="textDanger" size="sm">Remove</Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </SectionCard>
+          </div>
+        )}
+
+        {/* Orders tab shortcut */}
+        {activeTab === "orders" && (
+          <div className="animate-fade-in-up">
+            <SectionCard title="Orders">
+              <div className="text-center py-12">
+                <p className="text-text-grey mb-4">Manage your orders on the Orders page.</p>
+                <Button variant="secondary" onClick={() => navigate('/orders')}>Go to Orders</Button>
+              </div>
+            </SectionCard>
+          </div>
+        )}
+
+        {/* Wishlist tab shortcut */}
+        {activeTab === "wishlist" && (
+          <div className="animate-fade-in-up">
+            <SectionCard title="Wishlist">
+              <div className="text-center py-12">
+                <p className="text-text-grey mb-4">View and manage wishlist items.</p>
+                <Button variant="secondary" onClick={() => navigate('/wishlist')}>Open Wishlist</Button>
+              </div>
+            </SectionCard>
+          </div>
+        )}
+
+        {/* Settings placeholder */}
+        {activeTab === "settings" && (
+          <div className="animate-fade-in-up">
+            <SectionCard title="Account Settings">
+              <p className="text-text-grey">Profile editing, password changes, and notifications will be added here.</p>
+            </SectionCard>
+          </div>
+        )}
       </div>
-      {/* Market Closeby Description */}
-      <MarketClosebyDescription />
-    </div>
+    </section>
   );
 };
 
