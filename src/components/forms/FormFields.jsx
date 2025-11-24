@@ -53,7 +53,7 @@ export const SelectInput = ({
   label,
   value,
   onChange,
-  options,
+  options = [],
   required = false,
   disabled = false,
   className = '',
@@ -82,22 +82,28 @@ export const SelectInput = ({
             backgroundImage: 'none'
           }}
         >
-          {options.map((option) => (
-            <option 
-              key={option} 
-              value={option}
-              className="py-3 px-4 text-gray-700 hover:bg-gray-50 focus:bg-gray-50 bg-white"
-              style={{
-                padding: '12px 16px',
-                fontSize: '14px',
-                lineHeight: '1.5',
-                color: '#374151',
-                backgroundColor: '#ffffff'
-              }}
-            >
-              {option}
-            </option>
-          ))}
+          {options.map((option) => {
+            const optionValue = typeof option === 'object' ? option.value : option;
+            const optionLabel = typeof option === 'object' ? option.label : option;
+            const optionDisabled = typeof option === 'object' ? option.disabled : false;
+            return (
+              <option 
+                key={optionValue ?? optionLabel}
+                value={optionValue}
+                disabled={optionDisabled}
+                className="py-3 px-4 text-gray-700 hover:bg-gray-50 focus:bg-gray-50 bg-white"
+                style={{
+                  padding: '12px 16px',
+                  fontSize: '14px',
+                  lineHeight: '1.5',
+                  color: '#374151',
+                  backgroundColor: '#ffffff'
+                }}
+              >
+                {optionLabel}
+              </option>
+            );
+          })}
         </select>
         <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
           <img src="/icons/arrow-down.svg" alt="Dropdown" className="w-4 h-4" />

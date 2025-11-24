@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
 import { useOrdersStore } from "../store/ordersStore";
+import { useUserStore } from "../store/userStore";
 import { useToast } from "../context/ToastContext";
 import { Button } from "../components/common/Button";
 import PageHeader from "../components/common/PageHeader";
+import { TextInput, SelectInput } from "../components/forms/FormFields";
 
 const formatCurrency = (value) =>
   `₦${Math.max(value, 0)
@@ -20,6 +22,60 @@ const CheckoutPage = () => {
   const clearCart = useCartStore((state) => state.clearCart);
   const createOrder = useOrdersStore((state) => state.createOrder);
   const { showToast } = useToast();
+  
+  // User store for addresses
+  const addresses = useUserStore((state) => state.addresses);
+  const profile = useUserStore((state) => state.profile);
+  const addAddressToStore = useUserStore((state) => state.addAddress);
+  const updateAddressInStore = useUserStore((state) => state.updateAddress);
+  const setDefaultAddress = useUserStore((state) => state.setDefaultAddress);
+  const defaultAddress = addresses.find((a) => a.isDefault) || addresses[0];
+
+  // State declarations - must be before useEffect hooks
+  const [showAddressForm, setShowAddressForm] = useState(addresses.length === 0);
+  const [selectedAddressId, setSelectedAddressId] = useState(defaultAddress?.id || '');
+  const [selectedShippingMethod, setSelectedShippingMethod] = useState('standard');
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [editingAddressId, setEditingAddressId] = useState(null);
+  const [addressErrors, setAddressErrors] = useState({});
+  const [errors, setErrors] = useState({});
+
+  const buildAddressFormState = useCallback(
+    (data = {}) => ({
+      label: data.label || '',
+      recipient: data.recipient || profile.fullName || '',
+      email: data.email || profile.email || '',
+      phone: data.phone || profile.phone || '',
+      street: data.street || '',
+      city: data.city || '',
+      state: data.state || '',
+      postalCode: data.postalCode || '',
+      isDefault: data.isDefault ?? (addresses.length === 0),
+    }),
+    [addresses.length, profile]
+  );
+
+  const [addressForm, setAddressForm] = useState(() => buildAddressFormState());
+
+  const [formData, setFormData] = useState({
+    // Shipping Address
+    fullName: defaultAddress?.recipient || profile.fullName || "",
+    phone: defaultAddress?.phone || profile.phone || "",
+    email: defaultAddress?.email || profile.email || "",
+    address: defaultAddress?.street || "",
+    city: defaultAddress?.city || "",
+    state: defaultAddress?.state || "",
+    postalCode: defaultAddress?.postalCode || "",
+    // Payment Method
+    paymentMethod: "palmpay-wallet",
+    cardNumber: "",
+    cardName: "",
+    expiryDate: "",
+    cvv: "",
+  });
+
+  // Computed values
+  const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || defaultAddress;
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -27,6 +83,34 @@ const CheckoutPage = () => {
       navigate('/cart');
     }
   }, [cartItems.length, navigate]);
+
+  useEffect(() => {
+    if (!addresses.length) {
+      setSelectedAddressId('');
+      setShowAddressForm(true);
+      setEditingAddressId(null);
+      setAddressForm(buildAddressFormState({ isDefault: true }));
+      return;
+    }
+    if (!selectedAddressId) {
+      setSelectedAddressId(defaultAddress?.id || addresses[0]?.id || '');
+    }
+  }, [addresses, buildAddressFormState, defaultAddress, selectedAddressId]);
+
+  useEffect(() => {
+    if (selectedAddress) {
+      setFormData((prev) => ({
+        ...prev,
+        fullName: selectedAddress.recipient || prev.fullName,
+        email: selectedAddress.email || prev.email || profile.email,
+        phone: selectedAddress.phone || prev.phone,
+        address: selectedAddress.street || prev.address,
+        city: selectedAddress.city || prev.city,
+        state: selectedAddress.state || prev.state,
+        postalCode: selectedAddress.postalCode || prev.postalCode,
+      }));
+    }
+  }, [profile, selectedAddress]);
 
   // Don't render checkout if cart is empty
   if (cartItems.length === 0) {
@@ -53,26 +137,6 @@ const CheckoutPage = () => {
     }
   };
 
-  const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({
-    // Shipping Address
-    fullName: "",
-    phone: "",
-    email: "",
-    address: "",
-    city: "",
-    state: "",
-    postalCode: "",
-    // Payment Method
-    paymentMethod: "card",
-    cardNumber: "",
-    cardName: "",
-    expiryDate: "",
-    cvv: "",
-  });
-
-  const [errors, setErrors] = useState({});
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -82,104 +146,180 @@ const CheckoutPage = () => {
     }
   };
 
-  const validateStep = (step) => {
+  const closeAddressForm = () => {
+    setShowAddressForm(false);
+    setEditingAddressId(null);
+    setAddressErrors({});
+    setAddressForm(buildAddressFormState());
+  };
+
+  const openAddAddress = () => {
+    setEditingAddressId(null);
+    setAddressErrors({});
+    setSelectedAddressId('');
+    setAddressForm(buildAddressFormState({ isDefault: addresses.length === 0 }));
+    setShowAddressForm(true);
+  };
+
+  const openEditAddress = (address) => {
+    if (!address) return;
+    setEditingAddressId(address.id);
+    setAddressErrors({});
+    setAddressForm(buildAddressFormState(address));
+    setShowAddressForm(true);
+  };
+
+  const handleAddressFormChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setAddressForm((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+    if (addressErrors[name]) {
+      setAddressErrors((prev) => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const validateAddressForm = () => {
+    const requiredFields = ['label', 'recipient', 'email', 'phone', 'street', 'city', 'state', 'postalCode'];
+    const newErrors = {};
+
+    requiredFields.forEach((field) => {
+      if (!String(addressForm[field] || '').trim()) {
+        newErrors[field] = 'Required';
+      }
+    });
+    if (addressForm.email && !/\S+@\S+\.\S+/.test(addressForm.email)) {
+      newErrors.email = 'Enter a valid email';
+    }
+
+    setAddressErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleAddressFormSubmit = (e) => {
+    e.preventDefault();
+    if (!validateAddressForm()) return;
+
+    const payload = {
+      label: addressForm.label.trim(),
+      recipient: addressForm.recipient.trim(),
+      email: addressForm.email.trim(),
+      phone: addressForm.phone.trim(),
+      street: addressForm.street.trim(),
+      city: addressForm.city.trim(),
+      state: addressForm.state.trim(),
+      postalCode: addressForm.postalCode.trim(),
+      isDefault: addressForm.isDefault,
+    };
+
+    if (editingAddressId) {
+      const updated = updateAddressInStore(editingAddressId, payload);
+      setSelectedAddressId(updated?.id || editingAddressId);
+      showToast("Address updated successfully", "success");
+    } else {
+      const created = addAddressToStore(payload);
+      setSelectedAddressId(created?.id || '');
+      showToast("Address added successfully", "success");
+    }
+
+    closeAddressForm();
+  };
+
+  const handleMakeDefault = (addressId) => {
+    if (!addressId) return;
+    setDefaultAddress(addressId);
+    setSelectedAddressId(addressId);
+    showToast("Default address updated", "success");
+  };
+
+  const handleToggleAddressForm = () => {
+    if (showAddressForm) {
+      closeAddressForm();
+    } else {
+      openAddAddress();
+    }
+  };
+
+  const handleAddressSelect = (addressId) => {
+    if (!addressId) {
+      openAddAddress();
+      return;
+    }
+    const address = addresses.find((a) => a.id === addressId);
+    if (address) {
+      setSelectedAddressId(addressId);
+      setEditingAddressId(null);
+      setShowAddressForm(false);
+      setAddressErrors({});
+    }
+  };
+
+  const shippingMethods = [
+    { id: 'standard', name: 'Standard Shipping', duration: '3-7 working days', price: 1800 },
+    { id: 'express', name: 'Express Shipping', duration: '1-3 working days', price: 3500 },
+  ];
+  const addressOptions = addresses.length
+    ? [
+        { value: '', label: 'Add a new address' },
+        ...addresses.map((a) => ({
+          value: a.id,
+          label: `${a.label || 'Address'} • ${a.city}, ${a.state}`,
+        })),
+      ]
+    : [{ value: '', label: 'Add a new address' }];
+
+  const validateForm = () => {
     const newErrors = {};
     
-    if (step === 1) {
-      if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
-      if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
-      if (!formData.email.trim()) newErrors.email = "Email is required";
-      else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid";
-      if (!formData.address.trim()) newErrors.address = "Address is required";
-      if (!formData.city.trim()) newErrors.city = "City is required";
-      if (!formData.state.trim()) newErrors.state = "State is required";
-      if (!formData.postalCode.trim()) newErrors.postalCode = "Postal code is required";
-    }
+    if (!selectedAddressId) newErrors.addressSelect = "Select or add a shipping address";
     
-    if (step === 2) {
-      // Only validate card details if payment method is card
-      if (formData.paymentMethod === "card") {
-        const cardNumberDigits = formData.cardNumber.replace(/\s/g, "");
-        if (!cardNumberDigits) {
-          newErrors.cardNumber = "Card number is required";
-        } else if (!/^\d{16}$/.test(cardNumberDigits)) {
-          newErrors.cardNumber = "Card number must be 16 digits";
-        }
-        if (!formData.cardName.trim()) {
-          newErrors.cardName = "Cardholder name is required";
-        }
-        if (!formData.expiryDate.trim()) {
-          newErrors.expiryDate = "Expiry date is required";
-        } else if (!/^\d{2}\/\d{2}$/.test(formData.expiryDate)) {
-          newErrors.expiryDate = "Please use MM/YY format";
-        }
-        if (!formData.cvv.trim()) {
-          newErrors.cvv = "CVV is required";
-        } else if (!/^\d{3,4}$/.test(formData.cvv)) {
-          newErrors.cvv = "CVV must be 3-4 digits";
-        }
-      }
-      // Bank transfer and cash on delivery don't need validation
-    }
+    if (!agreedToTerms) newErrors.terms = "You must agree to the terms";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
-    if (validateStep(currentStep)) {
-      setCurrentStep((prev) => Math.min(prev + 1, 3));
-    }
-  };
-
-  const handleBack = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 1));
-  };
-
   const handleSubmitOrder = () => {
-    // Validate all steps before submitting
-    const step1Valid = validateStep(1);
-    const step2Valid = validateStep(2);
-    
-    if (step1Valid && step2Valid) {
-      const orderData = {
-        items: cartItems,
-        shippingAddress: {
-          fullName: formData.fullName,
-          phone: formData.phone,
-          email: formData.email,
-          address: formData.address,
-          city: formData.city,
-          state: formData.state,
-          postalCode: formData.postalCode,
-        },
-        paymentMethod: formData.paymentMethod,
-        subtotal,
-        deliveryFee,
-        total: grandTotal,
-      };
-
-      const order = createOrder(orderData);
-      clearCart();
-      showToast("Order placed successfully!", "success");
-      navigate(`/orders/${order.id}`);
-    } else {
-      // Navigate to the first invalid step
-      if (!step1Valid) {
-        setCurrentStep(1);
-        showToast("Please complete all shipping information", "error");
-      } else if (!step2Valid) {
-        setCurrentStep(2);
-        showToast("Please complete all payment information", "error");
-      }
+    if (!validateForm()) {
+      showToast("Please complete all required fields", "error");
+      return;
     }
+
+    const selectedShipping = shippingMethods.find((m) => m.id === selectedShippingMethod);
+    const finalDeliveryFee = selectedShipping?.price || deliveryFee;
+    const finalTotal = subtotal + finalDeliveryFee;
+
+    const orderData = {
+      items: cartItems,
+      shippingAddress: {
+        fullName: formData.fullName,
+        phone: formData.phone,
+        email: formData.email,
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        postalCode: formData.postalCode,
+      },
+      paymentMethod: formData.paymentMethod,
+      shippingMethod: selectedShippingMethod,
+      subtotal,
+      deliveryFee: finalDeliveryFee,
+      total: finalTotal,
+    };
+
+    const order = createOrder(orderData);
+    clearCart();
+    showToast("Order placed successfully!", "success");
+    navigate(`/orders/${order.id}`);
   };
 
-  const steps = [
-    { number: 1, title: "Shipping", description: "Delivery Information" },
-    { number: 2, title: "Payment", description: "Payment Method" },
-    { number: 3, title: "Review", description: "Order Summary" },
-  ];
+  const selectedShipping = shippingMethods.find((m) => m.id === selectedShippingMethod);
+  const finalDeliveryFee = selectedShipping?.price || deliveryFee;
+  const discount = 1354; // Example discount
+  const rounding = 46; // Example rounding
+  const finalTotal = subtotal + finalDeliveryFee - discount - rounding;
+  const saved = 1400; // Example saved amount
 
   const breadcrumbs = [
     { label: "Market CloseBy", link: "/" },
@@ -192,475 +332,542 @@ const CheckoutPage = () => {
       <PageHeader
         breadcrumbs={breadcrumbs}
         title="Checkout"
-        subtitle="Complete your order in a few simple steps"
+        subtitle="Complete your order"
         containerStyle="shadow"
         titleSize="medium"
       />
 
-      <div className="max-w-6xl mx-auto px-4 md:px-8 lg:px-12 py-8">
-        {/* Progress Steps */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            {steps.map((step, index) => (
-              <React.Fragment key={step.number}>
-                <div className="flex flex-col items-center flex-1">
-                  <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold text-lg transition-all duration-300 ${
-                      currentStep >= step.number
-                        ? "bg-secondary text-white shadow-lg"
-                        : "bg-gray-200 text-gray-500"
+      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8">
+          {/* Left Column */}
+          <div className="space-y-6">
+            {/* Shipping Address Section */}
+            <div className="bg-white rounded-3xl p-6 md:p-8 shadow-lg animate-fade-in-up">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-text-primary">Shipping Address</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  shape="rounded"
+                  onClick={handleToggleAddressForm}
+                >
+                  {showAddressForm ? "Close Form" : "Add Shipping Address"}
+                </Button>
+              </div>
+
+              {addresses.length > 0 && (
+                <div className="mb-6">
+                  <SelectInput
+                    id="address-select"
+                    name="addressSelect"
+                    label="Select saved address"
+                    value={selectedAddressId}
+                    onChange={(e) => handleAddressSelect(e.target.value)}
+                    options={addressOptions}
+                  />
+                  {errors.addressSelect && (
+                    <p className="text-danger text-xs mt-1">{errors.addressSelect}</p>
+                  )}
+                </div>
+              )}
+
+              {!showAddressForm && selectedAddress && (
+                <div className="relative border-2 border-secondary rounded-2xl p-5">
+                  {selectedAddress.isDefault && (
+                    <span className="absolute top-3 right-3 bg-secondary text-white text-xs font-semibold px-2 py-1 rounded">
+                      Default
+                    </span>
+                  )}
+                  <div className="space-y-2">
+                    <p className="text-sm text-text-grey">
+                      <span className="font-medium">Contact:</span> {selectedAddress.email || profile.email}
+                    </p>
+                    <p className="text-sm text-text-grey">
+                      <span className="font-medium">Name:</span> {selectedAddress.recipient}
+                    </p>
+                    <p className="text-sm text-text-grey">
+                      <span className="font-medium">Phone:</span> {selectedAddress.phone}
+                    </p>
+                    <p className="text-sm text-text-grey">
+                      <span className="font-medium">Ship to:</span> {selectedAddress.street}, {selectedAddress.city}, {selectedAddress.state} {selectedAddress.postalCode}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-3 mt-4">
+                    <Button variant="outline" size="sm" onClick={() => openEditAddress(selectedAddress)}>
+                      Edit address
+                    </Button>
+                    {!selectedAddress.isDefault && (
+                      <Button variant="textPrimary" size="sm" onClick={() => handleMakeDefault(selectedAddress.id)}>
+                        Make default
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {showAddressForm && (
+                <form className="space-y-4" onSubmit={handleAddressFormSubmit}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="md:col-span-2">
+                      <TextInput
+                        id="label"
+                        name="label"
+                        label="Address Label *"
+                        value={addressForm.label}
+                        onChange={handleAddressFormChange}
+                        placeholder="Home"
+                        required
+                        inputClassName={addressErrors.label ? "border-danger" : ""}
+                      />
+                      {addressErrors.label && (
+                        <p className="text-danger text-xs mt-1">{addressErrors.label}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <TextInput
+                        id="recipient"
+                        name="recipient"
+                        label="Full Name *"
+                        value={addressForm.recipient}
+                        onChange={handleAddressFormChange}
+                        placeholder="John Doe"
+                        required
+                        inputClassName={addressErrors.recipient ? "border-danger" : ""}
+                      />
+                      {addressErrors.recipient && (
+                        <p className="text-danger text-xs mt-1">{addressErrors.recipient}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <TextInput
+                        id="email"
+                        name="email"
+                        label="Email Address *"
+                        value={addressForm.email}
+                        onChange={handleAddressFormChange}
+                        placeholder="john@example.com"
+                        type="email"
+                        required
+                        inputClassName={addressErrors.email ? "border-danger" : ""}
+                      />
+                      {addressErrors.email && (
+                        <p className="text-danger text-xs mt-1">{addressErrors.email}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <TextInput
+                        id="phone"
+                        name="phone"
+                        label="Phone Number *"
+                        value={addressForm.phone}
+                        onChange={handleAddressFormChange}
+                        placeholder="08012345678"
+                        type="tel"
+                        required
+                        inputClassName={addressErrors.phone ? "border-danger" : ""}
+                      />
+                      {addressErrors.phone && (
+                        <p className="text-danger text-xs mt-1">{addressErrors.phone}</p>
+                      )}
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <TextInput
+                        id="street"
+                        name="street"
+                        label="Street Address *"
+                        value={addressForm.street}
+                        onChange={handleAddressFormChange}
+                        placeholder="123 Main Street"
+                        required
+                        inputClassName={addressErrors.street ? "border-danger" : ""}
+                      />
+                      {addressErrors.street && (
+                        <p className="text-danger text-xs mt-1">{addressErrors.street}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <TextInput
+                        id="city"
+                        name="city"
+                        label="City *"
+                        value={addressForm.city}
+                        onChange={handleAddressFormChange}
+                        placeholder="Lagos"
+                        required
+                        inputClassName={addressErrors.city ? "border-danger" : ""}
+                      />
+                      {addressErrors.city && (
+                        <p className="text-danger text-xs mt-1">{addressErrors.city}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <TextInput
+                        id="state"
+                        name="state"
+                        label="State *"
+                        value={addressForm.state}
+                        onChange={handleAddressFormChange}
+                        placeholder="Lagos State"
+                        required
+                        inputClassName={addressErrors.state ? "border-danger" : ""}
+                      />
+                      {addressErrors.state && (
+                        <p className="text-danger text-xs mt-1">{addressErrors.state}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <TextInput
+                        id="postalCode"
+                        name="postalCode"
+                        label="Postal Code *"
+                        value={addressForm.postalCode}
+                        onChange={handleAddressFormChange}
+                        placeholder="100001"
+                        required
+                        inputClassName={addressErrors.postalCode ? "border-danger" : ""}
+                      />
+                      {addressErrors.postalCode && (
+                        <p className="text-danger text-xs mt-1">{addressErrors.postalCode}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <label className="flex items-center gap-2 text-sm text-text-primary">
+                    <input
+                      type="checkbox"
+                      name="isDefault"
+                      checked={addressForm.isDefault}
+                      onChange={handleAddressFormChange}
+                      className="w-4 h-4 text-success focus:ring-success border-gray-300 rounded"
+                    />
+                    Set as default shipping address
+                  </label>
+
+                  <div className="flex flex-wrap gap-3">
+                    <Button type="submit" variant="secondary" size="md" shape="rounded">
+                      {editingAddressId ? "Update Address" : "Save Address"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="textPrimary"
+                      size="md"
+                      shape="rounded"
+                      onClick={closeAddressForm}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              )}
+            </div>
+
+            {/* Shipping Method Section */}
+            <div className="bg-white rounded-3xl p-6 md:p-8 shadow-lg animate-fade-in-up">
+              <h2 className="text-xl font-semibold text-text-primary mb-6">Shipping Method</h2>
+              <div className="space-y-4">
+                {shippingMethods.map((method) => (
+                  <label
+                    key={method.id}
+                    className={`flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer transition ${
+                      selectedShippingMethod === method.id
+                        ? "border-secondary bg-secondary/5"
+                        : "border-gray-200 hover:border-primary/30"
                     }`}
                   >
-                    {currentStep > step.number ? (
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    ) : (
-                      step.number
-                    )}
-                  </div>
-                  <div className="mt-2 text-center">
-                    <p
-                      className={`text-sm font-medium ${
-                        currentStep >= step.number ? "text-primary" : "text-gray-500"
-                      }`}
-                    >
-                      {step.title}
-                    </p>
-                    <p className="text-xs text-text-grey">{step.description}</p>
-                  </div>
-                </div>
-                {index < steps.length - 1 && (
-                  <div
-                    className={`flex-1 h-1 mx-4 transition-all duration-300 ${
-                      currentStep > step.number ? "bg-secondary" : "bg-gray-200"
-                    }`}
-                  />
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8">
-          {/* Main Content */}
-          <div className="space-y-6">
-            {/* Step 1: Shipping Address */}
-            {currentStep === 1 && (
-              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-lg animate-fade-in-up">
-                <h2 className="text-2xl font-semibold text-primary mb-6">Shipping Address</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-text-primary mb-2">
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-3 rounded-lg border ${
-                        errors.fullName ? "border-danger" : "border-gray-300"
-                      } focus:outline-none focus:ring-2 focus:ring-primary`}
-                      placeholder="John Doe"
-                    />
-                    {errors.fullName && (
-                      <p className="text-danger text-xs mt-1">{errors.fullName}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-text-primary mb-2">
-                      Phone Number *
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-3 rounded-lg border ${
-                        errors.phone ? "border-danger" : "border-gray-300"
-                      } focus:outline-none focus:ring-2 focus:ring-primary`}
-                      placeholder="08012345678"
-                    />
-                    {errors.phone && (
-                      <p className="text-danger text-xs mt-1">{errors.phone}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-text-primary mb-2">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-3 rounded-lg border ${
-                        errors.email ? "border-danger" : "border-gray-300"
-                      } focus:outline-none focus:ring-2 focus:ring-primary`}
-                      placeholder="john@example.com"
-                    />
-                    {errors.email && (
-                      <p className="text-danger text-xs mt-1">{errors.email}</p>
-                    )}
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-text-primary mb-2">
-                      Street Address *
-                    </label>
-                    <input
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-3 rounded-lg border ${
-                        errors.address ? "border-danger" : "border-gray-300"
-                      } focus:outline-none focus:ring-2 focus:ring-primary`}
-                      placeholder="123 Main Street"
-                    />
-                    {errors.address && (
-                      <p className="text-danger text-xs mt-1">{errors.address}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-text-primary mb-2">
-                      City *
-                    </label>
-                    <input
-                      type="text"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-3 rounded-lg border ${
-                        errors.city ? "border-danger" : "border-gray-300"
-                      } focus:outline-none focus:ring-2 focus:ring-primary`}
-                      placeholder="Lagos"
-                    />
-                    {errors.city && (
-                      <p className="text-danger text-xs mt-1">{errors.city}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-text-primary mb-2">
-                      State *
-                    </label>
-                    <input
-                      type="text"
-                      name="state"
-                      value={formData.state}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-3 rounded-lg border ${
-                        errors.state ? "border-danger" : "border-gray-300"
-                      } focus:outline-none focus:ring-2 focus:ring-primary`}
-                      placeholder="Lagos State"
-                    />
-                    {errors.state && (
-                      <p className="text-danger text-xs mt-1">{errors.state}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-text-primary mb-2">
-                      Postal Code *
-                    </label>
-                    <input
-                      type="text"
-                      name="postalCode"
-                      value={formData.postalCode}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-3 rounded-lg border ${
-                        errors.postalCode ? "border-danger" : "border-gray-300"
-                      } focus:outline-none focus:ring-2 focus:ring-primary`}
-                      placeholder="100001"
-                    />
-                    {errors.postalCode && (
-                      <p className="text-danger text-xs mt-1">{errors.postalCode}</p>
-                    )}
-                  </div>
-                </div>
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="radio"
+                        name="shippingMethod"
+                        value={method.id}
+                        checked={selectedShippingMethod === method.id}
+                        onChange={(e) => setSelectedShippingMethod(e.target.value)}
+                        className="w-5 h-5 text-success focus:ring-success"
+                      />
+                      <div>
+                        <p className="font-semibold text-text-primary">{method.name}</p>
+                        <p className="text-sm text-text-grey">{method.duration}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="font-semibold text-primary">{formatCurrency(method.price)}</span>
+                      {selectedShippingMethod === method.id && (
+                        <svg className="w-6 h-6 text-success" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                  </label>
+                ))}
               </div>
-            )}
+            </div>
 
-            {/* Step 2: Payment Method */}
-            {currentStep === 2 && (
-              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-lg animate-fade-in-up">
-                <h2 className="text-2xl font-semibold text-primary mb-6">Payment Method</h2>
-                
-                <div className="space-y-4 mb-6">
-                  <label className="flex items-center p-4 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition">
+            {/* Payment Method Section */}
+            <div className="bg-white rounded-3xl p-6 md:p-8 shadow-lg animate-fade-in-up">
+              <h2 className="text-xl font-semibold text-text-primary mb-6">Payment Method</h2>
+              <div className="space-y-4">
+                {/* Palmpay Bank Transfer */}
+                <label
+                  className={`flex items-center justify-between p-5 border-2 rounded-2xl cursor-pointer transition ${
+                    formData.paymentMethod === "palmpay-bank"
+                      ? "border-success bg-success/5"
+                      : "border-gray-200 hover:border-primary/30"
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
                     <input
                       type="radio"
                       name="paymentMethod"
-                      value="card"
-                      checked={formData.paymentMethod === "card"}
+                      value="palmpay-bank"
+                      checked={formData.paymentMethod === "palmpay-bank"}
                       onChange={handleInputChange}
-                      className="w-5 h-5 text-primary focus:ring-primary"
+                      className="w-5 h-5 text-success focus:ring-success"
                     />
-                    <span className="ml-3 font-medium text-text-primary">Credit/Debit Card</span>
-                  </label>
+                    <div className="flex items-center gap-3">
+                      <img src="/icons/palmpay-logo.svg" alt="Palmpay" className="w-10 h-10" />
+                      <div>
+                        <p className="font-semibold text-text-primary">Palmpay Bank Transfer</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs bg-secondary/20 text-secondary px-2 py-0.5 rounded">Extra 2% OFF</span>
+                          <span className="text-xs text-success">100% Delivery Guarantee</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {formData.paymentMethod === "palmpay-bank" && (
+                    <svg className="w-6 h-6 text-success" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </label>
 
-                  <label className="flex items-center p-4 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                {/* Palmpay Wallet */}
+                <label
+                  className={`flex items-center justify-between p-5 border-2 rounded-2xl cursor-pointer transition ${
+                    formData.paymentMethod === "palmpay-wallet"
+                      ? "border-success bg-success/5"
+                      : "border-gray-200 hover:border-primary/30"
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
                     <input
                       type="radio"
                       name="paymentMethod"
-                      value="bank"
-                      checked={formData.paymentMethod === "bank"}
+                      value="palmpay-wallet"
+                      checked={formData.paymentMethod === "palmpay-wallet"}
                       onChange={handleInputChange}
-                      className="w-5 h-5 text-primary focus:ring-primary"
+                      className="w-5 h-5 text-success focus:ring-success"
                     />
-                    <span className="ml-3 font-medium text-text-primary">Bank Transfer</span>
-                  </label>
+                    <div className="flex items-center gap-3">
+                      <img src="/icons/palmpay-logo.svg" alt="Palmpay" className="w-10 h-10" />
+                      <div>
+                        <p className="font-semibold text-text-primary">Palmpay Wallet</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs bg-secondary/20 text-secondary px-2 py-0.5 rounded">Extra 2% OFF</span>
+                          <span className="text-xs text-success">100% Delivery Guarantee</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {formData.paymentMethod === "palmpay-wallet" && (
+                    <svg className="w-6 h-6 text-success" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </label>
 
-                  <label className="flex items-center p-4 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                <p className="text-sm text-text-grey pl-9">Instant auto-approval for Palmpay orders.</p>
+
+                {/* Cash On Delivery */}
+                <label
+                  className={`flex items-center justify-between p-5 border-2 rounded-2xl cursor-pointer transition ${
+                    formData.paymentMethod === "cash"
+                      ? "border-success bg-success/5"
+                      : "border-gray-200 hover:border-primary/30"
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
                     <input
                       type="radio"
                       name="paymentMethod"
                       value="cash"
                       checked={formData.paymentMethod === "cash"}
                       onChange={handleInputChange}
-                      className="w-5 h-5 text-primary focus:ring-primary"
+                      className="w-5 h-5 text-success focus:ring-success"
                     />
-                    <span className="ml-3 font-medium text-text-primary">Cash on Delivery</span>
-                  </label>
-                </div>
-
-                {formData.paymentMethod === "card" && (
-                  <div className="space-y-4 mt-6 pt-6 border-t">
-                    <div>
-                      <label className="block text-sm font-medium text-text-primary mb-2">
-                        Card Number *
-                      </label>
-                      <input
-                        type="text"
-                        name="cardNumber"
-                        value={formData.cardNumber}
-                        onChange={handleCardNumberChange}
-                        maxLength={19}
-                        className={`w-full px-4 py-3 rounded-lg border ${
-                          errors.cardNumber ? "border-danger" : "border-gray-300"
-                        } focus:outline-none focus:ring-2 focus:ring-primary`}
-                        placeholder="1234 5678 9012 3456"
-                      />
-                      {errors.cardNumber && (
-                        <p className="text-danger text-xs mt-1">{errors.cardNumber}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-text-primary mb-2">
-                        Cardholder Name *
-                      </label>
-                      <input
-                        type="text"
-                        name="cardName"
-                        value={formData.cardName}
-                        onChange={handleInputChange}
-                        className={`w-full px-4 py-3 rounded-lg border ${
-                          errors.cardName ? "border-danger" : "border-gray-300"
-                        } focus:outline-none focus:ring-2 focus:ring-primary`}
-                        placeholder="JOHN DOE"
-                      />
-                      {errors.cardName && (
-                        <p className="text-danger text-xs mt-1">{errors.cardName}</p>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-text-primary mb-2">
-                          Expiry Date *
-                        </label>
-                        <input
-                          type="text"
-                          name="expiryDate"
-                          value={formData.expiryDate}
-                          onChange={handleExpiryChange}
-                          maxLength={5}
-                          placeholder="MM/YY"
-                          className={`w-full px-4 py-3 rounded-lg border ${
-                            errors.expiryDate ? "border-danger" : "border-gray-300"
-                          } focus:outline-none focus:ring-2 focus:ring-primary`}
-                        />
-                        {errors.expiryDate && (
-                          <p className="text-danger text-xs mt-1">{errors.expiryDate}</p>
-                        )}
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <span className="text-primary font-bold text-sm">COD</span>
                       </div>
-
                       <div>
-                        <label className="block text-sm font-medium text-text-primary mb-2">
-                          CVV *
-                        </label>
-                        <input
-                          type="text"
-                          name="cvv"
-                          value={formData.cvv}
-                          onChange={handleInputChange}
-                          maxLength={4}
-                          className={`w-full px-4 py-3 rounded-lg border ${
-                            errors.cvv ? "border-danger" : "border-gray-300"
-                          } focus:outline-none focus:ring-2 focus:ring-primary`}
-                          placeholder="123"
-                        />
-                        {errors.cvv && (
-                          <p className="text-danger text-xs mt-1">{errors.cvv}</p>
-                        )}
+                        <p className="font-semibold text-text-primary">Cash On Delivery (COD)</p>
+                        <span className="text-xs text-success">100% Delivery Guarantee</span>
                       </div>
                     </div>
                   </div>
-                )}
+                  {formData.paymentMethod === "cash" && (
+                    <svg className="w-6 h-6 text-success" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </label>
               </div>
-            )}
+            </div>
 
-            {/* Step 3: Review Order */}
-            {currentStep === 3 && (
-              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-lg animate-fade-in-up">
-                <h2 className="text-2xl font-semibold text-primary mb-6">Review Your Order</h2>
-                
-                <div className="space-y-6">
-                  {/* Shipping Address Review */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-text-primary mb-3">Shipping Address</h3>
-                    <div className="bg-background-alt rounded-lg p-4">
-                      <p className="text-text-primary font-medium">{formData.fullName}</p>
-                      <p className="text-text-grey">{formData.address}</p>
-                      <p className="text-text-grey">
-                        {formData.city}, {formData.state} {formData.postalCode}
-                      </p>
-                      <p className="text-text-grey">Phone: {formData.phone}</p>
-                      <p className="text-text-grey">Email: {formData.email}</p>
-                    </div>
-                  </div>
+            {/* Safe Payment Section */}
+            <div className="bg-white rounded-3xl p-6 md:p-8 shadow-lg animate-fade-in-up">
+              <div className="flex items-center gap-3 mb-2">
+                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <h2 className="text-xl font-semibold text-text-primary">Safe Payment</h2>
+              </div>
+              <p className="text-sm text-text-grey">
+                At Market Closeby, every payment method is 100% secure, guaranteeing a completely safe and worry-free shopping experience.
+              </p>
+            </div>
 
-                  {/* Payment Method Review */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-text-primary mb-3">Payment Method</h3>
-                    <div className="bg-background-alt rounded-lg p-4">
-                      <p className="text-text-primary font-medium capitalize">
-                        {formData.paymentMethod === "card" ? "Credit/Debit Card" : 
-                         formData.paymentMethod === "bank" ? "Bank Transfer" : 
-                         "Cash on Delivery"}
-                      </p>
-                      {formData.paymentMethod === "card" && formData.cardNumber && (
-                        <p className="text-text-grey">
-                          **** **** **** {formData.cardNumber.replace(/\s/g, "").slice(-4)}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Order Items Review */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-text-primary mb-3">Order Items</h3>
-                    <div className="space-y-3">
-                      {cartItems.map((item) => (
-                        <div key={item.id} className="flex items-center gap-4 p-3 bg-background-alt rounded-lg">
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                            className="w-16 h-16 object-contain rounded"
-                          />
-                          <div className="flex-1">
-                            <p className="font-medium text-text-primary">{item.name}</p>
-                            <p className="text-sm text-text-grey">Qty: {item.quantity}</p>
-                          </div>
-                          <p className="font-semibold text-primary">
-                            {formatCurrency(
-                              parseFloat(String(item.price).replace(/[₦,]/g, "")) * item.quantity
-                            )}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+            {/* Points Section */}
+            <div className="bg-white rounded-3xl p-6 md:p-8 shadow-lg animate-fade-in-up">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-xl font-semibold text-text-primary">Points</h2>
+                  <svg className="w-5 h-5 text-text-grey" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                 </div>
+                <span className="text-sm text-text-grey">No available points &gt;</span>
               </div>
-            )}
+            </div>
 
-            {/* Navigation Buttons */}
-            <div className="flex justify-between gap-4">
-              {currentStep > 1 && (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  shape="rounded"
-                  onClick={handleBack}
-                  className="flex-1 md:flex-none"
-                >
-                  Back
-                </Button>
-              )}
-              <div className="flex-1" />
-              {currentStep < 3 ? (
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  shape="rounded"
-                  onClick={handleNext}
-                  className="flex-1 md:flex-none min-w-[200px]"
-                >
-                  Continue
-                </Button>
-              ) : (
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  shape="rounded"
-                  onClick={handleSubmitOrder}
-                  className="flex-1 md:flex-none min-w-[200px]"
-                >
-                  Place Order
-                </Button>
-              )}
+            {/* Discount Section */}
+            <div className="bg-white rounded-3xl p-6 md:p-8 shadow-lg animate-fade-in-up">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-xl font-semibold text-text-primary">Discount</h2>
+                  <svg className="w-5 h-5 text-text-grey" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <span className="text-sm text-text-grey">No available coupons &gt;</span>
+              </div>
             </div>
           </div>
 
-          {/* Order Summary Sidebar */}
-          <aside className="bg-white rounded-3xl p-6 shadow-lg h-fit animate-fade-in-up sticky top-32">
-            <h3 className="text-xl font-semibold text-text-primary mb-4">Order Summary</h3>
-            
-            <div className="space-y-3 mb-4">
-              {cartItems.map((item) => (
-                <div key={item.id} className="flex items-center gap-3 text-sm">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-12 h-12 object-contain rounded"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-text-primary truncate">{item.name}</p>
-                    <p className="text-text-grey">Qty: {item.quantity}</p>
+          {/* Right Column - Order Summary */}
+          <aside className="space-y-6">
+            {/* My Order Section */}
+            <div className="bg-white rounded-3xl p-6 shadow-lg animate-fade-in-up sticky top-32">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-text-primary">My Order</h3>
+                <button className="text-primary text-sm hover:text-secondary transition">Edit</button>
+              </div>
+              
+              <div className="space-y-4 mb-6">
+                {cartItems.map((item) => (
+                  <div key={item.id} className="flex items-center gap-4">
+                    <div className="w-20 h-20 bg-background-alt rounded-xl flex items-center justify-center flex-shrink-0">
+                      <img src={item.image} alt={item.name} className="w-full h-full object-contain rounded-xl" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-text-primary text-sm line-clamp-2">{item.name}</p>
+                      <p className="text-xs text-text-grey mt-1">Qty: {item.quantity} {item.color || ''}</p>
+                    </div>
+                    <p className="font-semibold text-primary">{formatCurrency(parseFloat(String(item.price).replace(/[₦,]/g, "")) * item.quantity)}</p>
                   </div>
-                  <p className="font-semibold text-primary">
-                    {formatCurrency(
-                      parseFloat(String(item.price).replace(/[₦,]/g, "")) * item.quantity
-                    )}
-                  </p>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
-            <div className="border-t border-gray-200 pt-4 space-y-2">
-              <div className="flex justify-between text-sm text-text-grey">
-                <span>Subtotal</span>
-                <span>{formatCurrency(subtotal)}</span>
+              {/* Grab & Go Deals Section */}
+              <div className="border-t pt-4 mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-text-primary">Grab & Go Deals</h3>
+                  <button className="text-primary text-sm hover:text-secondary transition flex items-center gap-1">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Change
+                  </button>
+                </div>
+                <div className="flex items-center gap-4 p-3 bg-background-alt rounded-xl">
+                  <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+                    <img src="/images/product-placeholder.svg" alt="Deal" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-text-primary text-xs line-clamp-2">oraimo SpaceBuds Neo+ ANC Spatial Audio True...</p>
+                    <p className="text-xs text-text-grey mt-1">Black</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="font-semibold text-primary text-sm">₦19,710</span>
+                      <span className="text-xs text-text-grey line-through">₦25,000</span>
+                    </div>
+                  </div>
+                  <svg className="w-5 h-5 text-success flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
               </div>
-              <div className="flex justify-between text-sm text-text-grey">
-                <span>Delivery</span>
-                <span>{formatCurrency(deliveryFee)}</span>
+
+              {/* Order Summary */}
+              <div className="border-t pt-4 space-y-3">
+                <div className="flex justify-between text-sm text-text-grey">
+                  <span>Cart Subtotal</span>
+                  <span>{formatCurrency(subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-sm text-text-grey">
+                  <span>Shipping</span>
+                  <span>{formatCurrency(finalDeliveryFee)}</span>
+                </div>
+                <div className="flex justify-between text-sm text-danger">
+                  <span>Discount</span>
+                  <span>-{formatCurrency(discount)}</span>
+                </div>
+                <div className="flex justify-between text-sm text-danger">
+                  <span>Rounding</span>
+                  <span>-{formatCurrency(rounding)}</span>
+                </div>
+                <div className="flex justify-between items-center text-xl font-bold text-text-primary pt-4 border-t">
+                  <span>Total</span>
+                  <span className="text-primary">{formatCurrency(finalTotal)}</span>
+                </div>
+                <p className="text-sm text-success font-semibold">Saved ₦{saved.toLocaleString()}</p>
               </div>
-              <div className="flex justify-between text-lg font-semibold text-text-primary mt-4 pt-4 border-t">
-                <span>Total</span>
-                <span className="text-primary">{formatCurrency(grandTotal)}</span>
-              </div>
+
+              {/* Place Order Button */}
+              <Button
+                variant="secondary"
+                size="lg"
+                shape="rounded"
+                fullWidth
+                className="mt-6 shadow-lg hover:shadow-xl transition duration-300"
+                onClick={handleSubmitOrder}
+                disabled={!agreedToTerms}
+              >
+                PLACE ORDER
+              </Button>
+
+              {/* Terms Checkbox */}
+              <label className="flex items-start gap-3 mt-4 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  className="mt-1 w-4 h-4 text-success focus:ring-success border-gray-300 rounded"
+                />
+                <span className="text-sm text-text-grey">
+                  I have read and agree to the Market Closeby{" "}
+                  <a href="/terms" className="text-primary hover:underline">Terms of use</a> and{" "}
+                  <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>.
+                </span>
+              </label>
+              {errors.terms && (
+                <p className="text-danger text-xs mt-1">{errors.terms}</p>
+              )}
             </div>
           </aside>
         </div>
@@ -670,4 +877,3 @@ const CheckoutPage = () => {
 };
 
 export default CheckoutPage;
-

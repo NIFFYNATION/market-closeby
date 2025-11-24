@@ -12,6 +12,7 @@ export const useUserStore = create((set, get) => ({
       id: 'addr-1',
       label: 'Home',
       recipient: 'John Doe',
+      email: 'john@example.com',
       phone: '08012345678',
       street: '123 Main Street',
       city: 'Lagos',
@@ -41,17 +42,56 @@ export const useUserStore = create((set, get) => ({
     })),
 
   // Addresses
-  addAddress: (address) =>
-    set((state) => ({
-      addresses: [
-        { ...address, id: `addr-${Date.now()}`, isDefault: state.addresses.length === 0 },
-        ...state.addresses,
-      ],
-    })),
-  updateAddress: (id, updates) =>
-    set((state) => ({
-      addresses: state.addresses.map((a) => (a.id === id ? { ...a, ...updates } : a)),
-    })),
+  addAddress: (address) => {
+    let createdAddress = null;
+    set((state) => {
+      const isDefault = address.isDefault ?? state.addresses.length === 0;
+      const sanitizedAddress = {
+        id: address.id || `addr-${Date.now()}`,
+        label: address.label || `Address ${state.addresses.length + 1}`,
+        recipient: address.recipient || state.profile.fullName,
+        email: address.email || state.profile.email,
+        phone: address.phone || state.profile.phone,
+        street: address.street || '',
+        city: address.city || '',
+        state: address.state || '',
+        postalCode: address.postalCode || '',
+        isDefault,
+      };
+
+      createdAddress = sanitizedAddress;
+
+      const existing = isDefault
+        ? state.addresses.map((addr) => ({ ...addr, isDefault: false }))
+        : state.addresses;
+
+      return {
+        addresses: [sanitizedAddress, ...existing],
+      };
+    });
+
+    return createdAddress;
+  },
+  updateAddress: (id, updates = {}) => {
+      let updatedAddress = null;
+    set((state) => {
+      let addresses = state.addresses.map((a) => {
+        if (a.id === id) {
+          updatedAddress = { ...a, ...updates };
+          return updatedAddress;
+        }
+        return a;
+      });
+
+      if (updates.isDefault) {
+        addresses = addresses.map((addr) => ({ ...addr, isDefault: addr.id === id }));
+      }
+
+      return { addresses };
+    });
+
+    return updatedAddress;
+  },
   removeAddress: (id) =>
     set((state) => ({
       addresses: state.addresses.filter((a) => a.id !== id),
