@@ -39,7 +39,7 @@ export const Toast = ({ message, type = 'success', isVisible, onClose, duration 
 
   return (
     <div
-      className={`fixed top-20 right-4 md:right-6 z-50 min-w-[300px] max-w-md animate-slide-in-right`}
+      className={`fixed top-25 right-4 md:right-6 z-50 min-w-[300px] max-w-md animate-slide-in-right`}
       role="alert"
     >
       <div
