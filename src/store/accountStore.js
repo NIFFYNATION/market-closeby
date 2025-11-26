@@ -28,6 +28,7 @@ export const useAccountStore = create((set, get) => ({
         brand: 'Visa',
         last4: '3456',
         holder: 'JOHN DOE',
+        exp: '07/28',
         isDefault: true,
       },
     ],
@@ -94,14 +95,42 @@ export const useAccountStore = create((set, get) => ({
 
   // Actions: Payments
   addPaymentMethod: (pm) =>
-    set((state) => ({ profile: { ...state.profile, paymentMethods: [pm, ...state.profile.paymentMethods] } })),
+    set((state) => {
+      const isDefault = pm.isDefault ?? state.profile.paymentMethods.length === 0;
+      const sanitized = {
+        id: pm.id || `pm-${Date.now()}`,
+        type: pm.type || 'card',
+        brand: pm.brand || 'Visa',
+        last4: pm.last4 || '',
+        holder: pm.holder || state.profile.name?.toUpperCase() || 'CARD HOLDER',
+        exp: pm.exp || '',
+        isDefault,
+      };
+
+      const existing = isDefault
+        ? state.profile.paymentMethods.map((method) => ({ ...method, isDefault: false }))
+        : state.profile.paymentMethods;
+
+      return {
+        profile: {
+          ...state.profile,
+          paymentMethods: [sanitized, ...existing],
+        },
+      };
+    }),
 
   removePaymentMethod: (pmId) =>
     set((state) => ({
-      profile: {
-        ...state.profile,
-        paymentMethods: state.profile.paymentMethods.filter((p) => p.id !== pmId),
-      },
+      profile: (() => {
+        const remaining = state.profile.paymentMethods.filter((p) => p.id !== pmId);
+        if (!remaining.length) {
+          return { ...state.profile, paymentMethods: [] };
+        }
+        if (!remaining.some((p) => p.isDefault)) {
+          remaining[0] = { ...remaining[0], isDefault: true };
+        }
+        return { ...state.profile, paymentMethods: remaining };
+      })(),
     })),
 
   setDefaultPaymentMethod: (pmId) =>

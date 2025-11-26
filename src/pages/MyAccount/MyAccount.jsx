@@ -4,6 +4,8 @@ import { useAccountStore } from "../../store/accountStore";
 import { useOrdersStore } from "../../store/ordersStore";
 import PageHeader from "../../components/common/PageHeader";
 import { Button } from "../../components/common/Button";
+import { TextInput, SelectInput } from "../../components/forms/FormFields";
+import { useToast } from "../../context/ToastContext";
 
 const SectionCard = ({ title, children, right }) => (
   <div className="bg-white rounded-3xl p-6 md:p-8 shadow-lg">
@@ -25,11 +27,88 @@ const InfoRow = ({ label, value }) => (
 const MyAccount = () => {
   const navigate = useNavigate();
   const profile = useAccountStore((s) => s.profile);
+  const addPaymentMethod = useAccountStore((s) => s.addPaymentMethod);
+  const removePaymentMethod = useAccountStore((s) => s.removePaymentMethod);
+  const setDefaultPaymentMethod = useAccountStore((s) => s.setDefaultPaymentMethod);
   const orders = useOrdersStore((s) => s.orders);
+  const { showToast } = useToast();
 
   const [activeTab, setActiveTab] = useState("overview");
+  const [showAddCardForm, setShowAddCardForm] = useState(false);
   const defaultAddress = useMemo(() => profile.addressBook.find((a) => a.isDefault), [profile.addressBook]);
-  const defaultPayment = useMemo(() => profile.paymentMethods.find((p) => p.isDefault), [profile.paymentMethods]);
+  const paymentMethods = profile.paymentMethods;
+  const defaultPayment = useMemo(() => paymentMethods.find((p) => p.isDefault), [paymentMethods]);
+  const [cardForm, setCardForm] = useState({
+    brand: "Visa",
+    holder: profile.name?.toUpperCase() || "",
+    cardNumber: "",
+    exp: "",
+    isDefault: paymentMethods.length === 0,
+  });
+  const [cardErrors, setCardErrors] = useState({});
+
+  const formatCardNumber = (value = "") =>
+    value.replace(/\D/g, "").slice(0, 16).match(/.{1,4}/g)?.join(" ") || value.replace(/\D/g, "").slice(0, 16);
+
+  const handleCardFormChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    const nextValue = name === "cardNumber" ? formatCardNumber(value) : value;
+    setCardForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : nextValue,
+    }));
+    if (cardErrors[name]) {
+      setCardErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const validateCardForm = () => {
+    const errors = {};
+    const digits = cardForm.cardNumber.replace(/\s/g, "");
+
+    if (digits.length < 16) errors.cardNumber = "Enter a 16-digit card number";
+    if (!cardForm.holder.trim()) errors.holder = "Cardholder name is required";
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardForm.exp)) errors.exp = "Use MM/YY format";
+
+    setCardErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmitCard = (e) => {
+    e.preventDefault();
+    if (!validateCardForm()) return;
+
+    const digitsOnly = cardForm.cardNumber.replace(/\s/g, "");
+    const last4 = digitsOnly.slice(-4);
+    addPaymentMethod({
+      brand: cardForm.brand,
+      last4,
+      holder: cardForm.holder.toUpperCase(),
+      exp: cardForm.exp,
+      type: "card",
+      isDefault: cardForm.isDefault,
+    });
+
+    showToast("Card added successfully", "success");
+    setCardForm({
+      brand: cardForm.brand,
+      holder: profile.name?.toUpperCase() || "",
+      cardNumber: "",
+      exp: "",
+      isDefault: false,
+    });
+    setShowAddCardForm(false);
+  };
+
+  const handleRemoveCard = (id) => {
+    removePaymentMethod(id);
+    showToast("Payment method removed", "info");
+  };
+
+  const handleMakeDefaultCard = (id) => {
+    setDefaultPaymentMethod(id);
+    showToast("Default payment method updated", "success");
+  };
 
   const breadcrumbs = [
     { label: "Market CloseBy", link: "/" },
@@ -185,23 +264,140 @@ const MyAccount = () => {
 
         {/* Payments */}
         {activeTab === "payments" && (
-          <div className="animate-fade-in-up">
-            <SectionCard title="Payment Methods" right={<Button variant="secondary" size="sm">Add Card</Button>}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {profile.paymentMethods.map((p) => (
-                  <div key={p.id} className={`rounded-2xl p-4 border ${p.isDefault ? 'border-secondary' : 'border-gray-200'}`}>
-                    <InfoRow label="Type" value={p.type} />
-                    <InfoRow label="Brand" value={p.brand} />
-                    <InfoRow label="Last 4" value={p.last4} />
-                    <InfoRow label="Cardholder" value={p.holder} />
-                    <div className="flex gap-2 mt-3">
-                      {!p.isDefault && <Button variant="outline" size="sm">Make Default</Button>}
-                      <Button variant="textDanger" size="sm">Remove</Button>
+          <div className="animate-fade-in-up space-y-6">
+            <SectionCard
+              title="Payment Methods"
+              right={
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setShowAddCardForm((prev) => !prev)}
+                >
+                  {showAddCardForm ? "Close form" : "Add new card"}
+                </Button>
+              }
+            >
+              {paymentMethods.length === 0 ? (
+                <p className="text-text-grey">No cards saved yet. Add your first payment method to checkout faster.</p>
+              ) : (
+                <div className="space-y-4">
+                  {paymentMethods.map((pm) => (
+                    <div
+                      key={pm.id}
+                      className={`p-4 rounded-2xl border flex flex-col md:flex-row md:items-center md:justify-between gap-4 ${
+                        pm.isDefault ? "border-secondary bg-secondary/5" : "border-gray-200"
+                      }`}
+                    >
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+                          <span className="text-primary font-semibold text-lg">{pm.brand?.[0]}</span>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold text-text-primary">{pm.brand}</p>
+                            {pm.isDefault && (
+                              <span className="text-xs bg-secondary text-white px-2 py-0.5 rounded-full">Default</span>
+                            )}
+                          </div>
+                          <p className="text-sm text-text-grey">•••• {pm.last4}</p>
+                          <p className="text-xs text-text-grey mt-1">Expires {pm.exp || "—"}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {!pm.isDefault && (
+                          <Button variant="outline" size="sm" onClick={() => handleMakeDefaultCard(pm.id)}>
+                            Make default
+                          </Button>
+                        )}
+                        <Button variant="textDanger" size="sm" onClick={() => handleRemoveCard(pm.id)}>
+                          Remove
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </SectionCard>
+
+            {showAddCardForm && (
+              <SectionCard title="Add a new card">
+                <form className="space-y-4" onSubmit={handleSubmitCard}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <SelectInput
+                      id="brand"
+                      name="brand"
+                      label="Card Network"
+                      value={cardForm.brand}
+                      onChange={handleCardFormChange}
+                      options={["Visa", "Mastercard", "Verve"]}
+                    />
+                    <TextInput
+                      id="holder"
+                      name="holder"
+                      label="Cardholder Name"
+                      value={cardForm.holder}
+                      onChange={handleCardFormChange}
+                      placeholder="JOHN DOE"
+                      inputClassName={cardErrors.holder ? "border-danger" : ""}
+                    />
+                    {cardErrors.holder && (
+                      <p className="text-danger text-xs -mt-3 md:col-span-2">{cardErrors.holder}</p>
+                    )}
+                    <TextInput
+                      id="cardNumber"
+                      name="cardNumber"
+                      label="Card Number"
+                      value={cardForm.cardNumber}
+                      onChange={handleCardFormChange}
+                      placeholder="1234 5678 9012 3456"
+                      className="md:col-span-2"
+                      inputClassName={cardErrors.cardNumber ? "border-danger" : ""}
+                    />
+                    {cardErrors.cardNumber && (
+                      <p className="text-danger text-xs -mt-3 md:col-span-2">{cardErrors.cardNumber}</p>
+                    )}
+                    <TextInput
+                      id="exp"
+                      name="exp"
+                      label="Expiry (MM/YY)"
+                      value={cardForm.exp}
+                      onChange={handleCardFormChange}
+                      placeholder="07/28"
+                      inputClassName={cardErrors.exp ? "border-danger" : ""}
+                    />
+                    {cardErrors.exp && (
+                      <p className="text-danger text-xs -mt-3 md:col-span-2">{cardErrors.exp}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      id="default-card"
+                      type="checkbox"
+                      name="isDefault"
+                      checked={cardForm.isDefault}
+                      onChange={handleCardFormChange}
+                      className="w-4 h-4 text-secondary focus:ring-secondary border-gray-300 rounded"
+                    />
+                    <label htmlFor="default-card" className="text-sm text-text-primary">
+                      Set as default payment method
+                    </label>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <Button type="submit" variant="secondary" size="md">
+                      Save card
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="textPrimary"
+                      size="md"
+                      onClick={() => setShowAddCardForm(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              </SectionCard>
+            )}
           </div>
         )}
 

@@ -68,6 +68,7 @@ const CheckoutPage = () => {
     postalCode: defaultAddress?.postalCode || "",
     // Payment Method
     paymentMethod: "palmpay-wallet",
+    cardBrand: "Visa",
     cardNumber: "",
     cardName: "",
     expiryDate: "",
@@ -123,6 +124,9 @@ const CheckoutPage = () => {
     if (value.length <= 16) {
       value = value.match(/.{1,4}/g)?.join(' ') || value;
       setFormData((prev) => ({ ...prev, cardNumber: value }));
+      if (errors.cardNumber) {
+        setErrors((prev) => ({ ...prev, cardNumber: "" }));
+      }
     }
   };
 
@@ -134,6 +138,9 @@ const CheckoutPage = () => {
         value = value.slice(0, 2) + '/' + value.slice(2);
       }
       setFormData((prev) => ({ ...prev, expiryDate: value }));
+      if (errors.expiryDate) {
+        setErrors((prev) => ({ ...prev, expiryDate: "" }));
+      }
     }
   };
 
@@ -259,6 +266,38 @@ const CheckoutPage = () => {
     { id: 'standard', name: 'Standard Shipping', duration: '3-7 working days', price: 1800 },
     { id: 'express', name: 'Express Shipping', duration: '1-3 working days', price: 3500 },
   ];
+  const paymentOptions = [
+    {
+      id: 'palmpay-bank',
+      title: 'Palmpay Bank Transfer',
+      description: 'Pay via bank transfer and get instant confirmation.',
+      badge: 'Extra 2% OFF',
+      helper: '100% Delivery Guarantee',
+      iconType: 'palmpay',
+    },
+    {
+      id: 'palmpay-wallet',
+      title: 'Palmpay Wallet',
+      description: 'Pay directly from your Palmpay wallet balance.',
+      badge: 'Extra 2% OFF',
+      helper: 'Instant auto-approval',
+      iconType: 'palmpay',
+    },
+    {
+      id: 'cash',
+      title: 'Cash On Delivery (COD)',
+      description: 'Pay with cash or transfer when the order arrives.',
+      helper: '100% Delivery Guarantee',
+      iconType: 'cod',
+    },
+    {
+      id: 'card',
+      title: 'Debit or Credit Card',
+      description: 'Secure payments with Visa, Mastercard or Verve.',
+      helper: 'SSL encrypted. No fees.',
+      iconType: 'card',
+    },
+  ];
   const addressOptions = addresses.length
     ? [
         { value: '', label: 'Add a new address' },
@@ -273,6 +312,14 @@ const CheckoutPage = () => {
     const newErrors = {};
     
     if (!selectedAddressId) newErrors.addressSelect = "Select or add a shipping address";
+    
+    if (formData.paymentMethod === 'card') {
+      const digits = formData.cardNumber.replace(/\s/g, '');
+      if (digits.length < 16) newErrors.cardNumber = "Enter a valid card number";
+      if (!formData.cardName.trim()) newErrors.cardName = "Enter the cardholder name";
+      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(formData.expiryDate)) newErrors.expiryDate = "Use MM/YY format";
+      if (!/^\d{3,4}$/.test(formData.cvv)) newErrors.cvv = "Enter a valid CVV";
+    }
     
     if (!agreedToTerms) newErrors.terms = "You must agree to the terms";
 
@@ -326,6 +373,33 @@ const CheckoutPage = () => {
     { label: "Cart", link: "/cart" },
     { label: "Checkout", active: true },
   ];
+
+  const renderPaymentIcon = (type) => {
+    switch (type) {
+      case 'palmpay':
+        return <img src="/icons/palmpay-logo.svg" alt="Palmpay" className="w-10 h-10" />;
+      case 'cod':
+        return (
+          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+            <span className="text-primary font-bold text-sm">COD</span>
+          </div>
+        );
+      case 'card':
+        return (
+          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h18M3 11h18M7 15h2m4 0h4" />
+            </svg>
+          </div>
+        );
+      default:
+        return (
+          <div className="w-10 h-10 rounded-lg bg-background-alt flex items-center justify-center text-primary font-semibold">
+            ₦
+          </div>
+        );
+    }
+  };
 
   return (
     <section className="min-h-screen pb-20">
@@ -588,7 +662,7 @@ const CheckoutPage = () => {
                         value={method.id}
                         checked={selectedShippingMethod === method.id}
                         onChange={(e) => setSelectedShippingMethod(e.target.value)}
-                        className="w-5 h-5 text-success focus:ring-success"
+                        className="w-5 h-5 text-secondary focus:ring-secondary"
                       />
                       <div>
                         <p className="font-semibold text-text-primary">{method.name}</p>
@@ -598,7 +672,7 @@ const CheckoutPage = () => {
                     <div className="flex items-center gap-3">
                       <span className="font-semibold text-primary">{formatCurrency(method.price)}</span>
                       {selectedShippingMethod === method.id && (
-                        <svg className="w-6 h-6 text-success" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-6 h-6 text-secondary" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       )}
@@ -612,111 +686,125 @@ const CheckoutPage = () => {
             <div className="bg-white rounded-3xl p-6 md:p-8 shadow-lg animate-fade-in-up">
               <h2 className="text-xl font-semibold text-text-primary mb-6">Payment Method</h2>
               <div className="space-y-4">
-                {/* Palmpay Bank Transfer */}
-                <label
-                  className={`flex items-center justify-between p-5 border-2 rounded-2xl cursor-pointer transition ${
-                    formData.paymentMethod === "palmpay-bank"
-                      ? "border-success bg-success/5"
-                      : "border-gray-200 hover:border-primary/30"
-                  }`}
-                >
-                  <div className="flex items-center gap-4">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="palmpay-bank"
-                      checked={formData.paymentMethod === "palmpay-bank"}
-                      onChange={handleInputChange}
-                      className="w-5 h-5 text-success focus:ring-success"
-                    />
-                    <div className="flex items-center gap-3">
-                      <img src="/icons/palmpay-logo.svg" alt="Palmpay" className="w-10 h-10" />
-                      <div>
-                        <p className="font-semibold text-text-primary">Palmpay Bank Transfer</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs bg-secondary/20 text-secondary px-2 py-0.5 rounded">Extra 2% OFF</span>
-                          <span className="text-xs text-success">100% Delivery Guarantee</span>
+                {paymentOptions.map((option) => (
+                  <label
+                    key={option.id}
+                    className={`flex items-center justify-between p-5 border-2 rounded-2xl cursor-pointer transition ${
+                      formData.paymentMethod === option.id
+                        ? "border-secondary bg-secondary/5"
+                        : "border-gray-200 hover:border-primary/30"
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value={option.id}
+                        checked={formData.paymentMethod === option.id}
+                        onChange={handleInputChange}
+                        className="w-5 h-5 text-secondary focus:ring-secondary"
+                      />
+                      <div className="flex items-center gap-3">
+                        {renderPaymentIcon(option.iconType)}
+                        <div>
+                          <p className="font-semibold text-text-primary">{option.title}</p>
+                          <p className="text-sm text-text-grey">{option.description}</p>
+                          <div className="flex flex-wrap items-center gap-2 mt-2">
+                            {option.badge && (
+                              <span className="text-xs bg-secondary/20 text-secondary px-2 py-0.5 rounded-full">
+                                {option.badge}
+                              </span>
+                            )}
+                            {option.helper && (
+                              <span className="text-xs text-success font-semibold">{option.helper}</span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  {formData.paymentMethod === "palmpay-bank" && (
-                    <svg className="w-6 h-6 text-success" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </label>
+                    {formData.paymentMethod === option.id && (
+                      <svg className="w-6 h-6 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </label>
+                ))}
 
-                {/* Palmpay Wallet */}
-                <label
-                  className={`flex items-center justify-between p-5 border-2 rounded-2xl cursor-pointer transition ${
-                    formData.paymentMethod === "palmpay-wallet"
-                      ? "border-success bg-success/5"
-                      : "border-gray-200 hover:border-primary/30"
-                  }`}
-                >
-                  <div className="flex items-center gap-4">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="palmpay-wallet"
-                      checked={formData.paymentMethod === "palmpay-wallet"}
-                      onChange={handleInputChange}
-                      className="w-5 h-5 text-success focus:ring-success"
-                    />
-                    <div className="flex items-center gap-3">
-                      <img src="/icons/palmpay-logo.svg" alt="Palmpay" className="w-10 h-10" />
-                      <div>
-                        <p className="font-semibold text-text-primary">Palmpay Wallet</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs bg-secondary/20 text-secondary px-2 py-0.5 rounded">Extra 2% OFF</span>
-                          <span className="text-xs text-success">100% Delivery Guarantee</span>
-                        </div>
+                {formData.paymentMethod === 'card' && (
+                  <div className="mt-4 bg-background-alt rounded-2xl p-5 space-y-4 animate-fade-in-up">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-text-grey">Your card details are encrypted and never stored.</p>
+                      <div className="flex items-center gap-2 text-xs font-semibold text-success">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        SSL Secured
                       </div>
                     </div>
-                  </div>
-                  {formData.paymentMethod === "palmpay-wallet" && (
-                    <svg className="w-6 h-6 text-success" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </label>
-
-                <p className="text-sm text-text-grey pl-9">Instant auto-approval for Palmpay orders.</p>
-
-                {/* Cash On Delivery */}
-                <label
-                  className={`flex items-center justify-between p-5 border-2 rounded-2xl cursor-pointer transition ${
-                    formData.paymentMethod === "cash"
-                      ? "border-success bg-success/5"
-                      : "border-gray-200 hover:border-primary/30"
-                  }`}
-                >
-                  <div className="flex items-center gap-4">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="cash"
-                      checked={formData.paymentMethod === "cash"}
-                      onChange={handleInputChange}
-                      className="w-5 h-5 text-success focus:ring-success"
-                    />
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <span className="text-primary font-bold text-sm">COD</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <SelectInput
+                        id="cardBrand"
+                        name="cardBrand"
+                        label="Card Network"
+                        value={formData.cardBrand}
+                        onChange={handleInputChange}
+                        options={['Visa', 'Mastercard', 'Verve']}
+                        inputClassName={errors.cardBrand ? "border-danger" : ""}
+                      />
+                      <TextInput
+                        id="cardName"
+                        name="cardName"
+                        label="Cardholder Name"
+                        value={formData.cardName}
+                        onChange={handleInputChange}
+                        placeholder="JOHN DOE"
+                        inputClassName={errors.cardName ? "border-danger" : ""}
+                      />
+                      {errors.cardName && (
+                        <p className="text-danger text-xs md:col-span-2 -mt-3">{errors.cardName}</p>
+                      )}
+                      <div className="md:col-span-2">
+                        <TextInput
+                          id="cardNumber"
+                          name="cardNumber"
+                          label="Card Number"
+                          value={formData.cardNumber}
+                          onChange={handleCardNumberChange}
+                          placeholder="1234 5678 9012 3456"
+                          inputClassName={errors.cardNumber ? "border-danger" : ""}
+                        />
+                        {errors.cardNumber && (
+                          <p className="text-danger text-xs mt-1">{errors.cardNumber}</p>
+                        )}
                       </div>
-                      <div>
-                        <p className="font-semibold text-text-primary">Cash On Delivery (COD)</p>
-                        <span className="text-xs text-success">100% Delivery Guarantee</span>
-                      </div>
+                      <TextInput
+                        id="expiryDate"
+                        name="expiryDate"
+                        label="Expiry (MM/YY)"
+                        value={formData.expiryDate}
+                        onChange={handleExpiryChange}
+                        placeholder="07/28"
+                        inputClassName={errors.expiryDate ? "border-danger" : ""}
+                      />
+                      <TextInput
+                        id="cvv"
+                        name="cvv"
+                        label="CVV"
+                        value={formData.cvv}
+                        onChange={handleInputChange}
+                        placeholder="123"
+                        type="password"
+                        inputClassName={errors.cvv ? "border-danger" : ""}
+                      />
+                      {errors.expiryDate && (
+                        <p className="text-danger text-xs -mt-3">{errors.expiryDate}</p>
+                      )}
+                      {errors.cvv && (
+                        <p className="text-danger text-xs -mt-3 md:col-start-2">{errors.cvv}</p>
+                      )}
                     </div>
                   </div>
-                  {formData.paymentMethod === "cash" && (
-                    <svg className="w-6 h-6 text-success" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </label>
+                )}
               </div>
             </div>
 
