@@ -8,6 +8,15 @@ export const useAccountStore = create((set, get) => ({
     email: 'john@example.com',
     phone: '08012345678',
     avatar: '/images/avatar-placeholder.png',
+    preferences: {
+      marketingEmails: true,
+      orderUpdates: true,
+      smsAlerts: false,
+    },
+    security: {
+      twoFactorEnabled: false,
+      biometricLogin: false,
+    },
     addressBook: [
       {
         id: 'addr-1',
@@ -76,6 +85,16 @@ export const useAccountStore = create((set, get) => ({
 
   addAddress: (address) =>
     set((state) => ({ profile: { ...state.profile, addressBook: [address, ...state.profile.addressBook] } })),
+
+  updateAddress: (addressId, updates = {}) =>
+    set((state) => ({
+      profile: {
+        ...state.profile,
+        addressBook: state.profile.addressBook.map((addr) =>
+          addr.id === addressId ? { ...addr, ...updates } : addr
+        ),
+      },
+    })),
 
   removeAddress: (addressId) =>
     set((state) => ({
