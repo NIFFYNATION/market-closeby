@@ -5,6 +5,7 @@ import { useOrdersStore } from "../../store/ordersStore";
 import PageHeader from "../../components/common/PageHeader";
 import { Button } from "../../components/common/Button";
 import { TextInput, SelectInput } from "../../components/forms/FormFields";
+import ShippingAddressSection from "../../components/checkout/ShippingAddressSection";
 import { useToast } from "../../context/ToastContext";
 
 const SectionCard = ({ title, children, right }) => (
@@ -25,10 +26,10 @@ const InfoRow = ({ label, value }) => (
 );
 
 const Modal = ({ title, children, onClose }) => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+  <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 sm:py-10">
     <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-    <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl animate-fade-in-up">
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+    <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl animate-fade-in-up max-h-[90vh] flex flex-col">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
         <h3 className="text-lg font-semibold text-text-primary">{title}</h3>
         <button
           onClick={onClose}
@@ -40,7 +41,7 @@ const Modal = ({ title, children, onClose }) => (
           </svg>
         </button>
       </div>
-      <div className="p-6">{children}</div>
+      <div className="p-6 overflow-y-auto flex-1 w-full">{children}</div>
     </div>
   </div>
 );
@@ -148,21 +149,37 @@ const MyAccount = () => {
     phone: profile.phone,
   });
   const [profileErrors, setProfileErrors] = useState({});
-  const buildAddressForm = (address = {}) => ({
-    label: address.label || "",
+  const [addressModalOpen, setAddressModalOpen] = useState(false);
+  const [addressPrefill, setAddressPrefill] = useState(null);
+  const defaultAddress = useMemo(() => profile.addressBook.find((a) => a.isDefault), [profile.addressBook]);
+  const formatAccountAddress = (address = {}) => ({
+    id: address.id,
+    label: address.label || "Address",
     fullName: address.fullName || profile.name || "",
+    email: profile.email || "",
     phone: address.phone || profile.phone || "",
-    address: address.address || "",
+    addressLine: address.address || "",
     city: address.city || "",
     state: address.state || "",
     postalCode: address.postalCode || "",
-    isDefault: address.isDefault ?? profile.addressBook.length === 0,
+    isDefault: address.isDefault,
   });
-  const [addressForm, setAddressForm] = useState(() => buildAddressForm());
-  const [addressErrors, setAddressErrors] = useState({});
-  const [addressModalOpen, setAddressModalOpen] = useState(false);
-  const [editingAddressId, setEditingAddressId] = useState(null);
-  const defaultAddress = useMemo(() => profile.addressBook.find((a) => a.isDefault), [profile.addressBook]);
+  const accountAddresses = useMemo(
+    () => profile.addressBook.map((addr) => formatAccountAddress(addr)),
+    [profile.addressBook, profile.email, profile.name, profile.phone]
+  );
+  const [accountSelectedAddressId, setAccountSelectedAddressId] = useState(defaultAddress?.id || "");
+  useEffect(() => {
+    setAccountSelectedAddressId(defaultAddress?.id || "");
+  }, [defaultAddress?.id]);
+  const profileDefaults = useMemo(
+    () => ({
+      fullName: profile.name || "",
+      email: profile.email || "",
+      phone: profile.phone || "",
+    }),
+    [profile.name, profile.email, profile.phone]
+  );
   const paymentMethods = profile.paymentMethods;
   const defaultPayment = useMemo(() => paymentMethods.find((p) => p.isDefault), [paymentMethods]);
   const [cardForm, setCardForm] = useState({
@@ -284,54 +301,44 @@ const MyAccount = () => {
     setProfileModalOpen(false);
   };
 
-  const handleAddressFieldChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setAddressForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-    if (addressErrors[name]) {
-      setAddressErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-  };
-
-  const validateAddressForm = () => {
-    const required = ["label", "fullName", "phone", "address", "city", "state", "postalCode"];
-    const errors = {};
-    required.forEach((field) => {
-      if (!String(addressForm[field] || "").trim()) {
-        errors[field] = "Required";
-      }
-    });
-    setAddressErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
   const closeAddressModal = () => {
     setAddressModalOpen(false);
-    setAddressErrors({});
-    setEditingAddressId(null);
-    setAddressForm(buildAddressForm());
+    setAddressPrefill(null);
   };
 
-  const handleSubmitAddress = (e) => {
-    e.preventDefault();
-    if (!validateAddressForm()) return;
-    const payload = {
-      ...addressForm,
-      id: editingAddressId || `addr-${Date.now()}`,
-    };
-    if (editingAddressId) {
-      updateAddress(editingAddressId, payload);
-      showToast("Address updated", "success");
-    } else {
-      addAddress(payload);
-      showToast("Address added", "success");
-    }
-    if (payload.isDefault) {
-      setDefaultAddressStore(payload.id);
-    }
-    closeAddressModal();
+  const handleOpenAddressModal = (address = null) => {
+    setAddressPrefill(address ? formatAccountAddress(address) : null);
+    setAddressModalOpen(true);
+  };
+
+  const handleAccountAddAddress = (values) => {
+    const created = addAddress({
+      label: values.label,
+      fullName: values.fullName,
+      phone: values.phone,
+      address: values.addressLine,
+      city: values.city,
+      state: values.state,
+      postalCode: values.postalCode,
+      isDefault: values.isDefault,
+    });
+    showToast("Address added", "success");
+    return created ? formatAccountAddress(created) : null;
+  };
+
+  const handleAccountUpdateAddress = (addressId, values) => {
+    const updated = updateAddress(addressId, {
+      label: values.label,
+      fullName: values.fullName,
+      phone: values.phone,
+      address: values.addressLine,
+      city: values.city,
+      state: values.state,
+      postalCode: values.postalCode,
+      isDefault: values.isDefault,
+    });
+    showToast("Address updated", "success");
+    return updated ? formatAccountAddress(updated) : null;
   };
 
   const handleMakeDefaultAddress = (addressId) => {
@@ -339,23 +346,12 @@ const MyAccount = () => {
     showToast("Default address updated", "success");
   };
 
-  const handleRemoveAddressCard = (addressId) => {
+  const handleAccountRemoveAddress = (addressId) => {
     removeAddress(addressId);
+    if (addressId === accountSelectedAddressId) {
+      setAccountSelectedAddressId(defaultAddress?.id || "");
+    }
     showToast("Address removed", "info");
-  };
-
-  const openAddAddressModal = () => {
-    setAddressForm(buildAddressForm());
-    setEditingAddressId(null);
-    setAddressErrors({});
-    setAddressModalOpen(true);
-  };
-
-  const openEditAddressModal = (address) => {
-    setAddressForm(buildAddressForm(address));
-    setEditingAddressId(address.id);
-    setAddressErrors({});
-    setAddressModalOpen(true);
   };
 
   const handlePreferenceToggle = (field) => {
@@ -399,7 +395,10 @@ const MyAccount = () => {
       title: "Manage Addresses",
       description: "Keep your delivery locations up to date.",
       actionLabel: "Manage addresses",
-      onAction: () => setActiveTab("addresses"),
+      onAction: () => {
+        setActiveTab("addresses");
+        handleOpenAddressModal();
+      },
       accent: "bg-success/10",
       icon: (
         <svg className="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -448,7 +447,7 @@ const MyAccount = () => {
             { id: "payments", label: "Payment Methods" },
             { id: "settings", label: "Settings" },
           ].map((t) => (
-            <button
+          <button
               key={t.id}
               onClick={() => setActiveTab(t.id)}
               className={`px-4 py-3 font-medium border-b-2 transition-colors ${
@@ -458,7 +457,7 @@ const MyAccount = () => {
               }`}
             >
               {t.label}
-            </button>
+          </button>
           ))}
         </div>
 
@@ -564,8 +563,8 @@ const MyAccount = () => {
             <SectionCard
               title="Address Book"
               right={
-                <Button variant="secondary" size="sm" onClick={openAddAddressModal}>
-                  Add address
+                <Button variant="secondary" size="sm" onClick={() => handleOpenAddressModal()}>
+                  Manage addresses
                 </Button>
               }
             >
@@ -579,16 +578,16 @@ const MyAccount = () => {
                     <AddressCard
                       key={address.id}
                       address={address}
-                      onEdit={openEditAddressModal}
+                      onEdit={handleOpenAddressModal}
                       onMakeDefault={handleMakeDefaultAddress}
-                      onRemove={handleRemoveAddressCard}
+                      onRemove={handleAccountRemoveAddress}
                     />
                   ))}
                 </div>
               )}
             </SectionCard>
-          </div>
-        )}
+            </div>
+          )}
 
         {/* Payments */}
         {activeTab === "payments" && (
@@ -626,10 +625,10 @@ const MyAccount = () => {
                             {pm.isDefault && (
                               <span className="text-xs bg-secondary text-white px-2 py-0.5 rounded-full">Default</span>
                             )}
-                          </div>
+              </div>
                           <p className="text-sm text-text-grey">•••• {pm.last4}</p>
                           <p className="text-xs text-text-grey mt-1">Expires {pm.exp || "—"}</p>
-                        </div>
+                      </div>
                       </div>
                       <div className="flex items-center gap-2">
                         {!pm.isDefault && (
@@ -643,7 +642,7 @@ const MyAccount = () => {
                       </div>
                     </div>
                   ))}
-                </div>
+                  </div>
               )}
             </SectionCard>
 
@@ -659,7 +658,7 @@ const MyAccount = () => {
                       onChange={handleCardFormChange}
                       options={["Visa", "Mastercard", "Verve"]}
                     />
-                    <TextInput
+                      <TextInput
                       id="holder"
                       name="holder"
                       label="Cardholder Name"
@@ -671,7 +670,7 @@ const MyAccount = () => {
                     {cardErrors.holder && (
                       <p className="text-danger text-xs -mt-3 md:col-span-2">{cardErrors.holder}</p>
                     )}
-                    <TextInput
+                      <TextInput
                       id="cardNumber"
                       name="cardNumber"
                       label="Card Number"
@@ -714,20 +713,20 @@ const MyAccount = () => {
                     <Button type="submit" variant="secondary" size="md">
                       Save card
                     </Button>
-                    <Button
+                        <Button
                       type="button"
                       variant="textPrimary"
-                      size="md"
+                          size="md"
                       onClick={() => setShowAddCardForm(false)}
-                    >
+                        >
                       Cancel
-                    </Button>
+                        </Button>
                   </div>
                 </form>
               </SectionCard>
             )}
-          </div>
-        )}
+                                </div>
+                              )}
 
         {/* Orders tab shortcut */}
         {activeTab === "orders" && (
@@ -736,10 +735,10 @@ const MyAccount = () => {
               <div className="text-center py-12">
                 <p className="text-text-grey mb-4">Manage your orders on the Orders page.</p>
                 <Button variant="secondary" onClick={() => navigate('/orders')}>Go to Orders</Button>
-              </div>
+                            </div>
             </SectionCard>
-          </div>
-        )}
+                                </div>
+                              )}
 
         {/* Wishlist tab shortcut */}
         {activeTab === "wishlist" && (
@@ -748,10 +747,10 @@ const MyAccount = () => {
               <div className="text-center py-12">
                 <p className="text-text-grey mb-4">View and manage wishlist items.</p>
                 <Button variant="secondary" onClick={() => navigate('/wishlist')}>Open Wishlist</Button>
-              </div>
+                            </div>
             </SectionCard>
-          </div>
-        )}
+                                </div>
+                              )}
 
         {/* Settings placeholder */}
         {activeTab === "settings" && (
@@ -799,9 +798,9 @@ const MyAccount = () => {
                 </Button>
               </div>
             </SettingsSection>
-          </div>
-        )}
-      </div>
+                                </div>
+                              )}
+                      </div>
 
       {isProfileModalOpen && (
         <Modal title="Edit profile" onClose={() => setProfileModalOpen(false)}>
@@ -839,97 +838,34 @@ const MyAccount = () => {
               </Button>
               <Button type="button" variant="textPrimary" onClick={() => setProfileModalOpen(false)}>
                 Cancel
-              </Button>
-            </div>
+                        </Button>
+                      </div>
           </form>
         </Modal>
       )}
 
       {addressModalOpen && (
-        <Modal title={editingAddressId ? "Edit address" : "Add address"} onClose={closeAddressModal}>
-          <form className="space-y-4" onSubmit={handleSubmitAddress}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <TextInput
-                id="addressLabel"
-                name="label"
-                label="Label"
-                value={addressForm.label}
-                onChange={handleAddressFieldChange}
-                placeholder="Home, Office..."
-                inputClassName={addressErrors.label ? "border-danger" : ""}
-              />
-              <TextInput
-                id="addressFullName"
-                name="fullName"
-                label="Recipient name"
-                value={addressForm.fullName}
-                onChange={handleAddressFieldChange}
-                inputClassName={addressErrors.fullName ? "border-danger" : ""}
-              />
-              <TextInput
-                id="addressPhone"
-                name="phone"
-                label="Phone number"
-                value={addressForm.phone}
-                onChange={handleAddressFieldChange}
-                inputClassName={addressErrors.phone ? "border-danger" : ""}
-              />
-              <TextInput
-                id="addressPostalCode"
-                name="postalCode"
-                label="Postal code"
-                value={addressForm.postalCode}
-                onChange={handleAddressFieldChange}
-                inputClassName={addressErrors.postalCode ? "border-danger" : ""}
-              />
-              <div className="md:col-span-2">
-                <TextInput
-                  id="addressStreet"
-                  name="address"
-                  label="Street address"
-                  value={addressForm.address}
-                  onChange={handleAddressFieldChange}
-                  inputClassName={addressErrors.address ? "border-danger" : ""}
-                />
-              </div>
-              <TextInput
-                id="addressCity"
-                name="city"
-                label="City"
-                value={addressForm.city}
-                onChange={handleAddressFieldChange}
-                inputClassName={addressErrors.city ? "border-danger" : ""}
-              />
-              <TextInput
-                id="addressState"
-                name="state"
-                label="State"
-                value={addressForm.state}
-                onChange={handleAddressFieldChange}
-                inputClassName={addressErrors.state ? "border-danger" : ""}
-              />
-            </div>
-
-            <label className="flex items-center gap-2 text-sm text-text-primary">
-              <input
-                type="checkbox"
-                name="isDefault"
-                checked={addressForm.isDefault}
-                onChange={handleAddressFieldChange}
-                className="w-4 h-4 text-secondary focus:ring-secondary border-gray-300 rounded"
-              />
-              Set as default address
-            </label>
-
-            <div className="flex flex-wrap gap-3">
-              <Button type="submit" variant="secondary">
-                {editingAddressId ? "Update address" : "Save address"}
-              </Button>
-              <Button type="button" variant="textPrimary" onClick={closeAddressModal}>
-                Cancel
-              </Button>
-            </div>
-          </form>
+        <Modal title="Manage addresses" onClose={closeAddressModal}>
+          <ShippingAddressSection
+            hideHeader
+            layout="modal"
+            addresses={accountAddresses}
+            profileDefaults={profileDefaults}
+            selectedAddressId={accountSelectedAddressId}
+            onSelectAddress={setAccountSelectedAddressId}
+            onAddAddress={handleAccountAddAddress}
+            onUpdateAddress={handleAccountUpdateAddress}
+            onRemoveAddress={handleAccountRemoveAddress}
+            onMakeDefaultAddress={handleMakeDefaultAddress}
+            includeEmail={false}
+            allowRemoval
+            showSelectDropdown={accountAddresses.length > 0}
+            actionLabel="Add address"
+            sectionTitle="Manage addresses"
+            showSelectedCard={false}
+            prefillAddress={addressPrefill}
+            onPrefillConsumed={() => setAddressPrefill(null)}
+          />
         </Modal>
       )}
     </section>

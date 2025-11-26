@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
 import { useOrdersStore } from "../store/ordersStore";
@@ -7,6 +7,7 @@ import { useToast } from "../context/ToastContext";
 import { Button } from "../components/common/Button";
 import PageHeader from "../components/common/PageHeader";
 import { TextInput, SelectInput } from "../components/forms/FormFields";
+import ShippingAddressSection from "../components/checkout/ShippingAddressSection";
 
 const formatCurrency = (value) =>
   `₦${Math.max(value, 0)
@@ -30,32 +31,39 @@ const CheckoutPage = () => {
   const updateAddressInStore = useUserStore((state) => state.updateAddress);
   const setDefaultAddress = useUserStore((state) => state.setDefaultAddress);
   const defaultAddress = addresses.find((a) => a.isDefault) || addresses[0];
+  const removeAddressFromStore = useUserStore((state) => state.removeAddress);
 
   // State declarations - must be before useEffect hooks
-  const [showAddressForm, setShowAddressForm] = useState(addresses.length === 0);
   const [selectedAddressId, setSelectedAddressId] = useState(defaultAddress?.id || '');
   const [selectedShippingMethod, setSelectedShippingMethod] = useState('standard');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [editingAddressId, setEditingAddressId] = useState(null);
-  const [addressErrors, setAddressErrors] = useState({});
   const [errors, setErrors] = useState({});
-
-  const buildAddressFormState = useCallback(
-    (data = {}) => ({
-      label: data.label || '',
-      recipient: data.recipient || profile.fullName || '',
-      email: data.email || profile.email || '',
-      phone: data.phone || profile.phone || '',
-      street: data.street || '',
-      city: data.city || '',
-      state: data.state || '',
-      postalCode: data.postalCode || '',
-      isDefault: data.isDefault ?? (addresses.length === 0),
+  const profileDefaults = useMemo(
+    () => ({
+      fullName: profile.fullName || "",
+      email: profile.email || "",
+      phone: profile.phone || "",
     }),
-    [addresses.length, profile]
+    [profile.fullName, profile.email, profile.phone]
   );
 
-  const [addressForm, setAddressForm] = useState(() => buildAddressFormState());
+  const normalizeUserAddress = (address) => ({
+    id: address.id,
+    label: address.label || "Address",
+    fullName: address.recipient || address.fullName || profileDefaults.fullName,
+    email: address.email || profileDefaults.email,
+    phone: address.phone || profileDefaults.phone,
+    addressLine: address.street || address.address || "",
+    city: address.city || "",
+    state: address.state || "",
+    postalCode: address.postalCode || "",
+    isDefault: address.isDefault,
+  });
+
+  const normalizedAddresses = useMemo(
+    () => addresses.map((addr) => normalizeUserAddress(addr)),
+    [addresses, profileDefaults]
+  );
 
   const [formData, setFormData] = useState({
     // Shipping Address
@@ -88,15 +96,12 @@ const CheckoutPage = () => {
   useEffect(() => {
     if (!addresses.length) {
       setSelectedAddressId('');
-      setShowAddressForm(true);
-      setEditingAddressId(null);
-      setAddressForm(buildAddressFormState({ isDefault: true }));
       return;
     }
     if (!selectedAddressId) {
       setSelectedAddressId(defaultAddress?.id || addresses[0]?.id || '');
     }
-  }, [addresses, buildAddressFormState, defaultAddress, selectedAddressId]);
+  }, [addresses, defaultAddress, selectedAddressId]);
 
   useEffect(() => {
     if (selectedAddress) {
@@ -130,6 +135,32 @@ const CheckoutPage = () => {
     }
   };
 
+  const mapToStorePayload = (address) => ({
+    label: address.label,
+    recipient: address.fullName,
+    email: address.email,
+    phone: address.phone,
+    street: address.addressLine,
+    city: address.city,
+    state: address.state,
+    postalCode: address.postalCode,
+    isDefault: address.isDefault,
+  });
+
+  const handleAddAddress = (address) => {
+    const created = addAddressToStore(mapToStorePayload(address));
+    return created ? normalizeUserAddress(created) : null;
+  };
+
+  const handleUpdateAddress = (addressId, address) => {
+    const updated = updateAddressInStore(addressId, mapToStorePayload(address));
+    return updated ? normalizeUserAddress(updated) : null;
+  };
+
+  const handleRemoveAddress = (addressId) => {
+    removeAddressFromStore(addressId);
+  };
+
   // Format expiry date as user types
   const handleExpiryChange = (e) => {
     let value = e.target.value.replace(/\D/g, '');
@@ -156,81 +187,7 @@ const CheckoutPage = () => {
   const closeAddressForm = () => {
     setShowAddressForm(false);
     setEditingAddressId(null);
-    setAddressErrors({});
-    setAddressForm(buildAddressFormState());
-  };
-
-  const openAddAddress = () => {
-    setEditingAddressId(null);
-    setAddressErrors({});
-    setSelectedAddressId('');
-    setAddressForm(buildAddressFormState({ isDefault: addresses.length === 0 }));
-    setShowAddressForm(true);
-  };
-
-  const openEditAddress = (address) => {
-    if (!address) return;
-    setEditingAddressId(address.id);
-    setAddressErrors({});
-    setAddressForm(buildAddressFormState(address));
-    setShowAddressForm(true);
-  };
-
-  const handleAddressFormChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setAddressForm((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-    if (addressErrors[name]) {
-      setAddressErrors((prev) => ({ ...prev, [name]: '' }));
-    }
-  };
-
-  const validateAddressForm = () => {
-    const requiredFields = ['label', 'recipient', 'email', 'phone', 'street', 'city', 'state', 'postalCode'];
-    const newErrors = {};
-
-    requiredFields.forEach((field) => {
-      if (!String(addressForm[field] || '').trim()) {
-        newErrors[field] = 'Required';
-      }
-    });
-    if (addressForm.email && !/\S+@\S+\.\S+/.test(addressForm.email)) {
-      newErrors.email = 'Enter a valid email';
-    }
-
-    setAddressErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleAddressFormSubmit = (e) => {
-    e.preventDefault();
-    if (!validateAddressForm()) return;
-
-    const payload = {
-      label: addressForm.label.trim(),
-      recipient: addressForm.recipient.trim(),
-      email: addressForm.email.trim(),
-      phone: addressForm.phone.trim(),
-      street: addressForm.street.trim(),
-      city: addressForm.city.trim(),
-      state: addressForm.state.trim(),
-      postalCode: addressForm.postalCode.trim(),
-      isDefault: addressForm.isDefault,
-    };
-
-    if (editingAddressId) {
-      const updated = updateAddressInStore(editingAddressId, payload);
-      setSelectedAddressId(updated?.id || editingAddressId);
-      showToast("Address updated successfully", "success");
-    } else {
-      const created = addAddressToStore(payload);
-      setSelectedAddressId(created?.id || '');
-      showToast("Address added successfully", "success");
-    }
-
-    closeAddressForm();
+    setAddressFormInitial(buildAddressFormState());
   };
 
   const handleMakeDefault = (addressId) => {
@@ -240,25 +197,9 @@ const CheckoutPage = () => {
     showToast("Default address updated", "success");
   };
 
-  const handleToggleAddressForm = () => {
-    if (showAddressForm) {
-      closeAddressForm();
-    } else {
-      openAddAddress();
-    }
-  };
-
   const handleAddressSelect = (addressId) => {
-    if (!addressId) {
-      openAddAddress();
-      return;
-    }
-    const address = addresses.find((a) => a.id === addressId);
-    if (address) {
+    if (addressId) {
       setSelectedAddressId(addressId);
-      setEditingAddressId(null);
-      setShowAddressForm(false);
-      setAddressErrors({});
     }
   };
 
@@ -415,232 +356,21 @@ const CheckoutPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8">
           {/* Left Column */}
           <div className="space-y-6">
-            {/* Shipping Address Section */}
-            <div className="bg-white rounded-3xl p-6 md:p-8 shadow-lg animate-fade-in-up">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-text-primary">Shipping Address</h2>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  shape="rounded"
-                  onClick={handleToggleAddressForm}
-                >
-                  {showAddressForm ? "Close Form" : "Add Shipping Address"}
-                </Button>
-              </div>
-
-              {addresses.length > 0 && (
-                <div className="mb-6">
-                  <SelectInput
-                    id="address-select"
-                    name="addressSelect"
-                    label="Select saved address"
-                    value={selectedAddressId}
-                    onChange={(e) => handleAddressSelect(e.target.value)}
-                    options={addressOptions}
-                  />
-                  {errors.addressSelect && (
-                    <p className="text-danger text-xs mt-1">{errors.addressSelect}</p>
-                  )}
-                </div>
-              )}
-
-              {!showAddressForm && selectedAddress && (
-                <div className="relative border-2 border-secondary rounded-2xl p-5">
-                  {selectedAddress.isDefault && (
-                    <span className="absolute top-3 right-3 bg-secondary text-white text-xs font-semibold px-2 py-1 rounded">
-                      Default
-                    </span>
-                  )}
-                  <div className="space-y-2">
-                    <p className="text-sm text-text-grey">
-                      <span className="font-medium">Contact:</span> {selectedAddress.email || profile.email}
-                    </p>
-                    <p className="text-sm text-text-grey">
-                      <span className="font-medium">Name:</span> {selectedAddress.recipient}
-                    </p>
-                    <p className="text-sm text-text-grey">
-                      <span className="font-medium">Phone:</span> {selectedAddress.phone}
-                    </p>
-                    <p className="text-sm text-text-grey">
-                      <span className="font-medium">Ship to:</span> {selectedAddress.street}, {selectedAddress.city}, {selectedAddress.state} {selectedAddress.postalCode}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-3 mt-4">
-                    <Button variant="outline" size="sm" onClick={() => openEditAddress(selectedAddress)}>
-                      Edit address
-                    </Button>
-                    {!selectedAddress.isDefault && (
-                      <Button variant="textPrimary" size="sm" onClick={() => handleMakeDefault(selectedAddress.id)}>
-                        Make default
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {showAddressForm && (
-                <form className="space-y-4" onSubmit={handleAddressFormSubmit}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="md:col-span-2">
-                      <TextInput
-                        id="label"
-                        name="label"
-                        label="Address Label *"
-                        value={addressForm.label}
-                        onChange={handleAddressFormChange}
-                        placeholder="Home"
-                        required
-                        inputClassName={addressErrors.label ? "border-danger" : ""}
-                      />
-                      {addressErrors.label && (
-                        <p className="text-danger text-xs mt-1">{addressErrors.label}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <TextInput
-                        id="recipient"
-                        name="recipient"
-                        label="Full Name *"
-                        value={addressForm.recipient}
-                        onChange={handleAddressFormChange}
-                        placeholder="John Doe"
-                        required
-                        inputClassName={addressErrors.recipient ? "border-danger" : ""}
-                      />
-                      {addressErrors.recipient && (
-                        <p className="text-danger text-xs mt-1">{addressErrors.recipient}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <TextInput
-                        id="email"
-                        name="email"
-                        label="Email Address *"
-                        value={addressForm.email}
-                        onChange={handleAddressFormChange}
-                        placeholder="john@example.com"
-                        type="email"
-                        required
-                        inputClassName={addressErrors.email ? "border-danger" : ""}
-                      />
-                      {addressErrors.email && (
-                        <p className="text-danger text-xs mt-1">{addressErrors.email}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <TextInput
-                        id="phone"
-                        name="phone"
-                        label="Phone Number *"
-                        value={addressForm.phone}
-                        onChange={handleAddressFormChange}
-                        placeholder="08012345678"
-                        type="tel"
-                        required
-                        inputClassName={addressErrors.phone ? "border-danger" : ""}
-                      />
-                      {addressErrors.phone && (
-                        <p className="text-danger text-xs mt-1">{addressErrors.phone}</p>
-                      )}
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <TextInput
-                        id="street"
-                        name="street"
-                        label="Street Address *"
-                        value={addressForm.street}
-                        onChange={handleAddressFormChange}
-                        placeholder="123 Main Street"
-                        required
-                        inputClassName={addressErrors.street ? "border-danger" : ""}
-                      />
-                      {addressErrors.street && (
-                        <p className="text-danger text-xs mt-1">{addressErrors.street}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <TextInput
-                        id="city"
-                        name="city"
-                        label="City *"
-                        value={addressForm.city}
-                        onChange={handleAddressFormChange}
-                        placeholder="Lagos"
-                        required
-                        inputClassName={addressErrors.city ? "border-danger" : ""}
-                      />
-                      {addressErrors.city && (
-                        <p className="text-danger text-xs mt-1">{addressErrors.city}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <TextInput
-                        id="state"
-                        name="state"
-                        label="State *"
-                        value={addressForm.state}
-                        onChange={handleAddressFormChange}
-                        placeholder="Lagos State"
-                        required
-                        inputClassName={addressErrors.state ? "border-danger" : ""}
-                      />
-                      {addressErrors.state && (
-                        <p className="text-danger text-xs mt-1">{addressErrors.state}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <TextInput
-                        id="postalCode"
-                        name="postalCode"
-                        label="Postal Code *"
-                        value={addressForm.postalCode}
-                        onChange={handleAddressFormChange}
-                        placeholder="100001"
-                        required
-                        inputClassName={addressErrors.postalCode ? "border-danger" : ""}
-                      />
-                      {addressErrors.postalCode && (
-                        <p className="text-danger text-xs mt-1">{addressErrors.postalCode}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  <label className="flex items-center gap-2 text-sm text-text-primary">
-                    <input
-                      type="checkbox"
-                      name="isDefault"
-                      checked={addressForm.isDefault}
-                      onChange={handleAddressFormChange}
-                      className="w-4 h-4 text-success focus:ring-success border-gray-300 rounded"
-                    />
-                    Set as default shipping address
-                  </label>
-
-                  <div className="flex flex-wrap gap-3">
-                    <Button type="submit" variant="secondary" size="md" shape="rounded">
-                      {editingAddressId ? "Update Address" : "Save Address"}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="textPrimary"
-                      size="md"
-                      shape="rounded"
-                      onClick={closeAddressForm}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </form>
-              )}
-            </div>
+            <ShippingAddressSection
+              addresses={normalizedAddresses}
+              profileDefaults={profileDefaults}
+              selectedAddressId={selectedAddressId}
+              onSelectAddress={handleAddressSelect}
+              onAddAddress={handleAddAddress}
+              onUpdateAddress={handleUpdateAddress}
+              onRemoveAddress={handleRemoveAddress}
+              onMakeDefaultAddress={handleMakeDefault}
+              includeEmail
+              showSelectDropdown={addresses.length > 0}
+              allowRemoval={false}
+              sectionTitle="Shipping Address"
+              actionLabel="Add Shipping Address"
+            />
 
             {/* Shipping Method Section */}
             <div className="bg-white rounded-3xl p-6 md:p-8 shadow-lg animate-fade-in-up">

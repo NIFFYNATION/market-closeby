@@ -83,18 +83,64 @@ export const useAccountStore = create((set, get) => ({
   updateProfile: (updates) =>
     set((state) => ({ profile: { ...state.profile, ...updates } })),
 
-  addAddress: (address) =>
-    set((state) => ({ profile: { ...state.profile, addressBook: [address, ...state.profile.addressBook] } })),
+  addAddress: (address) => {
+    let createdAddress = null;
+    set((state) => {
+      const isDefault = address.isDefault ?? state.profile.addressBook.length === 0;
+      const sanitized = {
+        id: address.id || `addr-${Date.now()}`,
+        label: address.label || `Address ${state.profile.addressBook.length + 1}`,
+        fullName: address.fullName || state.profile.name,
+        phone: address.phone || state.profile.phone,
+        address: address.address || "",
+        city: address.city || "",
+        state: address.state || "",
+        postalCode: address.postalCode || "",
+        isDefault,
+      };
 
-  updateAddress: (addressId, updates = {}) =>
-    set((state) => ({
-      profile: {
-        ...state.profile,
-        addressBook: state.profile.addressBook.map((addr) =>
-          addr.id === addressId ? { ...addr, ...updates } : addr
-        ),
-      },
-    })),
+      createdAddress = sanitized;
+
+      const existing = isDefault
+        ? state.profile.addressBook.map((addr) => ({ ...addr, isDefault: false }))
+        : state.profile.addressBook;
+
+      return {
+        profile: {
+          ...state.profile,
+          addressBook: [sanitized, ...existing],
+        },
+      };
+    });
+
+    return createdAddress;
+  },
+
+  updateAddress: (addressId, updates = {}) => {
+    let updatedAddress = null;
+    set((state) => {
+      let updated = state.profile.addressBook.map((addr) => {
+        if (addr.id === addressId) {
+          updatedAddress = { ...addr, ...updates };
+          return updatedAddress;
+        }
+        return addr;
+      });
+
+      if (updates.isDefault) {
+        updated = updated.map((addr) => ({ ...addr, isDefault: addr.id === addressId }));
+      }
+
+      return {
+        profile: {
+          ...state.profile,
+          addressBook: updated,
+        },
+      };
+    });
+
+    return updatedAddress;
+  },
 
   removeAddress: (addressId) =>
     set((state) => ({
