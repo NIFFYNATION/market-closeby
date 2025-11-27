@@ -197,9 +197,9 @@ function Header() {
             </button>
 
             {/* Sell Button */}
-            <button className="bg-secondary text-white px-4 py-2 rounded-full text-sm font-medium hidden md:block hover:bg-secondary-light">
+            <Link to='/seller-landing-page'  className="bg-secondary text-white px-4 py-2 rounded-full text-sm font-medium hidden md:block hover:bg-secondary-light">
               Sell on Market Closeby
-            </button>
+            </Link>
               </div>
             </div>
           </div>
