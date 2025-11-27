@@ -7,9 +7,12 @@ import SearchBar from '../common/SearchBar';
 import { categories } from '../common/categoryData';
 import { useCartStore } from '../../store/cartStore';
 import { useWishlistStore } from '../../store/wishlistStore';
+import { useUIStore } from '../../store/uiStore';
 
 function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const isMobileMenuOpen = useUIStore((s) => s.isMobileMenuOpen);
+  const toggleMobileMenu = useUIStore((s) => s.toggleMobileMenu);
+  const closeMobileMenu = useUIStore((s) => s.closeMobileMenu);
   const [isLoggedIn, setIsLoggedIn] = useState(false); 
   
   const navigate = useNavigate();
@@ -105,9 +108,7 @@ function Header() {
     },
   ];
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+  // Menu control moved to global UI store for cross-component control
 
   const handleLogin = () => {
     setIsLoggedIn(true);
@@ -213,7 +214,7 @@ function Header() {
       {isMobileMenuOpen && (
         <div 
           className="fixed inset-0 backdrop-blur-lg bg-black/50 z-50 lg:hidden"
-          onClick={toggleMobileMenu}
+          onClick={closeMobileMenu}
         />
       )}
 

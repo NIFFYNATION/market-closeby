@@ -438,27 +438,29 @@ const MyAccount = () => {
 
       <div className=" mx-auto px-4 md:px-8 lg:px-12 py-8">
         {/* Tabs */}
-        <div className="flex flex-wrap gap-2 border-b border-[#D9D9D9] mb-6">
-          {[
-            { id: "overview", label: "Overview" },
-            { id: "orders", label: "Orders" },
-            { id: "wishlist", label: "Wishlist" },
-            { id: "addresses", label: "Addresses" },
-            { id: "payments", label: "Payment Methods" },
-            { id: "settings", label: "Settings" },
-          ].map((t) => (
-          <button
-              key={t.id}
-              onClick={() => setActiveTab(t.id)}
-              className={`px-4 py-3 font-medium border-b-2 transition-colors ${
-                activeTab === t.id
-                  ? "border-secondary text-secondary"
-                  : "border-transparent text-text-grey hover:text-primary"
-              }`}
-            >
-              {t.label}
-          </button>
-          ))}
+        <div className="relative mb-6 -mx-4 px-4">
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide whitespace-nowrap snap-x snap-mandatory">
+            {[
+              { id: "overview", label: "Overview" },
+              { id: "orders", label: "Orders" },
+              { id: "wishlist", label: "Wishlist" },
+              { id: "addresses", label: "Addresses" },
+              { id: "payments", label: "Payment Methods" },
+              { id: "settings", label: "Settings" },
+            ].map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setActiveTab(t.id)}
+                className={`snap-start px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${
+                  activeTab === t.id
+                    ? "bg-secondary text-white border-secondary shadow-sm"
+                    : "bg-white text-text-grey border-gray-200 hover:bg-gray-50"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Overview */}
