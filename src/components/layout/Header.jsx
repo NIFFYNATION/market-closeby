@@ -205,9 +205,9 @@ function Header() {
           </div>
         </div>
         <CategoryMenu />
-        <div className='block md:hidden'>
+        {/* <div className='block md:hidden'>
           <SearchBar />
-        </div>
+        </div> */}
       </header>
 
       {/* Mobile Menu Overlay */}
