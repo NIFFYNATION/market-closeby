@@ -73,7 +73,7 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="hover:text-secondary">
+                <Link to="/privacy-policy" className="hover:text-secondary">
                   Privacy Policy
                 </Link>
               </li>

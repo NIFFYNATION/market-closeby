@@ -11,6 +11,8 @@ import HomePage from "./pages/HomePage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ContactUs from "./pages/ContactUs";
+import AboutUs from "./pages/AboutUs";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -87,6 +89,8 @@ const router = createBrowserRouter([
           { path: "/category/:slug", element: <SearchResultsPage /> },
           { path: "/product/:id", element: <ProductDetailsPage /> },
           { path: "/contact", element: <ContactUs /> },
+          { path: "/about", element: <AboutUs /> },
+          { path: "/privacy-policy", element: <PrivacyPolicy /> },
           { path: "/cart", element: <CartPage /> },
           { path: "/wishlist", element: <WishlistPage /> },
           { path: "/checkout", element: <CheckoutPage /> },

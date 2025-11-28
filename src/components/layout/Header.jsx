@@ -288,14 +288,14 @@ function Header() {
           {/* Additional Menu Items */}
           <div className="py-2">
             <Link
-              to="/addresses"
+              to="/account"
               className="block px-4 py-3 text-primary hover:bg-gray-50"
               onClick={toggleMobileMenu}
             >
               Addresses
             </Link>
             <Link
-              to="/payment-methods"
+              to="/account"
               className="block px-4 py-3 text-primary hover:bg-gray-50"
               onClick={toggleMobileMenu}
             >
@@ -320,7 +320,7 @@ function Header() {
               Privacy Policy
             </Link>
             <Link
-              to="/return-policy"
+              to="/help/returns-refunds"
               className="block px-4 py-3  hover:bg-gray-50"
               onClick={toggleMobileMenu}
             >
