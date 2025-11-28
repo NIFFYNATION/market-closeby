@@ -13,6 +13,8 @@ import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ContactUs from "./pages/ContactUs";
 import AboutUs from "./pages/AboutUs";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import BulkPurchase from "./pages/BulkPurchase";
 import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -91,6 +93,8 @@ const router = createBrowserRouter([
           { path: "/contact", element: <ContactUs /> },
           { path: "/about", element: <AboutUs /> },
           { path: "/privacy-policy", element: <PrivacyPolicy /> },
+          { path: "/terms", element: <TermsAndConditions /> },
+          { path: "/bulk", element: <BulkPurchase /> },
           { path: "/cart", element: <CartPage /> },
           { path: "/wishlist", element: <WishlistPage /> },
           { path: "/checkout", element: <CheckoutPage /> },
