@@ -53,7 +53,7 @@ const MobileTabMenu = () => {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white shadow-2xl z-10 md:hidden">
+    <div className="fixed bottom-0 left-0 right-0 bg-white shadow-2xl z-20 md:hidden">
       <div className="flex items-center justify-around py-2">
         {tabs.map((tab) => (
           <button
@@ -63,15 +63,15 @@ const MobileTabMenu = () => {
               tab.isActive ? 'text-primary' : 'text-gray-500'
             }`}
           >
-            <div className="w-6 h-6 mb-2 flex items-center justify-center relative">
-              <img src={tab.icon} alt={tab.label} className="w-6 h-6" />
+            <div className="w-7 h-7 mb-1 flex items-center justify-center relative">
+              <img src={tab.icon} alt={tab.label} className="w-7 h-7" />
               {tab.id === 'cart' && cartCount > 0 && (
                 <span className="absolute -top-1 -right-2 bg-secondary text-white text-[10px] font-semibold rounded-full min-w-[1.15rem] px-1 flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
             </div>
-            <span className={`text-sm font-medium ${isActive(tab.path) || tab.isActive ? 'text-primary' : 'text-gray-500'}`}>
+            <span className={`text-xs font-semibold ${isActive(tab.path) || tab.isActive ? 'text-primary' : 'text-gray-500'}`}>
               {tab.label}
             </span>
           </button>

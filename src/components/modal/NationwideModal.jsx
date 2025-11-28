@@ -1,5 +1,6 @@
-// src/components/common/NationwideModal.jsx
+// src/components/modal/NationwideModal.jsx
 import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { statesAndCities } from "../common/locationsData";
 
 
@@ -20,6 +21,17 @@ export default function NationwideModal({ isOpen, onClose, setSelectedCity }) {
   const [selectedState, setSelectedState] = useState(null);
   const [search, setSearch] = useState("");
   const modalRef = useRef(null);
+
+  // Lock body scroll when open
+  useEffect(() => {
+    if (isOpen) {
+      const original = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = original || "";
+      };
+    }
+  }, [isOpen]);
 
   // Close on outside click
   useEffect(() => {
@@ -60,16 +72,18 @@ export default function NationwideModal({ isOpen, onClose, setSelectedCity }) {
   const groupedCities = groupByFirstLetter(cityList);
   
 
-  return (
-    
-    
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md">
+  const modalContent = (
+    <div className="fixed inset-0 z-[80] flex md:items-center items-end justify-center bg-black/70 backdrop-blur-sm">
       <div
-        className="bg-white rounded-2xl shadow-xl w-[90vw] max-w-5xl p-8 relative"
+        className="bg-white md:rounded-2xl rounded-t-2xl shadow-xl w-full md:w-[90vw] md:max-w-5xl p-5 md:p-8 relative max-h-[90vh] md:max-h-[70vh] flex flex-col"
         ref={modalRef}
       >
+        {/* Drag handle for mobile */}
+        <div className="md:hidden flex justify-center">
+          <span className="block w-12 h-1.5 bg-gray-300 rounded-full" />
+        </div>
         {/* Header */}
-        <div className="grid md:grid-cols-2 items-center mb-10">
+        <div className="grid md:grid-cols-2 items-center mb-6 md:mb-8">
           {selectedState ? (
             <button
               className="text-primary font-bold flex items-center mr-4"
@@ -79,7 +93,7 @@ export default function NationwideModal({ isOpen, onClose, setSelectedCity }) {
               Nationwide - Nigeria <span className="mx-2">-</span> {selectedState.name}
             </button>
           ) : (
-            <span className="text-primary font-bold text-lg mr-4">
+            <span className="text-primary font-extrabold text-lg md:text-xl mr-4">
               Nationwide - Nigeria
             </span>
           )}
@@ -88,7 +102,7 @@ export default function NationwideModal({ isOpen, onClose, setSelectedCity }) {
           </div>
         </div>
         {/* Content */}
-        <div className="overflow-y-auto max-h-[60vh] sidebar-scrollbar">
+        <div className="overflow-y-auto md:max-h-[60vh] max-h-[70vh] sidebar-scrollbar">
           {!selectedState ? (
             <StateList groupedStates={groupedStates} onStateClick={handleStateClick} />
           ) : (
@@ -105,11 +119,13 @@ export default function NationwideModal({ isOpen, onClose, setSelectedCity }) {
       </div>
     </div>
   );
+
+  return isOpen ? createPortal(modalContent, document.body) : null;
 }
 
 function StateList({ groupedStates, onStateClick }) {
   return (
-    <div className="grid md:grid-cols-3 gap-8">
+    <div className="grid md:grid-cols-3 gap-4 md:gap-8">
       {Object.keys(groupedStates)
         .sort()
         .map((letter) => (
@@ -119,7 +135,7 @@ function StateList({ groupedStates, onStateClick }) {
               {groupedStates[letter].map((state) => (
                 <li
                   key={state.name}
-                  className="flex items-center justify-between py-4 px-2 cursor-pointer hover:bg-gray-100 "
+                  className="flex items-center justify-between py-3 px-3 cursor-pointer hover:bg-gray-100 rounded-lg"
                   onClick={() => onStateClick(state)}
                 >
                   {state.name}
@@ -135,7 +151,7 @@ function StateList({ groupedStates, onStateClick }) {
 
 function CityList({ groupedCities, stateName, onCityClick }) {
   return (
-    <div className="grid md:grid-cols-3 gap-8">
+    <div className="grid md:grid-cols-3 gap-4 md:gap-8">
       {Object.keys(groupedCities)
         .sort()
         .map((letter) => (
@@ -145,7 +161,7 @@ function CityList({ groupedCities, stateName, onCityClick }) {
               {groupedCities[letter].map((city) => (
                 <li
                   key={city}
-                  className="py-4 px-2 cursor-pointer hover:bg-gray-100 border-b border-[#BBBBBB] inline-block"
+                  className="py-3 px-3 cursor-pointer hover:bg-gray-100 rounded-lg"
                   onClick={() => onCityClick(`${city}`)}
                 >
                   {city} - {stateName}
@@ -160,17 +176,19 @@ function CityList({ groupedCities, stateName, onCityClick }) {
 
 function SearchBar({ value, onChange }) {
   return (
-    <div className="relative w-75 mt-6 md:mt-0">
+    <div className="relative w-full md:w-80 mt-4 md:mt-0">
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Search for items in your state or LGA..."
-        className="w-full pl-4 text-sm pr-10 py-3 rounded-md shadow-lg focus:outline-none focus:ring-1 focus:ring-[#130C76] text-[#A7A7A7] focus:border-transparent"
+        placeholder="Search states or cities..."
+        className="w-full pl-4 text-sm pr-10 py-3 rounded-md shadow-lg focus:outline-none focus:ring-1 focus:ring-[#130C76] text-[#333] placeholder-gray-400 focus:border-transparent"
       />
-      <button className="absolute right-0 bg-secondary p-[14px] rounded-r-md hover:bg-secondary-light">
-        <img src="/icons/search.svg" alt="search" className="w-4 h-4" />
-      </button>
+      <div className="absolute right-0 top-0 h-full flex items-center">
+        <span className="bg-secondary p-[12px] rounded-r-md">
+          <img src="/icons/search.svg" alt="search" className="w-4 h-4" />
+        </span>
+      </div>
 
 
 
