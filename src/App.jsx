@@ -1,10 +1,12 @@
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, ScrollRestoration } from "react-router-dom";
 
 function App() {
   return (
     <div className="min-h-screen ">
       <Outlet />
+      {/* Recommended: React Router scroll restoration */}
+      <ScrollRestoration />
     </div>
   );
 }

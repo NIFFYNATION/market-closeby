@@ -45,11 +45,11 @@ const CartPage = () => {
 
   if (!items.length) {
     return (
-      <section className="min-h-screen pt-32 pb-16 flex flex-col items-center justify-center text-center px-6 animate-fade-in-up">
+      <section className="min-h-screen pt-32 pb-16 mt-20 flex flex-col items-center justify-center text-center px-6 animate-fade-in-up">
         <img
           src="/imgs/empty-cart.png"
           alt="Empty cart"
-          className="w-52 md:w-72 mb-8 "
+          className="w-52 md:w-72"
         />
         <h1 className="text-2xl md:text-3xl font-semibold text-primary mb-4">
           Your cart is currently empty
