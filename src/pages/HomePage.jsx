@@ -3,6 +3,7 @@ import CategoryBrowser from "../components/common/CategoryBrowser";
 import TrendingProducts from "../components/TrendingProducts";
 import "./HomePage.css";
 import HeroCoverflow from "../components/common/HeroCoverflow";
+import { Link } from "react-router-dom";
 
 function HomePage() {
   return (
@@ -32,9 +33,9 @@ function HomePage() {
                 </h2>
               </div>
             </div>
-            <button className="bg-secondary hover:bg-secondary-light text-white px-6 py-3 my-4 md:my-16  rounded-full font-medium transition-colors duration-300">
+            <Link to="/signin" className="bg-secondary hover:bg-secondary-light text-white px-6 py-3 my-4 md:my-16  rounded-full font-medium transition-colors duration-300">
               Sell on Market Closeby
-            </button>
+            </Link>
           </div>
         </div>
 

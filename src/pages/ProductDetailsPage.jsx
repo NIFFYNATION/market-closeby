@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { productsData } from "../components/productsData";
 import { Button } from "../components/common/Button";
@@ -7,6 +7,8 @@ import PageHeader from "../components/common/PageHeader";
 import { useCartStore } from "../store/cartStore";
 import { useWishlistStore } from "../store/wishlistStore";
 import { useToast } from "../context/ToastContext";
+import ProductDetailsSkeleton from "../components/skeletons/ProductDetailsSkeleton";
+
 
 
 const socialIcons = [
@@ -27,6 +29,12 @@ const ProductDetailsPage = () => {
   // For image gallery
   const [mainImage, setMainImage] = useState(product?.image);
   const [quantity, setQuantity] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(t);
+  }, [id]);
 
   // Helper function to calculate savings
   const calculateSavings = (currentPrice, oldPrice) => {
@@ -82,6 +90,9 @@ const ProductDetailsPage = () => {
   
   return (
     <div className="min-h-screen py-8">
+      {isLoading ? (
+        <ProductDetailsSkeleton />
+      ) : (<>
       {/* Page Header */}
       <PageHeader
         breadcrumbs={breadcrumbs}
@@ -245,6 +256,7 @@ const ProductDetailsPage = () => {
           </div>
         </div>
       </div>
+        </>)}
     </div>
   );
 };

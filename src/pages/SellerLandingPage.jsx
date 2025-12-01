@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "../components/common/Button";
+import SellerLandingSkeleton from "../components/skeletons/SellerLandingSkeleton";
 
 function SellerLandingPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -117,6 +118,7 @@ function SellerLandingPage() {
   };
 
   const [testimonialsPerSlide, setTestimonialsPerSlide] = useState(getTestimonialsPerSlide());
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const handleResize = () => {
@@ -127,8 +129,16 @@ function SellerLandingPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <div className="min-h-screen px-4 sm:px-6 lg:px-8 bg-background">
+      {isLoading ? (
+        <SellerLandingSkeleton />
+      ) : (<>
       {/* Hero Section */}
       <section className="py-8 sm:py-12 lg:py-16 md:mt-40">
         <div className="w-full mx-auto text-center">
@@ -430,6 +440,7 @@ function SellerLandingPage() {
           </Button>
         </div>
       </section>
+        </>)}
     </div>
   );
 }
