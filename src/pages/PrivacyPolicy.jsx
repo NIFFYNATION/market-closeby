@@ -3,7 +3,7 @@ import React from 'react';
 const PrivacyPolicy = () => {
   return (
     <main className="min-h-screen bg-gray-50">
-      <section className="bg-gradient-to-br from-primary to-secondary text-white">
+      <section className="mt-18 sm:mt-38 bg-gradient-to-br from-primary to-secondary text-white">
         <div className="max-w-6xl mx-auto px-6 py-14 md:py-18">
           <h1 className="text-3xl md:text-4xl font-extrabold">Privacy Policy (Nigeria, 2025)</h1>
           <p className="mt-2 opacity-90">Effective date: 01 January 2025 • Last updated: 01 January 2025</p>

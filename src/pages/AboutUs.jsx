@@ -5,7 +5,7 @@ const AboutUs = () => {
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-primary to-secondary text-white">
+      <section className="bg-gradient-to-br mt-18 sm:mt-38 from-primary to-secondary text-white">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight">Market Closeby — Your everyday marketplace, closer than ever.</h1>
           <p className="mt-4 text-base md:text-lg opacity-90">Our mission is simple: help people find, buy, and receive what they need from trusted local and nationwide sellers—fast, fairly, and with joy.</p>
