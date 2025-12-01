@@ -5,6 +5,7 @@ import ProductsCard from '../components/cards/ProductsCard';
 import FilterSidebar from '../components/common/FilterSidebar';
 import { getCategoryForSearch } from '../utils/getCategoryForSearch';
 import { categories } from '../components/common/categoryData';
+import GridSkeleton from '../components/common/GridSkeleton';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -51,6 +52,7 @@ const SearchResultsPage = () => {
   // Sort dropdown state
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState('Popularity');
+  const [isLoading, setIsLoading] = useState(true);
 
   const sortOptions = [
     'Popularity',
@@ -110,6 +112,11 @@ const SearchResultsPage = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(t);
+  }, [slug, searchTerm, categoryFromQuery]);
 
   // Filter products by search term and category
   const filteredProducts = productsData.filter(product => {
@@ -215,23 +222,27 @@ const SearchResultsPage = () => {
         
         {/* Product Grid */}
         <main className="flex-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.length === 0 ? (
-              <div className="col-span-full text-center text-text-grey py-20">
-                {searchTerm ? (
-                  <>No products found for <span className="font-semibold">{searchTerm}</span></>
-                ) : displayCategory ? (
-                  <>No products found in <span className="font-semibold">{displayCategory}</span></>
-                ) : (
-                  <>No products found</>
-                )}
-              </div>
-            ) : (
-              filteredProducts.map(product => (
-                <ProductsCard key={product.id} product={product} />
-              ))
-            )}
-          </div>
+          {isLoading ? (
+            <GridSkeleton count={12} />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.length === 0 ? (
+                <div className="col-span-full text-center text-text-grey py-20">
+                  {searchTerm ? (
+                    <>No products found for <span className="font-semibold">{searchTerm}</span></>
+                  ) : displayCategory ? (
+                    <>No products found in <span className="font-semibold">{displayCategory}</span></>
+                  ) : (
+                    <>No products found</>
+                  )}
+                </div>
+              ) : (
+                filteredProducts.map(product => (
+                  <ProductsCard key={product.id} product={product} />
+                ))
+              )}
+            </div>
+          )}
         </main>
       </div>
     </div>

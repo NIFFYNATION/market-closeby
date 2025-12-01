@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { productsData } from './productsData';
 import ProductsCard from './cards/ProductsCard';
+import GridSkeleton from './common/GridSkeleton';
 
 
 
 
 const TrendingProducts = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Handle window resize to detect mobile view
   useEffect(() => {
@@ -17,6 +19,11 @@ const TrendingProducts = () => {
     
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(t);
   }, []);
 
   return (
@@ -34,11 +41,15 @@ const TrendingProducts = () => {
         </div>
         
         {/* Product grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
-          {productsData.slice(0, isMobile ? 4 : 8).map((product) => (
-            <ProductsCard key={product.id} product={product} />
-          ))}
-        </div>
+        {isLoading ? (
+          <GridSkeleton count={isMobile ? 4 : 8} />
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
+            {productsData.slice(0, isMobile ? 4 : 8).map((product) => (
+              <ProductsCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
