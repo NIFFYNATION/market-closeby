@@ -11,7 +11,7 @@ const PageHeader = ({
   className = ''
 }) => {
   const getContainerClasses = () => {
-    const baseClasses = 'pt-40 md:pt-50';
+    const baseClasses = 'pt-28 md:pt-50';
     
     switch (containerStyle) {
       case 'shadow':

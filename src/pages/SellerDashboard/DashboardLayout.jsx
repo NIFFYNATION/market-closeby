@@ -30,12 +30,12 @@ const DashboardLayout = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <img src="/icons/Logo.svg" alt="" /> 
-            <button 
-              onClick={toggleSidebar}
+            <Link to="/"
+              // onClick={toggleSidebar}
               className="w-6 h-6 block lg:hidden"
             >
               <img src="/icons/menu-white.svg" alt="Menu" className="w-6 h-6" /> 
-            </button>
+            </Link>
           </div>
           <div className="flex items-center space-x-4">
             <div className="relative">

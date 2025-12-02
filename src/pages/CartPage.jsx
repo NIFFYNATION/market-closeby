@@ -45,7 +45,7 @@ const CartPage = () => {
 
   if (!items.length) {
     return (
-      <section className="min-h-screen pt-32 pb-16 mt-20 flex flex-col items-center justify-center text-center px-6 animate-fade-in-up">
+      <section className="min-h-screen pt-20 pb-16 md:mt-30 flex flex-col items-center justify-center text-center px-6 animate-fade-in-up">
         <img
           src="/imgs/empty-cart.png"
           alt="Empty cart"
