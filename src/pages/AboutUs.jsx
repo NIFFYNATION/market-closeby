@@ -8,8 +8,8 @@ const AboutUs = () => {
       <section className="bg-gradient-to-br mt-18 sm:mt-38 from-primary to-secondary text-white">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight">Market Closeby — Your everyday marketplace, closer than ever.</h1>
-          <p className="mt-4 text-base md:text-lg opacity-90">Our mission is simple: help people find, buy, and receive what they need from trusted local and nationwide sellers—fast, fairly, and with joy.</p>
-          <div className="mt-8 flex gap-4">
+          <p className="mt-4 text-base md:text-lg opacity-90">Our mission is simple: help people find, buy, and receive what they need from trusted local and nationwide sellers-fast, fairly, and with joy.</p>
+          <div className="mt-8 flex flex-col md:flex-row text-center gap-4">
             <Link to="/signup" className="bg-white text-primary font-semibold px-6 py-3 rounded-full shadow hover:shadow-lg transition">Start shopping</Link>
             <Link to="/seller-landing-page" className="border border-white/90 text-white px-6 py-3 rounded-full hover:bg-white/10 transition">Sell on Market Closeby</Link>
           </div>
