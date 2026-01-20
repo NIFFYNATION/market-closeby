@@ -34,7 +34,7 @@ const DashboardLayout = () => {
               // onClick={toggleSidebar}
               className="w-6 h-6 block lg:hidden"
             >
-              <img src="/icons/menu-white.svg" alt="Menu" className="w-6 h-6" /> 
+              <img src="/icons/menu-white.png" alt="Menu" className="w-6 h-6" /> 
             </Link>
           </div>
           <div className="flex items-center space-x-4">

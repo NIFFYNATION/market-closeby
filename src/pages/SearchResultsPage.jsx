@@ -137,7 +137,7 @@ const SearchResultsPage = () => {
   };
 
   return (
-    <div className="pt-40 md:pt-48  min-h-screen py-8 ">
+    <div className="pt-18 md:pt-40  min-h-screen py-8 ">
       {/* Breadcrumb */}
     <div className='bg-background shadow-xl py-8 px-0 md:px-6 lg:px-10'>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between text-xs text-text-grey px-6 pt- pb-6 gap-4">

@@ -165,8 +165,55 @@ function SellerLandingPage() {
 
           {/* Seller Images Carousel */}
           <div className="relative mx-auto mt-8 sm:mt-12">
-            {/* Carousel Container */}
-            <div className="relative overflow-hidden rounded-xl sm:rounded-2xl">
+            {/* Mobile-only: clean single-image carousel */}
+            <div className="sm:hidden">
+              <div className="relative overflow-hidden rounded-3xl bg-background-alt shadow-lg">
+                {/* soft background glow */}
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-secondary/10" />
+
+                <div
+                  className="flex transition-transform duration-500 ease-out"
+                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                >
+                  {sellerImages.map((img, index) => (
+                    <div key={index} className="w-full flex-shrink-0 p-3">
+                      <div className="relative overflow-hidden rounded-2xl bg-white shadow-sm">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/0 to-black/0" />
+                        <img
+                          src={img.src}
+                          alt={img.alt}
+                          className="w-full h-64 object-cover"
+                          loading="lazy"
+                          draggable="false"
+                        />
+                        <div className="absolute bottom-3 left-3 right-3">
+                          <p className="text-white text-xs font-medium line-clamp-2 drop-shadow">
+                            {img.alt}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Mobile dots */}
+                <div className="flex items-center justify-center gap-2 px-4 pb-4">
+                  {sellerImages.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => goToSlide(index)}
+                      aria-label={`Go to slide ${index + 1}`}
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        currentSlide === index ? "w-8 bg-secondary" : "w-2 bg-gray-300"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop/tablet: keep existing design unchanged */}
+            <div className="hidden sm:block relative overflow-hidden rounded-xl sm:rounded-2xl">
               <div
                 className="flex transition-transform duration-500 ease-in-out"
                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -231,14 +278,14 @@ function SellerLandingPage() {
               </svg>
             </button>
 
-            {/* Dots Indicator */}
-            <div className="flex justify-center mt-4 sm:mt-6 space-x-2">
+            {/* Dots Indicator (desktop/tablet only; mobile uses its own) */}
+            <div className="hidden sm:flex justify-center mt-4 sm:mt-6 space-x-2">
               {sellerImages.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => goToSlide(index)}
                   className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-200 ${
-                    currentSlide === index ? "bg-orange-400" : "bg-gray-300"
+                    currentSlide === index ? "bg-secondary" : "bg-gray-300"
                   }`}
                 />
               ))}

@@ -130,7 +130,7 @@ function Header() {
               className="lg:hidden pr-4"
               onClick={toggleMobileMenu}
             >
-              <img src="/icons/menu-white.svg" alt="Menu" className="w-8 h-8" />
+              <img src="/icons/menu-white.png" alt="Menu" className="w-8 h-8" />
             </button>
             
         {/* Logo */}

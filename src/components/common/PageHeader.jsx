@@ -15,7 +15,7 @@ const PageHeader = ({
     
     switch (containerStyle) {
       case 'shadow':
-        return `${baseClasses} bg-background shadow-xl py-8 px-6   lg:px-10 mb-10`;
+        return `${baseClasses} bg-background shadow-sm py-8 px-6   lg:px-10 mb-10`;
       case 'background':
         return `${baseClasses} bg-gray-50 px-10`;
       default:
