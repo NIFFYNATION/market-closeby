@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "../components/common/Button";
+import { Link } from "react-router-dom";
 import SellerLandingSkeleton from "../components/skeletons/SellerLandingSkeleton";
 
 function SellerLandingPage() {
@@ -158,9 +159,9 @@ function SellerLandingPage() {
             </p>
 
             {/* CTA Button */}
-            <Button variant="secondary" className="mb-8 sm:mb-10 w-full sm:w-auto px-8 py-3 text-base sm:text-lg">
+            <Link to='/seller-dashboard' className="mb-8 sm:mb-10 w-full sm:w-auto px-8 py-3 font-semibold text-base sm:text-lg bg-secondary text-background hover:bg-secondary-light">
               Start selling now
-            </Button>
+            </Link>
           </div>
 
           {/* Seller Images Carousel */}

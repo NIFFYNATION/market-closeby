@@ -11,18 +11,18 @@ const ProductsCard = ({ product }) => {
           {product.verified && (
             <>
             <div className="absolute top-4 
-            right-4 z-10">
+            right-2 z-10">
              <img src="/icons/verified-user.svg" alt="Verified User" />
             </div>
             <div className="absolute top-10 
-            right-4 z-10">
+            right-2 z-10">
              <img src="/icons/check.svg" 
              alt="Check User" />
             </div>
             </>
           )}
           <div className="p-4">
-            <img src={product.image} alt={product.name} className="w-full h-40 object-contain" />
+            <img src={product.image} alt={product.name} className="w-full h-30 object-contain" />
           </div>
         </div>
         <div className="py-4 px-3">
