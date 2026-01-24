@@ -114,7 +114,7 @@ function SellerLandingPage() {
               Join the fastest-growing seller marketplace with built-in tools for
               <br className="hidden sm:block" />
               <span className="sm:hidden"> </span>visibility, payment, and logistics
-            </p>
+             </p>
 
             {/* CTA Button */}
             <Button 
@@ -123,7 +123,7 @@ function SellerLandingPage() {
               onClick={() => navigate('/store-setup')}
             >
               Start selling now
-            </Link>
+            </Button>
           </div>
 
           {/* Seller Images Carousel */}

@@ -126,7 +126,7 @@ const Support = () => {
   };
 
   return (
-    <div className={`flex h-[calc(100vh-140px)] rounded-2xl border overflow-hidden ${borderColor} ${theme === 'dark' ? 'bg-[#1e1e1e]' : 'bg-white'}`}>
+    <div className={`flex lg:h-[calc(100vh-140px)] h-[calc(100vh-200px)] rounded-2xl border overflow-hidden ${borderColor} ${theme === 'dark' ? 'bg-[#1e1e1e]' : 'bg-white'}`}>
       {/* Sidebar - Chat List */}
       <div className={`w-full md:w-80 border-r flex flex-col ${borderColor} ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
         <div className={`p-4 border-b ${borderColor}`}>
