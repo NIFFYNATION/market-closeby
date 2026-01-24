@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CategoryBrowser from "../components/common/CategoryBrowser";
 import TrendingProducts from "../components/TrendingProducts";
 import "./HomePage.css";
 import HeroCoverflow from "../components/common/HeroCoverflow";
 import { Link } from "react-router-dom";
+import { useUIStore } from "../store/uiStore";
 
 const heroImages = [
   '/imgs/hero/banner1.jpg',
@@ -14,12 +15,28 @@ const heroImages = [
 
 function HomePage() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const setShowMobileTabMenu = useUIStore((s) => s.setShowMobileTabMenu);
 
   const handleImageChange = (index) => {
     // Ensure the index loops within the heroImages length
     const loopedIndex = index % heroImages.length;
     setActiveImageIndex(loopedIndex);
   };
+
+  // Detect scroll to show/hide mobile menu
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show menu as soon as user scrolls down (any amount)
+      setShowMobileTabMenu(window.scrollY > 0);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      // Reset to show menu when leaving HomePage
+      setShowMobileTabMenu(true);
+    };
+  }, [setShowMobileTabMenu]);
 
   return (
    <div className="w-full">

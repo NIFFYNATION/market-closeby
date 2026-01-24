@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useMemo, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../components/common/Button";
 import {
   TextInput,
@@ -15,30 +15,22 @@ import {
   deliveryDayOptions,
   productConditionOptions,
 } from "../../components/common/categoryData";
+import ImageUploader from "../../components/forms/ImageUploader";
 import { useDashboardTheme } from "./DashboardLayout";
-import { FiCpu, FiX, FiCalendar, FiShare2, FiPercent, FiTrendingUp, FiLayers, FiCheck, FiImage, FiSettings, FiTruck, FiEye } from "react-icons/fi";
+import { FiCpu, FiX, FiCalendar, FiShare2, FiPercent, FiTrendingUp, FiLayers, FiCheck } from "react-icons/fi";
 import { FaBullhorn } from "react-icons/fa";
 import { useToast } from "../../context/ToastContext";
 import { useSellerStore } from '../../store/sellerStore';
-import ImageUploader from "../../components/forms/ImageUploader";
 
-const AddProduct = () => {
+const EditProduct = () => {
   const { theme } = useDashboardTheme();
   const navigate = useNavigate();
+  const { id } = useParams();
   const { stores, currentStoreId } = useSellerStore();
   const [loading, setLoading] = useState(false);
   const [selectedImages, setSelectedImages] = useState([]);
   const [currentStep, setCurrentStep] = useState(1); // Add step state
-  const [maxStep, setMaxStep] = useState(1); // Track max reached step
   
-  const steps = [
-    { id: 1, title: "Info", icon: FiLayers },
-    { id: 2, title: "Images", icon: FiImage },
-    { id: 3, title: "Settings", icon: FiSettings },
-    { id: 4, title: "Delivery", icon: FiTruck },
-    { id: 5, title: "Review", icon: FiEye },
-  ];
-
   // AI State
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
@@ -90,6 +82,65 @@ const AddProduct = () => {
   });
 
   const [tagInput, setTagInput] = useState("");
+
+  // Simulate fetching product data
+  useEffect(() => {
+    if (id) {
+        setLoading(true);
+        // Simulate API call delay
+        setTimeout(() => {
+            // Mock data - in a real app, this would come from an API based on ID
+            setFormData({
+                productName: "Premium Leather Bag",
+                category: "Fashion",
+                subCategory: "Bags",
+                state: "Lagos",
+                lga: "Ikeja",
+                price: "25000",
+                stock: "15",
+                discount: "10",
+                tags: ["Fashion", "Leather", "Bag"],
+                description: "High quality leather bag suitable for all occasions.",
+                estimatedDeliveryDay: "1-3 Days",
+                shippingRegion: "Nationwide",
+                shippingFee: "2000",
+                productCondition: "New",
+                scheduledDate: "",
+                autoPostSocial: true,
+                selectedSocialPlatforms: ["Instagram"],
+                enableDynamicPricing: false,
+                dynamicPricing: {
+                    type: 'sales_count',
+                    increaseAmount: '',
+                    threshold: '',
+                },
+                enableDiscountScheduler: false,
+                discountScheduler: {
+                    percentage: '',
+                    startDate: '',
+                    endDate: '',
+                },
+                enableAds: false,
+                adsSettings: {
+                    budget: '',
+                    duration: '7',
+                    audience: 'all',
+                    adFormat: 'banner',
+                    placement: 'search_results',
+                    cta: 'shop_now'
+                },
+                targetStores: [currentStoreId],
+            });
+            
+            // Mock images
+            setSelectedImages([
+                { id: 1, preview: "https://via.placeholder.com/150", file: null }
+            ]);
+            
+            setLoading(false);
+        }, 1000);
+    }
+  }, [id, currentStoreId]);
 
   const handleAddTag = (e) => {
     if (e.key === 'Enter' || e.key === ',') {
@@ -153,29 +204,6 @@ const AddProduct = () => {
     return ["Select LGA", ...selectedState.cities];
   }, [formData.state]);
 
-  // Generate tags options from category data
-  const tagsOptions = useMemo(() => {
-    const allTags = new Set(["Eg. Bags, totes"]); // Use Set to avoid duplicates
-
-    categories.forEach((category) => {
-      // Add category name as a tag
-      allTags.add(category.name);
-
-      // Add section titles as tags
-      category.sections.forEach((section) => {
-        allTags.add(section.title);
-
-        // Add some items as tags (limit to avoid too many options)
-        section.items.slice(0, 3).forEach((item) => {
-          allTags.add(item);
-        });
-      });
-    });
-
-    return Array.from(allTags);
-  }, []);
-
- 
   const deliveryDaySelectOptions = useMemo(() => {
     return [
       "Choose category",
@@ -261,37 +289,22 @@ const AddProduct = () => {
       ];
       const missingFields = requiredFields.filter((field) => !formData[field]);
 
-      if (missingFields.length > 0) {
-        alert("Please fill in all required fields.");
+      if (missingFields.length > 0 || selectedImages.length === 0) {
+        alert(
+          "Please fill in all required fields and upload at least one image."
+        );
         return;
       }
 
       setCurrentStep(2);
-      setMaxStep(prev => Math.max(prev, 2));
-    } else if (currentStep === 2) {
-      // Validate Step 2 (Images)
-      if (selectedImages.length === 0) {
-        alert("Please upload at least one image.");
-        return;
-      }
-      setCurrentStep(3);
-      setMaxStep(prev => Math.max(prev, 3));
-    } else if (currentStep === 3) {
-      // Validate Step 3 (Advanced Settings - Optional, so just proceed)
-      setCurrentStep(4);
-      setMaxStep(prev => Math.max(prev, 4));
-    } else if (currentStep === 4) {
-       // Validate Step 4 (Delivery)
+    } else {
+       // Validate Step 2 (Delivery)
        const requiredFields = ["estimatedDeliveryDay", "shippingRegion", "shippingFee", "productCondition"];
        const missingFields = requiredFields.filter((field) => !formData[field]);
        if (missingFields.length > 0) {
            alert("Please fill in all delivery options.");
            return;
        }
-       setCurrentStep(5);
-       setMaxStep(prev => Math.max(prev, 5));
-    } else {
-       // Submit on Step 5
        handleSubmit();
     }
   };
@@ -305,18 +318,18 @@ const AddProduct = () => {
       console.log("Form Data:", formData);
       console.log("Selected Images:", selectedImages);
       // Navigate back to dashboard or show success message
-      showToast('Product created successfully!', 'success');
-      navigate("/seller-dashboard");
+      showToast('Product updated successfully!', 'success');
+      navigate("/seller-dashboard/products");
     } catch (error) {
       console.error("Error submitting form:", error);
-      showToast('Failed to create product.', 'error');
+      showToast('Failed to update product.', 'error');
     } finally {
       setLoading(false);
     }
   };
 
   const handleCancel = () => {
-    navigate("/seller-dashboard");
+    navigate("/seller-dashboard/products");
   };
 
   const handlePrevious = () => {
@@ -332,8 +345,16 @@ const AddProduct = () => {
 
   const labelThemeClass = theme === 'dark' ? 'text-slate-300' : 'text-gray-700';
 
+  if (loading && !formData.productName) {
+      return (
+          <div className="flex items-center justify-center min-h-[400px]">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500"></div>
+          </div>
+      );
+  }
+
   return (
-    <div className="w-full max-w-full overflow-x-hidden p-4 md:p-6">
+    <div className=" mx-auto p-0 md:p-6 ">
       {/* Header */}
       <div className="mb-8">
         <h1
@@ -341,37 +362,8 @@ const AddProduct = () => {
             theme === "dark" ? "text-white" : "text-text-primary"
           }`}
         >
-          Add Product
+          Edit Product
         </h1>
-      </div>
-
-      {/* Steps Navigation */}
-      <div className="w-full mb-8">
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 w-90 sm:w-full">
-          {steps.map((step) => {
-              const Icon = step.icon;
-              const isActive = currentStep === step.id;
-              const isCompleted = step.id < currentStep || (step.id < maxStep && step.id !== currentStep);
-              
-              return (
-                  <button
-                      key={step.id}
-                      onClick={() => setCurrentStep(step.id)}
-                      disabled={step.id > maxStep}
-                      className={`flex-shrink-0 flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full border text-xs md:text-sm font-medium transition-all whitespace-nowrap ${
-                          isActive 
-                              ? theme === 'dark' ? 'bg-amber-500 text-[#1a1a4b] border-amber-500' : 'bg-amber-500 text-white border-amber-500'
-                              : isCompleted
-                                  ? theme === 'dark' ? 'bg-green-500/10 text-green-500 border-green-500/50' : 'bg-green-50 text-green-600 border-green-200'
-                                  : theme === 'dark' ? 'bg-white/5 text-slate-400 border-white/10' : 'bg-white text-slate-400 border-slate-200'
-                      } ${step.id <= maxStep ? 'cursor-pointer hover:opacity-80' : 'cursor-not-allowed opacity-50'}`}
-                  >
-                      {isCompleted ? <FiCheck className="w-3 h-3 md:w-4 md:h-4" /> : <Icon className="w-3 h-3 md:w-4 md:h-4" />}
-                      {step.title}
-                  </button>
-              )
-          })}
-        </div>
       </div>
 
       <form className="space-y-8">
@@ -396,12 +388,19 @@ const AddProduct = () => {
                 theme === "dark" ? "text-slate-400" : "text-gray-600"
               }`}
             >
-              Provide valid information for your clients to reach you
+              Update information for your product
             </p>
           </div>
 
+          {/* Images Upload Section - Always visible */}
+          <ImageUploader 
+            images={selectedImages}
+            setImages={setSelectedImages}
+            theme={theme}
+          />
+
           {/* Conditional Content Based on Step */}
-          {currentStep === 1 && (
+          {currentStep === 1 ? (
             /* Other Info Section - Step 1 */
             <div className="space-y-6">
               <h3
@@ -589,20 +588,9 @@ const AddProduct = () => {
                   className={`w-full px-4 py-3 outline-none transition-all duration-200 ${inputThemeClass}`}
                 />
               </div>
-            </div>
-          )}
 
-          {currentStep === 2 && (
-            <ImageUploader 
-              images={selectedImages}
-              setImages={setSelectedImages}
-              theme={theme}
-            />
-          )}
-
-          {currentStep === 3 && (
-              /* Advanced Settings & Marketing - Step 3 */
-              <div className="space-y-6">
+              {/* Advanced Settings & Marketing */}
+              <div className="space-y-8 mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
                 <h3 className={`text-sm font-medium uppercase tracking-wide ${theme === "dark" ? "text-slate-300" : "text-gray-700"}`}>
                   ADVANCED SETTINGS & MARKETING
                 </h3>
@@ -952,10 +940,9 @@ const AddProduct = () => {
                  )}
 
               </div>
-          )}
-
-          {currentStep === 4 && (
-            /* Delivery Option Section - Step 4 */
+            </div>
+          ) : (
+            /* Delivery Option Section - Step 2 */
             <div className="space-y-6">
               <h3
                 className={`text-sm font-medium uppercase tracking-wide ${
@@ -1022,128 +1009,6 @@ const AddProduct = () => {
               </div>
             </div>
           )}
-
-          {currentStep === 5 && (
-            /* Review Section - Step 5 */
-            <div className="space-y-8">
-                <div className="text-center mb-8">
-                    <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Review Product Details</h3>
-                    <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
-                        Please review all information before publishing your product.
-                    </p>
-                </div>
-
-                <div className={`rounded-xl border overflow-hidden ${theme === 'dark' ? 'bg-[#121212] border-white/10' : 'bg-slate-50 border-slate-200'}`}>
-                    {/* Basic Info Summary */}
-                    <div className="p-6 border-b border-white/10">
-                        <div className="flex items-center gap-3 mb-4">
-                            <FiLayers className="w-5 h-5 text-amber-500" />
-                            <h4 className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Basic Information</h4>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
-                            <div>
-                                <span className={`text-xs block mb-1 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>Product Name</span>
-                                <span className={`text-sm font-medium ${theme === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{formData.productName}</span>
-                            </div>
-                            <div>
-                                <span className={`text-xs block mb-1 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>Category</span>
-                                <span className={`text-sm font-medium ${theme === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{formData.category} / {formData.subCategory}</span>
-                            </div>
-                            <div>
-                                <span className={`text-xs block mb-1 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>Price</span>
-                                <span className={`text-sm font-medium ${theme === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{formData.price}</span>
-                            </div>
-                            <div>
-                                <span className={`text-xs block mb-1 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>Stock</span>
-                                <span className={`text-sm font-medium ${theme === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{formData.stock} units</span>
-                            </div>
-                            <div>
-                                <span className={`text-xs block mb-1 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>Location</span>
-                                <span className={`text-sm font-medium ${theme === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{formData.lga}, {formData.state}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Images Summary */}
-                    <div className="p-6 border-b border-white/10">
-                        <div className="flex items-center gap-3 mb-4">
-                            <FiImage className="w-5 h-5 text-amber-500" />
-                            <h4 className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Images ({selectedImages.length})</h4>
-                        </div>
-                        <div className="flex gap-2 overflow-x-auto pb-2">
-                            {selectedImages.map((img, idx) => (
-                                <div key={img.id} className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border border-white/10">
-                                    <img src={img.preview} alt="Product" className="w-full h-full object-cover" />
-                                    {idx === 0 && (
-                                        <div className="absolute top-0 right-0 bg-amber-500 text-white text-[10px] px-1 rounded-bl">Cover</div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Settings Summary */}
-                    {(formData.scheduledDate || formData.enableDynamicPricing || formData.targetStores.length > 1) && (
-                        <div className="p-6 border-b border-white/10">
-                            <div className="flex items-center gap-3 mb-4">
-                                <FiSettings className="w-5 h-5 text-amber-500" />
-                                <h4 className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Advanced Settings</h4>
-                            </div>
-                            <div className="space-y-3">
-                                {formData.scheduledDate && (
-                                    <div className="flex items-center gap-2 text-sm">
-                                        <FiCalendar className="text-slate-400" />
-                                        <span className={theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}>
-                                            Scheduled for: <span className="font-medium">{new Date(formData.scheduledDate).toLocaleString()}</span>
-                                        </span>
-                                    </div>
-                                )}
-                                {formData.enableDynamicPricing && (
-                                    <div className="flex items-center gap-2 text-sm">
-                                        <FiTrendingUp className="text-slate-400" />
-                                        <span className={theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}>Dynamic Pricing Enabled</span>
-                                    </div>
-                                )}
-                                {formData.targetStores.length > 1 && (
-                                    <div className="flex items-center gap-2 text-sm">
-                                        <FiShare2 className="text-slate-400" />
-                                        <span className={theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}>
-                                            Posting to {formData.targetStores.length} stores
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Delivery Summary */}
-                    <div className="p-6">
-                         <div className="flex items-center gap-3 mb-4">
-                            <FiTruck className="w-5 h-5 text-amber-500" />
-                            <h4 className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Delivery & Condition</h4>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
-                             <div>
-                                <span className={`text-xs block mb-1 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>Delivery Time</span>
-                                <span className={`text-sm font-medium ${theme === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{formData.estimatedDeliveryDay}</span>
-                            </div>
-                            <div>
-                                <span className={`text-xs block mb-1 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>Shipping Fee</span>
-                                <span className={`text-sm font-medium ${theme === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{formData.shippingFee}</span>
-                            </div>
-                             <div>
-                                <span className={`text-xs block mb-1 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>Region</span>
-                                <span className={`text-sm font-medium ${theme === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{formData.shippingRegion}</span>
-                            </div>
-                            <div>
-                                <span className={`text-xs block mb-1 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>Condition</span>
-                                <span className={`text-sm font-medium ${theme === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>{formData.productCondition}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-          )}
         </div>
 
         {/* Action Buttons */}
@@ -1184,9 +1049,9 @@ const AddProduct = () => {
             className="px-8 py-3 bg-secondary text-background hover:bg-secondary-light rounded-lg font-medium disabled:opacity-50"
           >
             {loading
-              ? "Processing..."
-              : currentStep === 5
-              ? "Post Product"
+              ? "Updating..."
+              : currentStep === 2
+              ? "Update Product"
               : "Proceed"}
           </Button>
         </div>
@@ -1270,4 +1135,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default EditProduct;

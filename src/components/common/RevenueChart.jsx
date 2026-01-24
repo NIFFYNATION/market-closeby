@@ -9,15 +9,21 @@ const RevenueChart = ({
   selectedPeriod = "Last 7 days", 
   onPeriodChange,
   isVerified = true,
-  className = ""
+  className = "",
+  theme = "light",
 }) => {
-  // Custom tooltip component
-  const CustomTooltip = ({ active, payload, label }) => {
+  const isDark = theme === 'dark';
+
+  const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length && isVerified) {
+      const containerClass = isDark
+        ? 'bg-gray-900 text-white border border-white/10'
+        : 'bg-white text-gray-900 border border-gray-200';
+      const subtitleClass = isDark ? 'text-gray-400' : 'text-gray-500';
       return (
-        <div className="bg-gray-800 text-white px-3 py-2 rounded-lg text-sm shadow-lg">
+        <div className={`${containerClass} px-3 py-2 rounded-lg text-sm shadow-lg`}>
           <div className="font-semibold">₦{payload[0].value * 10}</div>
-          <div className="text-xs text-gray-300">July 18, 2025</div>
+          <div className={`text-xs ${subtitleClass}`}>July 18, 2025</div>
         </div>
       );
     }
@@ -25,16 +31,38 @@ const RevenueChart = ({
   };
 
   return (
-    <div className={`bg-background p-6 rounded-lg shadow-sm w-full ${className}`}>
+    <div
+      className={`p-6 rounded-lg shadow-sm w-full border ${
+        isDark
+          ? 'bg-[#1e1e1e] border-white/10'
+          : 'bg-background border-gray-100'
+      } ${className}`}
+    >
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-text-grey">{title}</h3>
-          <div className="text-2xl font-bold text-gray-900 mb-2 text-primary">{revenue}</div>
+          <h3
+            className={`text-lg font-semibold ${
+              isDark ? 'text-slate-200' : 'text-text-grey'
+            }`}
+          >
+            {title}
+          </h3>
+          <div
+            className={`text-2xl font-bold mb-2 ${
+              isDark ? 'text-white' : 'text-primary text-gray-900'
+            }`}
+          >
+            {revenue}
+          </div>
         </div>
         <select
           value={selectedPeriod}
           onChange={(e) => onPeriodChange && onPeriodChange(e.target.value)}
-          className="text-sm bg-[#F5F6FA] border border-[#DEE5ED] rounded-sm px-5 py-3 focus:outline-none focus:ring-2"
+          className={`text-sm rounded-sm px-5 py-3 focus:outline-none focus:ring-2 ${
+            isDark
+              ? 'bg-[#111827] border border-white/10 text-slate-200 focus:ring-amber-400/40'
+              : 'bg-[#F5F6FA] border border-[#DEE5ED] text-gray-700 focus:ring-primary/40'
+          }`}
         >
           <option>Last 7 days</option>
           <option>Last 30 days</option>
@@ -42,8 +70,14 @@ const RevenueChart = ({
         </select>
       </div>
       <div className="flex items-center justify-end space-x-2 mb-6">
-        <span className="w-3 h-3 bg-danger rounded-full"></span>
-        <span className="text-sm text-gray-600">Total Profit: {profit}</span>
+        <span className="w-3 h-3 bg-danger rounded-full" />
+        <span
+          className={`text-sm ${
+            isDark ? 'text-slate-300' : 'text-gray-600'
+          }`}
+        >
+          Total Profit: {profit}
+        </span>
       </div>
       
       {/* Recharts Implementation */}
@@ -65,25 +99,25 @@ const RevenueChart = ({
               </linearGradient>
             </defs>
             
-            <CartesianGrid 
-              strokeDasharray="0" 
-              stroke="#f3f4f6" 
-              horizontal={true}
-              vertical={true}
+            <CartesianGrid
+              strokeDasharray="0"
+              stroke={isDark ? '#1f2937' : '#f3f4f6'}
+              horizontal
+              vertical
             />
             
-            <XAxis 
-              dataKey="name" 
+            <XAxis
+              dataKey="name"
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 15, fill: '#6b7280' }}
+              tick={{ fontSize: 12, fill: isDark ? '#9ca3af' : '#6b7280' }}
               dy={10}
             />
             
-            <YAxis 
+            <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 15, fill: '#6b7280' }}
+              tick={{ fontSize: 12, fill: isDark ? '#9ca3af' : '#6b7280' }}
               domain={[0, 50]}
               ticks={[0, 10, 20, 30, 40, 50]}
             />
@@ -106,8 +140,26 @@ const RevenueChart = ({
         </ResponsiveContainer>
       </div>
       
-      <div className="text-xs md:text-lg text-text-grey mt-4 justify-self-center">
-        <span className='font-bold text-gray-600'>{profit}</span> earned in booking fee over the <span className="font-bold text-gray-600">past 7 days</span>
+      <div
+        className={`text-xs md:text-lg mt-4 justify-self-center ${
+          isDark ? 'text-slate-300' : 'text-text-grey'
+        }`}
+      >
+        <span
+          className={`font-bold ${
+            isDark ? 'text-slate-100' : 'text-gray-600'
+          }`}
+        >
+          {profit}
+        </span>{' '}
+        earned in booking fee over the{' '}
+        <span
+          className={`font-bold ${
+            isDark ? 'text-slate-100' : 'text-gray-600'
+          }`}
+        >
+          past 7 days
+        </span>
       </div>
     </div>
   );

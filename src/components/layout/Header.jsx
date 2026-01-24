@@ -6,7 +6,6 @@ import { Button } from '../common/Button';
 import SearchBar from '../common/SearchBar';
 import { categories } from '../common/categoryData';
 import { useCartStore } from '../../store/cartStore';
-import { useWishlistStore } from '../../store/wishlistStore';
 import { useUIStore } from '../../store/uiStore';
 
 function Header() {
@@ -17,7 +16,6 @@ function Header() {
   
   const navigate = useNavigate();
   const cartCount = useCartStore((state) => state.cartCount());
-  const wishlistCount = useWishlistStore((state) => state.wishlistCount());
 
   // Icons (replace with your own SVGs or icon components)
   const helpIcon = <img src="/icons/help.svg" alt="Help" className="w-5 h-5" />;
@@ -270,7 +268,7 @@ function Header() {
         <div className="flex-1 overflow-y-auto min-h-0">
           {/* Categories Section */}
           <div className="border-b border-primary">
-            {categories.map((category, index) => (
+            {categories.map((category) => (
               <Link
                 key={category.name}
                 to={`/category/${category.name.toLowerCase().replace(/&/g,'and').replace(/\s+/g, '-')}`}

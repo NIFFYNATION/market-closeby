@@ -69,7 +69,8 @@ const DeliveryAndShipping = () => {
           logoWidth="w-20 h-20 mx-auto"
           title="Delivery & Shipping"
           subtitle="Please provide account details where your proceeds will go to"
-          showBackButton={false}
+          showBackButton={true}
+          onBack={() => navigate('/confirm-business-id')}
         />
 
         <form onSubmit={handleSubmit} className="space-y-6">

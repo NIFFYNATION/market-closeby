@@ -3,8 +3,11 @@ import Header from './Header';
 import Footer from './Footer';
 import MobileTabMenu from '../common/MobileTabMenu';
 import { Outlet } from 'react-router-dom'
+import { useUIStore } from '../../store/uiStore';
 
 const Layout = () => {
+  const showMobileTabMenu = useUIStore((s) => s.showMobileTabMenu);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -15,8 +18,8 @@ const Layout = () => {
       <div className="hidden md:block">
         <Footer />
       </div>
-      {/* Mobile Tab Menu - only visible on mobile */}
-      <MobileTabMenu />
+      {/* Mobile Tab Menu - only visible on mobile and when not on hero section */}
+      <MobileTabMenu isVisible={showMobileTabMenu} />
     </div>
   );
 };

@@ -1,33 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { categories } from './categoryData'
 import ScrollControlButtons from '../common/ScrollControlButtons';
 
 const CategoryBrowser = () => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const scrollRef = useRef(null);
 
-  // Handle window resize to detect mobile view
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const [activeBtn, setActiveBtn] = useState(null);
-
-  // Scroll handlers
   const scrollByAmount = (amount) => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
     }
   };
-
-  // Helper for icon color (SVG filter for white/primary)
-  const iconFilter = (direction) =>
-    activeBtn === direction ? 'invert brightness-200' : 'filter-none';
 
   return (
     <div className="bg-primary py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6 lg:px-10 w-full">

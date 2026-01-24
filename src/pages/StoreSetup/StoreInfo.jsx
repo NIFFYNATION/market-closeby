@@ -52,8 +52,8 @@ function StoreInfo() {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Navigate to next step or dashboard
-      navigate('/account');
+      // Navigate to next step in store setup
+      navigate('/store-image-upload');
     } catch (error) {
       console.error('Error saving store information:', error);
       alert('Failed to save store information. Please try again.');
@@ -68,8 +68,8 @@ function StoreInfo() {
       <AuthHeader 
         title="Store Information"
         subtitle="Let's start by gathering some basic details about your store."
-        // showBackButton={true}
-        onBackClick={() => navigate('/')}
+        showBackButton={true}
+        onBack={() => navigate(-1)}
       />
 
       {/* Form Content */}

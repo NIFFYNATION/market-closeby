@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { TextInput, SelectInput, TextareaInput } from '../../components/forms/FormFields';
 import { statesAndCities } from '../../components/common/locationsData';
 import { categories } from '../../components/common/categoryData';
+import { useDashboardTheme } from './DashboardLayout';
 
 const Settings = () => {
+  const { theme } = useDashboardTheme();
   const [activeTab, setActiveTab] = useState('Personal Information');
   const [formData, setFormData] = useState({
     fullName: '',
@@ -26,6 +28,9 @@ const Settings = () => {
     newPassword: '',
     confirmPassword: ''
   });
+  const [errors, setErrors] = useState({});
+  const [saveMessage, setSaveMessage] = useState('');
+  const [saveMessageType, setSaveMessageType] = useState('');
 
   const [showPasswords, setShowPasswords] = useState({
     current: false,
@@ -47,10 +52,90 @@ const Settings = () => {
       [name]: value
     }));
   };
+  const validateCurrentTab = () => {
+    const newErrors = {};
+
+    if (activeTab === 'Personal Information') {
+      if (!formData.fullName.trim()) {
+        newErrors.fullName = 'Full name is required.';
+      }
+      if (!formData.email.trim()) {
+        newErrors.email = 'Email address is required.';
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        newErrors.email = 'Enter a valid email address.';
+      }
+      if (!formData.phoneNumber.trim()) {
+        newErrors.phoneNumber = 'Phone number is required.';
+      }
+      if (!formData.country.trim()) {
+        newErrors.country = 'Country is required.';
+      }
+    }
+
+    if (activeTab === 'Store Information') {
+      if (!formData.storeName.trim()) {
+        newErrors.storeName = 'Store name is required.';
+      }
+      if (!formData.state.trim()) {
+        newErrors.state = 'State is required.';
+      }
+      if (!formData.lga.trim()) {
+        newErrors.lga = 'LGA is required.';
+      }
+      if (!formData.category.trim()) {
+        newErrors.category = 'Category is required.';
+      }
+      if (!formData.address.trim()) {
+        newErrors.address = 'Address is required.';
+      }
+    }
+
+    if (activeTab === 'Bank Settings') {
+      if (!formData.bankName.trim()) {
+        newErrors.bankName = 'Bank name is required.';
+      }
+      if (!formData.accountNumber.trim()) {
+        newErrors.accountNumber = 'Account number is required.';
+      } else if (!/^\d{10}$/.test(formData.accountNumber)) {
+        newErrors.accountNumber = 'Account number must be 10 digits.';
+      }
+      if (!formData.accountHolderName.trim()) {
+        newErrors.accountHolderName = 'Account holder name is required.';
+      }
+    }
+
+    if (activeTab === 'Security') {
+      if (!formData.currentPassword.trim()) {
+        newErrors.currentPassword = 'Current password is required.';
+      }
+      if (!formData.newPassword.trim()) {
+        newErrors.newPassword = 'New password is required.';
+      } else if (formData.newPassword.length < 8) {
+        newErrors.newPassword = 'New password must be at least 8 characters.';
+      }
+      if (!formData.confirmPassword.trim()) {
+        newErrors.confirmPassword = 'Please re-type your new password.';
+      } else if (formData.confirmPassword !== formData.newPassword) {
+        newErrors.confirmPassword = 'Passwords do not match.';
+      }
+    }
+
+    return newErrors;
+  };
 
   const handleSave = () => {
+    const validationErrors = validateCurrentTab();
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setSaveMessage('Please fix the highlighted fields.');
+      setSaveMessageType('error');
+      return;
+    }
+
+    setSaveMessage('Settings saved successfully.');
+    setSaveMessageType('success');
     console.log('Saving form data:', formData);
-    // Add save logic here
   };
 
   // Get states for dropdown
@@ -70,11 +155,23 @@ const Settings = () => {
     }));
   };
 
+  const inputThemeClass = `rounded-lg border ${
+    theme === 'dark'
+      ? 'bg-[#111827] border-gray-700 text-slate-100 placeholder-slate-500'
+      : 'border-gray-300'
+  }`;
+
+  const labelThemeClass = theme === 'dark' ? 'text-slate-300' : 'text-gray-700';
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Personal Information':
         return (
-          <div className=" bg-background rounded-2xl p-4 md:p-8 shadow-sm">
+          <div
+            className={`rounded-2xl p-4 md:p-8 shadow-sm border ${
+              theme === 'dark' ? 'bg-[#1e1e1e] border-white/10' : 'bg-background border-gray-100'
+            }`}
+          >
 
             {/* Profile Picture Section */}
             <div className="flex justify-center mb-8">
@@ -92,7 +189,7 @@ const Settings = () => {
               </div>
             </div>
 
-            <h3 className="text-lg font-semibold text-text-primary mb-6">Personal Information</h3>
+            <h3 className={`text-lg font-semibold mb-6 ${theme === 'dark' ? 'text-white' : 'text-text-primary'}`}>Personal Information</h3>
             
             <div className="space-y-6">
               <TextInput
@@ -103,7 +200,11 @@ const Settings = () => {
                 value={formData.fullName}
                 onChange={handleInputChange}
                 className=""
-                inputClassName="relative pr-12"
+                inputClassName={`${inputThemeClass} relative pr-12`}
+                labelClassName={labelThemeClass}
+                required
+                error={errors.fullName}
+                theme={theme}
               />
               
               <TextInput
@@ -115,7 +216,11 @@ const Settings = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 className=""
-                inputClassName="relative pr-12"
+                inputClassName={`${inputThemeClass} relative pr-12`}
+                labelClassName={labelThemeClass}
+                required
+                error={errors.email}
+                theme={theme}
               />
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -127,7 +232,11 @@ const Settings = () => {
                   value={formData.phoneNumber}
                   onChange={handleInputChange}
                   className=""
-                  inputClassName="relative pr-12"
+                  inputClassName={`${inputThemeClass} relative pr-12`}
+                  labelClassName={labelThemeClass}
+                  required
+                  error={errors.phoneNumber}
+                  theme={theme}
                 />
                 
                 <TextInput
@@ -138,6 +247,11 @@ const Settings = () => {
                   value={formData.country}
                   onChange={handleInputChange}
                   className=""
+                  inputClassName={inputThemeClass}
+                  labelClassName={labelThemeClass}
+                  required
+                  error={errors.country}
+                  theme={theme}
                 />
               </div>
             </div>
@@ -156,8 +270,12 @@ const Settings = () => {
       
       case 'Store Information':
         return (
-          <div className="bg-background rounded-2xl p-4 md:p-8 shadow-sm">
-            <h3 className="text-lg font-semibold text-text-primary mb-6">Store Information</h3>
+          <div
+            className={`rounded-2xl p-4 md:p-8 shadow-sm border ${
+              theme === 'dark' ? 'bg-[#1e1e1e] border-white/10' : 'bg-background border-gray-100'
+            }`}
+          >
+            <h3 className={`text-lg font-semibold mb-6 ${theme === 'dark' ? 'text-white' : 'text-text-primary'}`}>Store Information</h3>
             
             <div className="space-y-6">
               <TextInput
@@ -168,7 +286,11 @@ const Settings = () => {
                 value={formData.storeName}
                 onChange={handleInputChange}
                 className=""
-                inputClassName="relative pr-12"
+                inputClassName={`${inputThemeClass} relative pr-12`}
+                labelClassName={labelThemeClass}
+                required
+                error={errors.storeName}
+                theme={theme}
               />
               
               <TextareaInput
@@ -180,7 +302,10 @@ const Settings = () => {
                 onChange={handleInputChange}
                 rows={4}
                 className=""
-                inputClassName="relative pr-12"
+                inputClassName={`${inputThemeClass} relative pr-12`}
+                labelClassName={labelThemeClass}
+                helperText="Tell customers what your store is about."
+                theme={theme}
               />
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -192,6 +317,11 @@ const Settings = () => {
                   onChange={handleInputChange}
                   options={stateOptions}
                   className=""
+                  inputClassName={inputThemeClass}
+                  labelClassName={labelThemeClass}
+                  required
+                  error={errors.state}
+                  theme={theme}
                 />
                 
                 <SelectInput
@@ -202,6 +332,11 @@ const Settings = () => {
                   onChange={handleInputChange}
                   options={lgaOptions}
                   className=""
+                  inputClassName={inputThemeClass}
+                  labelClassName={labelThemeClass}
+                  required
+                  error={errors.lga}
+                  theme={theme}
                 />
               </div>
               
@@ -214,6 +349,11 @@ const Settings = () => {
                   onChange={handleInputChange}
                   options={categoryOptions}
                   className=""
+                  inputClassName={inputThemeClass}
+                  labelClassName={labelThemeClass}
+                  required
+                  error={errors.category}
+                  theme={theme}
                 />
                 
                 <TextInput
@@ -223,7 +363,11 @@ const Settings = () => {
                   value={formData.address}
                   onChange={handleInputChange}
                   className=""
-                  inputClassName="relative pr-12"
+                  inputClassName={`${inputThemeClass} relative pr-12`}
+                  labelClassName={labelThemeClass}
+                  required
+                  error={errors.address}
+                  theme={theme}
                 />
               </div>
             </div>
@@ -242,8 +386,12 @@ const Settings = () => {
       
       case 'Bank Settings':
         return (
-          <div className="bg-background rounded-2xl p-4 md:p-8 shadow-sm">
-            <h3 className="text-lg font-semibold text-text-primary mb-6">Bank Information</h3>
+          <div
+            className={`rounded-2xl p-4 md:p-8 shadow-sm border ${
+              theme === 'dark' ? 'bg-[#1e1e1e] border-white/10' : 'bg-background border-gray-100'
+            }`}
+          >
+            <h3 className={`text-lg font-semibold mb-6 ${theme === 'dark' ? 'text-white' : 'text-text-primary'}`}>Bank Information</h3>
             
             <div className="space-y-6">
               <TextInput
@@ -254,7 +402,11 @@ const Settings = () => {
                 value={formData.bankName}
                 onChange={handleInputChange}
                 className=""
-                inputClassName="relative pr-12"
+                inputClassName={`${inputThemeClass} relative pr-12`}
+                labelClassName={labelThemeClass}
+                required
+                error={errors.bankName}
+                theme={theme}
               />
               
               <TextInput
@@ -262,11 +414,14 @@ const Settings = () => {
                 name="accountNumber"
                 label="Account Number"
                 placeholder='0154993028'
-
                 value={formData.accountNumber}
                 onChange={handleInputChange}
                 className=""
-                inputClassName="relative pr-12"
+                inputClassName={`${inputThemeClass} relative pr-12`}
+                labelClassName={labelThemeClass}
+                required
+                error={errors.accountNumber}
+                theme={theme}
               />
               
               <TextInput
@@ -274,11 +429,14 @@ const Settings = () => {
                 name="accountHolderName"
                 label="Account Holder Name"
                 placeholder='John Fortune'
-
                 value={formData.accountHolderName}
                 onChange={handleInputChange}
                 className=""
-                inputClassName="relative pr-12"
+                inputClassName={`${inputThemeClass} relative pr-12`}
+                labelClassName={labelThemeClass}
+                required
+                error={errors.accountHolderName}
+                theme={theme}
               />
             </div>
 
@@ -296,12 +454,16 @@ const Settings = () => {
       
       case 'Security':
         return (
-          <div className="bg-background rounded-2xl p-4 md:p-8 shadow-sm">
-            <h3 className="text-lg font-semibold text-text-primary mb-6">Security Information</h3>
+          <div
+            className={`rounded-2xl p-4 md:p-8 shadow-sm border ${
+              theme === 'dark' ? 'bg-[#1e1e1e] border-white/10' : 'bg-background border-gray-100'
+            }`}
+          >
+            <h3 className={`text-lg font-semibold mb-6 ${theme === 'dark' ? 'text-white' : 'text-text-primary'}`}>Security Information</h3>
             
             <div className="space-y-6">
               <div className="relative">
-                <label className="block text-sm font-medium text-text-primary mb-2">
+                <label className={`block text-sm font-medium mb-2 ${labelThemeClass}`}>
                   Enter Your Current Password
                 </label>
                 <div className="relative">
@@ -311,12 +473,18 @@ const Settings = () => {
                     name="currentPassword"
                     value={formData.currentPassword}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors duration-200 pr-12"
+                    className={`w-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors duration-200 pr-12 ${inputThemeClass}`}
+                    aria-invalid={!!errors.currentPassword}
+                    aria-describedby={errors.currentPassword ? 'currentPassword-error' : undefined}
                   />
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('current')}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className={`absolute right-4 top-1/2 transform -translate-y-1/2 transition-colors ${
+                      theme === 'dark'
+                        ? 'text-slate-400 hover:text-slate-200'
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
                   >
                     <img 
                       src={showPasswords.current ? "/icons/eye-hidden.svg" : "/icons/eye-hidden.svg"} 
@@ -325,10 +493,15 @@ const Settings = () => {
                     />
                   </button>
                 </div>
+                {errors.currentPassword && (
+                  <p id="currentPassword-error" className="mt-2 text-sm text-red-500">
+                    {errors.currentPassword}
+                  </p>
+                )}
               </div>
               
               <div className="relative">
-                <label className="block text-sm font-medium text-text-primary mb-2">
+                <label className={`block text-sm font-medium mb-2 ${labelThemeClass}`}>
                   New Password
                 </label>
                 <div className="relative">
@@ -338,12 +511,18 @@ const Settings = () => {
                     name="newPassword"
                     value={formData.newPassword}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors duration-200 pr-12"
+                    className={`w-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors duration-200 pr-12 ${inputThemeClass}`}
+                    aria-invalid={!!errors.newPassword}
+                    aria-describedby={errors.newPassword ? 'newPassword-error' : undefined}
                   />
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('new')}
-                    className="absolute  right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className={`absolute  right-4 top-1/2 transform -translate-y-1/2 transition-colors ${
+                      theme === 'dark'
+                        ? 'text-slate-400 hover:text-slate-200'
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
                   >
                     <img 
                       src={showPasswords.new ? "/icons/eye-hidden.svg" : "/icons/eye-hidden.svg"} 
@@ -352,10 +531,15 @@ const Settings = () => {
                     />
                   </button>
                 </div>
+                {errors.newPassword && (
+                  <p id="newPassword-error" className="mt-2 text-sm text-red-500">
+                    {errors.newPassword}
+                  </p>
+                )}
               </div>
               
               <div className="relative">
-                <label className="block text-sm font-medium text-text-primary mb-2">
+                <label className={`block text-sm font-medium mb-2 ${labelThemeClass}`}>
                   Re-type New Password
                 </label>
                 <div className="relative">
@@ -365,12 +549,18 @@ const Settings = () => {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors duration-200 pr-12"
+                    className={`w-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors duration-200 pr-12 ${inputThemeClass}`}
+                    aria-invalid={!!errors.confirmPassword}
+                    aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
                   />
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('confirm')}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className={`absolute right-4 top-1/2 transform -translate-y-1/2 transition-colors ${
+                      theme === 'dark'
+                        ? 'text-slate-400 hover:text-slate-200'
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
                   >
                     <img 
                       src={showPasswords.confirm ? "/icons/eye-hidden.svg" : "/icons/eye-hidden.svg"} 
@@ -379,6 +569,11 @@ const Settings = () => {
                     />
                   </button>
                 </div>
+                {errors.confirmPassword && (
+                  <p id="confirmPassword-error" className="mt-2 text-sm text-red-500">
+                    {errors.confirmPassword}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -436,16 +631,20 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen p-0 md:p-6">
-      <div className="mx-auto">
+      <div className="mx-auto max-w-5xl space-y-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-text-primary mb-2">{headerText.title}</h1>
-          <p className="text-text-grey">{headerText.subtitle}</p>
+        <div>
+          <h1 className={`text-2xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-text-primary'}`}>{headerText.title}</h1>
+          <p className={`text-text-grey ${theme === 'dark' ? 'text-slate-400' : ''}`}>{headerText.subtitle}</p>
         </div>
 
         {/* Tabs */}
-        <div className="mb-8">
-          <div className="flex gap-6 border-b border-gray-200 overflow-x-auto">
+        <div>
+          <div
+            className={`flex gap-6 border-b overflow-x-auto ${
+              theme === 'dark' ? 'border-white/10' : 'border-gray-200'
+            }`}
+          >
             <div className='min-w-fit flex gap-6'>
               {tabs.map((tab) => (
                 <button
@@ -453,8 +652,12 @@ const Settings = () => {
                   onClick={() => setActiveTab(tab)}
                   className={`px-6 py-3 font-medium text-sm transition-colors duration-200 border-b-2 whitespace-nowrap ${
                     activeTab === tab
-                      ? 'text-primary border-primary'
-                      : 'text-text-grey border-transparent hover:text-text-primary hover:border-gray-300'
+                      ? theme === 'dark'
+                        ? 'text-secondary border-secondary'
+                        : 'text-primary border-primary'
+                      : theme === 'dark'
+                        ? 'text-slate-400 border-transparent hover:text-slate-200 hover:border-white/10'
+                        : 'text-text-grey border-transparent hover:text-text-primary hover:border-gray-300'
                   }`}
                 >
                   {tab}
@@ -463,6 +666,18 @@ const Settings = () => {
             </div>
           </div>
         </div>
+
+        {saveMessage && (
+          <div
+            className={`rounded-lg px-4 py-3 text-sm ${
+              saveMessageType === 'success'
+                ? 'bg-green-50 text-green-700 border border-green-200'
+                : 'bg-red-50 text-red-700 border border-red-200'
+            }`}
+          >
+            {saveMessage}
+          </div>
+        )}
 
         {/* Tab Content */}
         <div className="animate-fadeIn">

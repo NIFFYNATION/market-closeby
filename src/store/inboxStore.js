@@ -47,7 +47,7 @@ const demoThreads = [
   },
 ];
 
-export const useInboxStore = create((set, get) => ({
+export const useInboxStore = create((set) => ({
   threads: demoThreads,
   activeThreadId: demoThreads[0]?.id || null,
 

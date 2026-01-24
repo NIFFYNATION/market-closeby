@@ -14,7 +14,7 @@ const StoreImageUpload = () => {
   };
 
   const handleSkip = () => {
-    navigate('/kyc');
+    navigate('/location-info');
   };
 
   const handleSaveAndContinue = async () => {
@@ -29,8 +29,8 @@ const StoreImageUpload = () => {
       // Simulate file upload
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Navigate to KYC page
-      navigate('/kyc');
+      // Navigate to location info page
+      navigate('/location-info');
     } catch (error) {
       console.error('Error uploading image:', error);
       alert('Failed to upload image. Please try again.');
@@ -45,7 +45,8 @@ const StoreImageUpload = () => {
       <AuthHeader 
         title="Upload Picture Of Your Store"
         subtitle="Make your store stand out with a clear, professional image"
-        onBackClick={() => navigate('/store-setup')}
+        showBackButton={true}
+        onBack={() => navigate('/store-setup')}
       />
 
       {/* Upload Content */}

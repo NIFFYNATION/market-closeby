@@ -16,6 +16,10 @@ const Auth = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const handleSocialLogin = (provider) => {
+    console.log(`Social login with ${provider} is not implemented yet`);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({

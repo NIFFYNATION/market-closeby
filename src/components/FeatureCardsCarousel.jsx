@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 
 import { featureCards } from "./data/featureCardsData";
 import FeatureCard from "./cards/FeatureCard";
@@ -6,18 +6,12 @@ import ScrollControlButtons from "./common/ScrollControlButtons";
 
 const FeatureCardsCarousel = () => {
   const scrollRef = useRef(null);
-  const [activeBtn, setActiveBtn] = useState(null);
 
-  const scrollByAmount = (amount, direction) => {
+  const scrollByAmount = (amount) => {
     if (scrollRef.current) {
-      setActiveBtn(direction);
       scrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
-      setTimeout(() => setActiveBtn(null), 180);
     }
   };
-
-  const iconFilter = (direction) =>
-    activeBtn === direction ? 'invert brightness-200' : 'filter-none';
 
   return (
     <div className="w-full py-8 px-3 sm:px-4 md:px-6 lg:px-10">

@@ -70,7 +70,8 @@ const BankDetails = () => {
           logoWidth="w-20 h-20 mx-auto"
           title="Enter Your Bank Details"
           subtitle="Please provide account details where your proceeds will go to"
-          showBackButton={false}
+          showBackButton={true}
+          onBack={() => navigate('/delivery-shipping')}
         />
 
         <form onSubmit={handleSubmit} className="space-y-6">

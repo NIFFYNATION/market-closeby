@@ -7,8 +7,7 @@ const AccountComplete = () => {
   const navigate = useNavigate();
 
   const handleGoToDashboard = () => {
-    // Navigate to user dashboard/account page
-    navigate('/my-account');
+    navigate('/seller-dashboard');
   };
 
   const handleStartShopping = () => {

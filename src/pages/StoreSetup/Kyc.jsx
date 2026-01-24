@@ -27,7 +27,7 @@ const Kyc = () => {
   };
 
   const handleSkip = () => {
-    navigate("/location-info");
+    navigate("/confirm-business-id");
   };
 
   const handleSaveAndContinue = async () => {
@@ -48,8 +48,8 @@ const Kyc = () => {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // Navigate to location-info page
-      navigate("/location-info");
+      // Navigate to confirm-business-id page
+      navigate("/confirm-business-id");
     } catch (error) {
       console.error("Error submitting KYC:", error);
       alert("Failed to submit KYC information. Please try again.");
@@ -64,7 +64,8 @@ const Kyc = () => {
       <AuthHeader
         title="Complete Your KYC"
         subtitle="Please ensure the details match your official documents"
-        onBackClick={() => navigate("/store-image-upload")}
+        showBackButton={true}
+        onBack={() => navigate("/location-info")}
       />
 
       {/* Form Content */}

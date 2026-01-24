@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Outlet, ScrollRestoration } from "react-router-dom";
 
 function App() {

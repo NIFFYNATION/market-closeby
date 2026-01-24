@@ -41,7 +41,8 @@ const ConfirmBusinessId = () => {
           logoWidth="w-20 h-20 mx-auto"
           title="Business Identity Confirmation"
           subtitle="Upload your CAC certificate to confirm your business is officially registered"
-          showBackButton={false}
+          showBackButton={true}
+          onBack={() => navigate('/kyc')}
         />
 
         <div className="space-y-6">

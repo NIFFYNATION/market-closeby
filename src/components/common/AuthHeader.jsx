@@ -10,13 +10,12 @@ const AuthHeader = ({
   onBack = null
 }) => {
   return (
-    <div className="text-center mb-8">
-      {/* Back Button (optional) */}
+    <div className="text-center mb-8 ms-3">
       {showBackButton && (
-        <div className="flex items-center mb-4">
+        <div className="flex items-center mb-6 mt-2">
           <button 
             onClick={onBack}
-            className="flex items-center text-primary hover:text-primary-dark transition-colors"
+            className="inline-flex items-center px-4 py-2 rounded-full bg-gray-100 text-primary font-medium text-sm hover:bg-gray-200 hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors shadow-sm"
           >
             <img src="/icons/arrow-left.svg" alt="Back" className="w-5 h-5 mr-2" />
             Back

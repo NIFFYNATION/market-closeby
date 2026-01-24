@@ -62,7 +62,7 @@ function HeroCoverflow({ images = defaultImages, className = '', onImageChange }
             onImageChange(swiper.realIndex);
           }
         }}
-        onProgress={(swiper, progress) => {
+        onProgress={(swiper) => {
           swiper.slides.forEach((slideEl) => {
             const p = slideEl.progress;
             const abs = Math.abs(p);
@@ -156,8 +156,7 @@ function HeroCoverflow({ images = defaultImages, className = '', onImageChange }
 
           // Image class: use object-cover centered to fill container properly
           const imgClass = slide.imgClass || "w-full h-full object-cover object-center";
-          
-          const isLoading = loadingStates[idx] === false;
+
           const isLoaded = loadingStates[idx] === true;
 
           const handleLoad = () => {

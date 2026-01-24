@@ -20,7 +20,7 @@ const Dashboard = () => {
   ];
 
   // Custom tooltip component
-  const CustomTooltip = ({ active, payload, label }) => {
+  const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-gray-800 text-white px-3 py-2 rounded-lg text-sm shadow-lg">
@@ -293,43 +293,44 @@ const Dashboard = () => {
                     <option>Last 90 days</option>
                   </select>
                 </div>
-                <div className="max-w-[900px] overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50">
+                <div className="relative max-w-full overflow-x-auto">
+                  <div className="max-h-80 overflow-y-auto">
+                    <table className="min-w-[640px] w-full">
+                      <thead className="sticky top-0 z-10 bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 sm:px-6 py-2 sm:py-3 text-left text-[11px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Product name
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 sm:px-6 py-2 sm:py-3 text-left text-[11px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Amount
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 sm:px-6 py-2 sm:py-3 text-left text-[11px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Quantity sold
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 sm:px-6 py-2 sm:py-3 text-left text-[11px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Date
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 sm:px-6 py-2 sm:py-3 text-left text-[11px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Status
                         </th>
                       </tr>
-                    </thead>
-                    <tbody className="bg-background divide-y divide-gray-200">
-                      {transactions.map((transaction, index) => (
-                        <tr key={index} className="hover:bg-gray-50 transition-colors duration-200">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      </thead>
+                      <tbody className="bg-background divide-y divide-gray-200">
+                        {transactions.map((transaction, index) => (
+                          <tr key={index} className="hover:bg-gray-50 transition-colors duration-200">
+                            <td className="px-4 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900">
                             {transaction.product}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                            <td className="px-4 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-900 font-semibold">
                             {transaction.amount}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-4 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-900">
                             {transaction.quantity}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-4 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-900">
                             {transaction.date}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-4 sm:px-6 py-3 whitespace-nowrap">
                             <span
                               className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
                                 transaction.status === 'Success'
@@ -340,10 +341,11 @@ const Dashboard = () => {
                               {transaction.status}
                             </span>
                           </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>

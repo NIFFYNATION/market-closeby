@@ -153,7 +153,7 @@ const ShippingAddressSection = ({
       setEditingId(null);
       setIsFormOpen(false);
       setFormErrors({});
-    } catch (error) {
+    } catch {
       showToast("Unable to save address", "error");
     }
   };

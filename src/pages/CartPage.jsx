@@ -17,7 +17,6 @@ const CartPage = () => {
   const addItem = useCartStore((state) => state.addItem);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
-  const clearCart = useCartStore((state) => state.clearCart);
   const subtotal = useCartStore((state) => state.subtotal());
   const deliveryFee = useCartStore((state) => state.deliveryFee());
   const grandTotal = useCartStore((state) => state.grandTotal());

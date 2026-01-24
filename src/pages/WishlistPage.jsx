@@ -7,11 +7,6 @@ import { Button } from "../components/common/Button";
 import PageHeader from "../components/common/PageHeader";
 import StarRating from "../components/common/StarRating";
 
-const formatCurrency = (value) =>
-  `₦${Math.max(value, 0)
-    .toFixed(0)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
-
 const WishlistPage = () => {
   const navigate = useNavigate();
   const items = useWishlistStore((state) => state.items);

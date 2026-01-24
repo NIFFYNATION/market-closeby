@@ -47,7 +47,7 @@ export default function DropdownMenu({
             <div className="px-6 py-4 flex justify-center">{header}</div>
           )}
           <ul className="py-3">
-            {menuItems.map((item, idx) =>
+            {menuItems.map((item) =>
               (
                 <li key={item.label}>
                   {item.to ? (

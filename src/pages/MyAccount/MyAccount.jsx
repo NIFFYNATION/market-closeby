@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAccountStore } from "../../store/accountStore";
 import { useOrdersStore } from "../../store/ordersStore";
@@ -152,21 +152,24 @@ const MyAccount = () => {
   const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [addressPrefill, setAddressPrefill] = useState(null);
   const defaultAddress = useMemo(() => profile.addressBook.find((a) => a.isDefault), [profile.addressBook]);
-  const formatAccountAddress = (address = {}) => ({
-    id: address.id,
-    label: address.label || "Address",
-    fullName: address.fullName || profile.name || "",
-    email: profile.email || "",
-    phone: address.phone || profile.phone || "",
-    addressLine: address.address || "",
-    city: address.city || "",
-    state: address.state || "",
-    postalCode: address.postalCode || "",
-    isDefault: address.isDefault,
-  });
+  const formatAccountAddress = useCallback(
+    (address = {}) => ({
+      id: address.id,
+      label: address.label || "Address",
+      fullName: address.fullName || profile.name || "",
+      email: profile.email || "",
+      phone: address.phone || profile.phone || "",
+      addressLine: address.address || "",
+      city: address.city || "",
+      state: address.state || "",
+      postalCode: address.postalCode || "",
+      isDefault: address.isDefault,
+    }),
+    [profile.email, profile.name, profile.phone]
+  );
   const accountAddresses = useMemo(
     () => profile.addressBook.map((addr) => formatAccountAddress(addr)),
-    [profile.addressBook, profile.email, profile.name, profile.phone]
+    [profile.addressBook, formatAccountAddress]
   );
   const [accountSelectedAddressId, setAccountSelectedAddressId] = useState(defaultAddress?.id || "");
   useEffect(() => {

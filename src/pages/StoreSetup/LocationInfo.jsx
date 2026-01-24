@@ -59,7 +59,7 @@ const LocationInfo = () => {
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // Navigate to next step
-      navigate("/confirm-business-id");
+      navigate("/kyc");
     } catch (error) {
       console.error("Error submitting location info:", error);
     } finally {
@@ -68,7 +68,7 @@ const LocationInfo = () => {
   };
 
   const handleSkip = () => {
-    navigate("/confirm-business-id");
+    navigate("/kyc");
   };
 
   return (
@@ -80,7 +80,8 @@ const LocationInfo = () => {
           logoWidth="w-20 h-20 mx-auto"
           title="Location information"
           subtitle="Provide valid information for your client to reach you"
-          showBackButton={false}
+          showBackButton={true}
+          onBack={() => navigate("/store-image-upload")}
         />
 
         <form onSubmit={handleSubmit} className="space-y-6">

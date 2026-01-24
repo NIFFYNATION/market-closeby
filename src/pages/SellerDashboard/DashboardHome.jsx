@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/common/Button';
 import RevenueChart from '../../components/common/RevenueChart';
+import { useDashboardTheme } from './DashboardLayout';
+import { useSellerStore } from '../../store/sellerStore';
 
 const DashboardHome = () => {
   const navigate = useNavigate();
+  const { theme } = useDashboardTheme();
+  const { getCurrentStore } = useSellerStore();
+  const currentStore = getCurrentStore();
   const [selectedPeriod, setSelectedPeriod] = useState('Last 7 days');
-  
-  // Seller verification status - you can modify this based on your authentication logic
-  const [isVerified, setIsVerified] = useState(true);
+  const [isVerified] = useState(true);
 
   // Chart data
   const chartData = [
@@ -60,7 +63,13 @@ const DashboardHome = () => {
     <>
       {/* Welcome Section */}
       <div className="flex flex-col md:flex-row items-start justify-between gap-4 pb-6">
-        <h2 className="text-3xl font-semibold text-gray-900">Welcome, Fortune 👋</h2>
+        <h2
+          className={`text-3xl font-semibold ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}
+        >
+          Welcome, {currentStore?.name || 'Seller'} 👋
+        </h2>
         <Button
           variant="secondary"
           onClick={() => navigate(isVerified ? '/seller-dashboard/add-product' : '/store-setup')}
@@ -85,13 +94,38 @@ const DashboardHome = () => {
 
         {/* Stats Cards */}
         {statsCards.map((stat, index) => (
-          <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200">
-            <h3 className="text-sm font-medium text-gray-600 mb-2">{stat.title}</h3>
-            <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
+          <div
+            key={index}
+            className={`p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow duration-200 ${
+              theme === 'dark'
+                ? 'bg-[#1e1e1e] border-white/10'
+                : 'bg-white border-gray-100'
+            }`}
+          >
+            <h3
+              className={`text-sm font-medium mb-2 ${
+                theme === 'dark' ? 'text-slate-300' : 'text-gray-600'
+              }`}
+            >
+              {stat.title}
+            </h3>
+            <div
+              className={`text-3xl font-bold mb-2 ${
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              }`}
+            >
+              {stat.value}
+            </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500">{stat.period}</span>
+              <span
+                className={`text-sm ${
+                  theme === 'dark' ? 'text-slate-400' : 'text-gray-500'
+                }`}
+              >
+                {stat.period}
+              </span>
               <div className="w-24 h-16">
-                <img src="./icons/graph.svg" alt="Graph" className='w-24 h-16'/>
+                <img src="./icons/graph.svg" alt="Graph" className="w-24 h-16" />
               </div>
             </div>
           </div>
@@ -102,7 +136,7 @@ const DashboardHome = () => {
       <div className="flex flex-col xl:flex-row gap-8 mt-15">
 
         {/* Revenue Chart */}
-        <div className="space-y-8 w-full">
+        <div className="space-y-8 w-full xl:w-2/3">
           <RevenueChart
             data={isVerified ? chartData : emptyChartData}
             title="Total Revenue"
@@ -111,90 +145,294 @@ const DashboardHome = () => {
             selectedPeriod={selectedPeriod}
             onPeriodChange={setSelectedPeriod}
             isVerified={isVerified}
+            theme={theme}
           />
 
           {/* Transaction History */}
-          <div className="bg-background p-6 rounded-xl shadow-sm w-full">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Transaction history</h3>
-              <select className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#130C76] focus:border-[#130C76] bg-white">
+          <div
+            className={`p-6 rounded-xl shadow-sm w-full ${
+              theme === 'dark' ? 'bg-[#1e1e1e]' : 'bg-background'
+            }`}
+          >
+            <div
+              className={`flex items-center justify-between p-6 border-b ${
+                theme === 'dark' ? 'border-white/10' : 'border-gray-200'
+              }`}
+            >
+              <h3
+                className={`text-lg font-semibold ${
+                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                }`}
+              >
+                Transaction history
+              </h3>
+              <select
+                className={`text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#130C76] focus:border-[#130C76] ${
+                  theme === 'dark'
+                    ? 'bg-[#1e1e1e] border border-white/10 text-slate-200'
+                    : 'bg-white border border-gray-300 text-gray-700'
+                }`}
+              >
                 <option>Last 7 days</option>
                 <option>Last 30 days</option>
                 <option>Last 90 days</option>
               </select>
             </div>
-            <div className="max-w-[900px] overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Product name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Amount
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Quantity sold
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-background divide-y divide-gray-200">
-                  {!isVerified ? (
-                    <tr>
-                      <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
-                        No transaction yet
-                      </td>
-                    </tr>
-                  ) : (
-                    transactions.map((transaction, index) => (
-                      <tr key={index} className="hover:bg-gray-50 transition-colors duration-200">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+
+            <div className="mt-4 space-y-3 md:hidden max-w-[90vw] mx-auto">
+              {!isVerified ? (
+                <div
+                  className={`py-6 px-4 rounded-lg text-center ${
+                    theme === 'dark'
+                      ? 'bg-[#1e1e1e] text-slate-400'
+                      : 'bg-white text-gray-500'
+                  }`}
+                >
+                  No transaction yet
+                </div>
+              ) : (
+                transactions.map((transaction, index) => (
+                  <div
+                    key={index}
+                    className={`rounded-lg p-4 border ${
+                      theme === 'dark'
+                        ? 'bg-[#1e1e1e] border-white/10'
+                        : 'bg-white border-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <p
+                          className={`text-[11px] font-medium uppercase tracking-wide ${
+                            theme === 'dark' ? 'text-slate-400' : 'text-gray-500'
+                          }`}
+                        >
+                          Product name
+                        </p>
+                        <p
+                          className={`mt-1 text-sm font-medium ${
+                            theme === 'dark' ? 'text-white' : 'text-gray-900'
+                          }`}
+                        >
                           {transaction.product}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                        </p>
+                      </div>
+                      <span
+                        className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                          transaction.status === 'Success'
+                            ? ' text-success'
+                            : ' text-danger'
+                        }`}
+                      >
+                        {transaction.status}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 text-xs">
+                      <div>
+                        <p
+                          className={`font-medium uppercase tracking-wide ${
+                            theme === 'dark' ? 'text-slate-400' : 'text-gray-500'
+                          }`}
+                        >
+                          Amount
+                        </p>
+                        <p
+                          className={`mt-1 ${
+                            theme === 'dark' ? 'text-white' : 'text-gray-900'
+                          }`}
+                        >
                           {transaction.amount}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        </p>
+                      </div>
+                      <div>
+                        <p
+                          className={`font-medium uppercase tracking-wide ${
+                            theme === 'dark' ? 'text-slate-400' : 'text-gray-500'
+                          }`}
+                        >
+                          Quantity sold
+                        </p>
+                        <p
+                          className={`mt-1 ${
+                            theme === 'dark' ? 'text-slate-200' : 'text-gray-900'
+                          }`}
+                        >
                           {transaction.quantity}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        </p>
+                      </div>
+                      <div>
+                        <p
+                          className={`font-medium uppercase tracking-wide ${
+                            theme === 'dark' ? 'text-slate-400' : 'text-gray-500'
+                          }`}
+                        >
+                          Date
+                        </p>
+                        <p
+                          className={`mt-1 ${
+                            theme === 'dark' ? 'text-slate-200' : 'text-gray-900'
+                          }`}
+                        >
                           {transaction.date}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                              transaction.status === 'Success'
-                                ? ' text-success'
-                                : ' text-danger'
-                            }`}
-                          >
-                            {transaction.status}
-                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="relative max-w-[90vw] md:max-w-full mx-auto overflow-x-auto hidden md:block">
+              <div className="max-h-80 overflow-y-auto">
+                <table className="min-w-[640px] w-full">
+                  <thead
+                    className={`sticky top-0 z-10 ${
+                      theme === 'dark' ? 'bg-[#111827]' : 'bg-gray-50'
+                    }`}
+                  >
+                    <tr>
+                      <th
+                        className={`px-4 sm:px-6 py-2 sm:py-3 text-left text-[11px] sm:text-xs font-medium uppercase tracking-wider ${
+                          theme === 'dark' ? 'text-slate-400' : 'text-gray-500'
+                        }`}
+                      >
+                        Product name
+                      </th>
+                      <th
+                        className={`px-4 sm:px-6 py-2 sm:py-3 text-left text-[11px] sm:text-xs font-medium uppercase tracking-wider ${
+                          theme === 'dark' ? 'text-slate-400' : 'text-gray-500'
+                        }`}
+                      >
+                        Amount
+                      </th>
+                      <th
+                        className={`px-4 sm:px-6 py-2 sm:py-3 text-left text-[11px] sm:text-xs font-medium uppercase tracking-wider ${
+                          theme === 'dark' ? 'text-slate-400' : 'text-gray-500'
+                        }`}
+                      >
+                        Quantity sold
+                      </th>
+                      <th
+                        className={`px-4 sm:px-6 py-2 sm:py-3 text-left text-[11px] sm:text-xs font-medium uppercase tracking-wider ${
+                          theme === 'dark' ? 'text-slate-400' : 'text-gray-500'
+                        }`}
+                      >
+                        Date
+                      </th>
+                      <th
+                        className={`px-4 sm:px-6 py-2 sm:py-3 text-left text-[11px] sm:text-xs font-medium uppercase tracking-wider ${
+                          theme === 'dark' ? 'text-slate-400' : 'text-gray-500'
+                        }`}
+                      >
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody
+                    className={`divide-y ${
+                      theme === 'dark'
+                        ? 'bg-[#1e1e1e] divide-gray-700'
+                        : 'bg-background divide-gray-200'
+                    }`}
+                  >
+                    {!isVerified ? (
+                      <tr>
+                        <td
+                          colSpan="5"
+                          className={`px-6 py-8 text-center ${
+                            theme === 'dark' ? 'text-slate-400' : 'text-gray-500'
+                          }`}
+                        >
+                          No transaction yet
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      transactions.map((transaction, index) => (
+                        <tr
+                          key={index}
+                          className={`transition-colors duration-200 ${
+                            theme === 'dark' ? 'hover:bg-white/5' : 'hover:bg-gray-50'
+                          }`}
+                        >
+                          <td
+                            className={`px-4 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm font-medium ${
+                              theme === 'dark' ? 'text-white' : 'text-gray-900'
+                            }`}
+                          >
+                            {transaction.product}
+                          </td>
+                          <td
+                            className={`px-4 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm font-semibold ${
+                              theme === 'dark' ? 'text-white' : 'text-gray-900'
+                            }`}
+                          >
+                            {transaction.amount}
+                          </td>
+                          <td
+                            className={`px-4 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm ${
+                              theme === 'dark' ? 'text-slate-200' : 'text-gray-900'
+                            }`}
+                          >
+                            {transaction.quantity}
+                          </td>
+                          <td
+                            className={`px-4 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm ${
+                              theme === 'dark' ? 'text-slate-200' : 'text-gray-900'
+                            }`}
+                          >
+                            {transaction.date}
+                          </td>
+                          <td className="px-4 sm:px-6 py-3 whitespace-nowrap">
+                            <span
+                              className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                                transaction.status === 'Success'
+                                  ? ' text-success'
+                                  : ' text-danger'
+                              }`}
+                            >
+                              {transaction.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Customer List */}
-        <div className=" lg:w-2/4">
-         <div className='bg-background p-6 rounded-lg shadow-sm w-full'>
-           <h3 className="text-lg font-semibold text-gray-900 mb-6">Customer</h3>
+        <div className="w-full xl:w-1/3">
+         <div
+           className={`p-6 rounded-lg shadow-sm w-full ${
+             theme === 'dark' ? 'bg-[#1e1e1e]' : 'bg-background'
+           }`}
+         >
+           <h3
+             className={`text-lg font-semibold mb-6 ${
+               theme === 'dark' ? 'text-white' : 'text-gray-900'
+             }`}
+           >
+             Customer
+           </h3>
           <div className="space-y-4 max-h-80 overflow-y-scroll sidebar-scrollbar">
             {isVerified ? (
               customers.map((customer, index) => (
-                <div key={index} className="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200">
-                  <span className="text-sm font-medium text-gray-600 w-6">{customer.id}</span>
+                <div
+                  key={index}
+                  className={`flex items-center space-x-3 p-2 rounded-lg transition-colors duration-200 ${
+                    theme === 'dark' ? 'hover:bg-white/5' : 'hover:bg-gray-50'
+                  }`}
+                >
+                  <span
+                    className={`text-sm font-medium w-6 ${
+                      theme === 'dark' ? 'text-slate-400' : 'text-gray-600'
+                    }`}
+                  >
+                    {customer.id}
+                  </span>
                   <div className={`w-8 h-8 ${customer.bgColor} rounded-full flex items-center justify-center overflow-hidden`}>
                     <img 
                       src={customer.avatar} 
@@ -209,12 +447,22 @@ const DashboardHome = () => {
                       <img src="/icons/user.svg" alt={customer.name} className="w-full h-full" />
                     </div>
                   </div>
-                  <span className="text-sm font-medium text-gray-900">{customer.name}</span>
+                  <span
+                    className={`text-sm font-medium ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    }`}
+                  >
+                    {customer.name}
+                  </span>
                 </div>
               ))
             ) : (
               <div className="text-center py-8">
-                <p className="text-gray-500">No customer yet</p>
+                <p
+                  className={theme === 'dark' ? 'text-slate-400' : 'text-gray-500'}
+                >
+                  No customer yet
+                </p>
               </div>
             )}
           </div>

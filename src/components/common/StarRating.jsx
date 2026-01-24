@@ -1,4 +1,3 @@
-// Star rating component
 const StarRating = ({ rating, reviews }) => (
   <div className="grid grid-cols-1 sm:grid-cols-2  items-center gap-2">
     <span className="flex items-center">
@@ -11,7 +10,7 @@ const StarRating = ({ rating, reviews }) => (
       />
     ))}
     </span>
-    {/* <span className="text-xs ml-1">({reviews} Review{reviews !== 1 ? 's' : ''})</span> */}
+    <span className="text-xs ml-1">({reviews} Review{reviews !== 1 ? 's' : ''})</span>
   </div>
 );
 export default StarRating;

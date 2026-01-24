@@ -19,7 +19,6 @@ const CheckoutPage = () => {
   const cartItems = useCartStore((state) => state.items);
   const subtotal = useCartStore((state) => state.subtotal());
   const deliveryFee = useCartStore((state) => state.deliveryFee());
-  const grandTotal = useCartStore((state) => state.grandTotal());
   const clearCart = useCartStore((state) => state.clearCart);
   const createOrder = useOrdersStore((state) => state.createOrder);
   const { showToast } = useToast();
@@ -60,10 +59,7 @@ const CheckoutPage = () => {
     isDefault: address.isDefault,
   });
 
-  const normalizedAddresses = useMemo(
-    () => addresses.map((addr) => normalizeUserAddress(addr)),
-    [addresses, profileDefaults]
-  );
+  const normalizedAddresses = addresses.map((addr) => normalizeUserAddress(addr));
 
   const [formData, setFormData] = useState({
     // Shipping Address
@@ -184,12 +180,6 @@ const CheckoutPage = () => {
     }
   };
 
-  const closeAddressForm = () => {
-    setShowAddressForm(false);
-    setEditingAddressId(null);
-    setAddressFormInitial(buildAddressFormState());
-  };
-
   const handleMakeDefault = (addressId) => {
     if (!addressId) return;
     setDefaultAddress(addressId);
@@ -239,16 +229,6 @@ const CheckoutPage = () => {
       iconType: 'card',
     },
   ];
-  const addressOptions = addresses.length
-    ? [
-        { value: '', label: 'Add a new address' },
-        ...addresses.map((a) => ({
-          value: a.id,
-          label: `${a.label || 'Address'} • ${a.city}, ${a.state}`,
-        })),
-      ]
-    : [{ value: '', label: 'Add a new address' }];
-
   const validateForm = () => {
     const newErrors = {};
     

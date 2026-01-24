@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../components/common/Button";
 import SellerLandingSkeleton from "../components/skeletons/SellerLandingSkeleton";
 
 function SellerLandingPage() {
+  const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [currentTestimonialSlide, setCurrentTestimonialSlide] = useState(0);
 
   const sellerImages = [
     {
@@ -70,14 +71,6 @@ function SellerLandingPage() {
     return () => clearInterval(timer);
   }, [sellerImages.length]);
 
-  // Auto-slide functionality for testimonials
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTestimonialSlide((prev) => (prev + 1) % testimonials.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [testimonials.length]);
-
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % sellerImages.length);
   };
@@ -92,42 +85,7 @@ function SellerLandingPage() {
     setCurrentSlide(index);
   };
 
-  // Testimonial carousel controls
-  const nextTestimonial = () => {
-    setCurrentTestimonialSlide((prev) => (prev + 1) % testimonials.length);
-  };
-
-  const prevTestimonial = () => {
-    setCurrentTestimonialSlide(
-      (prev) => (prev - 1 + testimonials.length) % testimonials.length
-    );
-  };
-
-  const goToTestimonial = (index) => {
-    setCurrentTestimonialSlide(index);
-  };
-
-  // Calculate how many testimonials to show per slide based on screen size
-  const getTestimonialsPerSlide = () => {
-    if (typeof window !== 'undefined') {
-      if (window.innerWidth >= 1024) return 3; // lg screens
-      if (window.innerWidth >= 768) return 2;  // md screens
-      return 1; // mobile
-    }
-    return 3;
-  };
-
-  const [testimonialsPerSlide, setTestimonialsPerSlide] = useState(getTestimonialsPerSlide());
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setTestimonialsPerSlide(getTestimonialsPerSlide());
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   useEffect(() => {
     const t = setTimeout(() => setIsLoading(false), 600);
@@ -158,7 +116,11 @@ function SellerLandingPage() {
             </p>
 
             {/* CTA Button */}
-            <Button variant="secondary" className="mb-8 sm:mb-10 w-full sm:w-auto px-8 py-3 text-base sm:text-lg">
+            <Button 
+              variant="secondary" 
+              className="mb-8 sm:mb-10 w-full sm:w-auto px-8 py-3 text-base sm:text-lg"
+              onClick={() => navigate('/store-setup')}
+            >
               Start selling now
             </Button>
           </div>
@@ -416,7 +378,11 @@ function SellerLandingPage() {
 
           {/* CTA Button */}
           <div className="mt-8 sm:mt-12">
-            <Button variant="secondary" className="w-full sm:w-auto px-6 sm:px-8 py-3 text-base sm:text-lg">
+            <Button 
+              variant="secondary" 
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 text-base sm:text-lg"
+              onClick={() => navigate('/store-setup')}
+            >
               Start selling now
             </Button>
           </div>
@@ -435,7 +401,10 @@ function SellerLandingPage() {
           </p>
 
           {/* CTA Button */}
-          <Button variant="secondary" >
+          <Button 
+            variant="secondary" 
+            onClick={() => navigate('/store-setup')}
+          >
             Join the Marketplace
           </Button>
         </div>

@@ -7,5 +7,9 @@ export const useUIStore = create((set, get) => ({
   openMobileMenu: () => set({ isMobileMenuOpen: true }),
   closeMobileMenu: () => set({ isMobileMenuOpen: false }),
   toggleMobileMenu: () => set({ isMobileMenuOpen: !get().isMobileMenuOpen }),
+
+  // Mobile tab menu visibility state
+  showMobileTabMenu: true,
+  setShowMobileTabMenu: (visible) => set({ showMobileTabMenu: visible }),
 }));
 
