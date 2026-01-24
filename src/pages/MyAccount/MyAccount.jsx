@@ -451,7 +451,7 @@ const MyAccount = () => {
               { id: "payments", label: "Payment Methods" },
               { id: "settings", label: "Settings" },
             ].map((t) => (
-              <button
+          <button
                 key={t.id}
                 onClick={() => setActiveTab(t.id)}
                 className={`snap-start px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${
@@ -461,7 +461,7 @@ const MyAccount = () => {
                 }`}
               >
                 {t.label}
-              </button>
+          </button>
             ))}
           </div>
         </div>
@@ -810,7 +810,7 @@ const MyAccount = () => {
       {isProfileModalOpen && (
         <Modal title="Edit profile" onClose={() => setProfileModalOpen(false)}>
           <form className="space-y-4" onSubmit={handleSaveProfile}>
-            <TextInput
+                          <TextInput
               id="name"
               name="name"
               label="Full name"
@@ -819,18 +819,18 @@ const MyAccount = () => {
               inputClassName={profileErrors.name ? "border-danger" : ""}
             />
             {profileErrors.name && <p className="text-danger text-xs -mt-3">{profileErrors.name}</p>}
-            <TextInput
+                          <TextInput
               id="email"
-              name="email"
+                            name="email"
               label="Email address"
               value={profileForm.email}
               onChange={handleProfileFieldChange}
               inputClassName={profileErrors.email ? "border-danger" : ""}
             />
             {profileErrors.email && <p className="text-danger text-xs -mt-3">{profileErrors.email}</p>}
-            <TextInput
+                          <TextInput
               id="phone"
-              name="phone"
+                            name="phone"
               label="Phone number"
               value={profileForm.phone}
               onChange={handleProfileFieldChange}
@@ -840,7 +840,7 @@ const MyAccount = () => {
             <div className="flex gap-3 pt-2">
               <Button type="submit" variant="secondary">
                 Save changes
-              </Button>
+                          </Button>
               <Button type="button" variant="textPrimary" onClick={() => setProfileModalOpen(false)}>
                 Cancel
                         </Button>

@@ -13,6 +13,9 @@ function Header() {
   const toggleMobileMenu = useUIStore((s) => s.toggleMobileMenu);
   const closeMobileMenu = useUIStore((s) => s.closeMobileMenu);
   const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  // Mobile category drilldown state (mobile-only)
+  const [mobileMenuView, setMobileMenuView] = useState("categories"); // "categories" | "submenu"
+  const [mobileActiveCategoryIndex, setMobileActiveCategoryIndex] = useState(0);
   
   const navigate = useNavigate();
   const cartCount = useCartStore((state) => state.cartCount());
@@ -108,6 +111,27 @@ function Header() {
 
   // Menu control moved to global UI store for cross-component control
 
+  const createSlug = (name = "") => name.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "-");
+
+  const openMobileSubMenu = (index) => {
+    setMobileActiveCategoryIndex(index);
+    setMobileMenuView("submenu");
+  };
+
+  const closeMobileSubMenu = () => setMobileMenuView("categories");
+
+  const handleMobileSearchNavigation = (searchTerm) => {
+    closeMobileMenu();
+    setMobileMenuView("categories");
+    navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+  };
+
+  const handleMobileCategoryNavigation = (categoryName) => {
+    closeMobileMenu();
+    setMobileMenuView("categories");
+    navigate(`/category/${createSlug(categoryName)}`);
+  };
+
   const handleLogin = () => {
     setIsLoggedIn(true);
     // Add your login logic here
@@ -128,7 +152,7 @@ function Header() {
               className="lg:hidden pr-4"
               onClick={toggleMobileMenu}
             >
-              <img src="/icons/menu-white.svg" alt="Menu" className="w-8 h-8" />
+              <img src="/icons/menu-white.png" alt="Menu" className="w-8 h-8" />
             </button>
             
         {/* Logo */}
@@ -212,7 +236,10 @@ function Header() {
       {isMobileMenuOpen && (
         <div 
           className="fixed inset-0 backdrop-blur-lg bg-black/50 z-50 lg:hidden"
-          onClick={closeMobileMenu}
+          onClick={() => {
+            closeMobileMenu();
+            setMobileMenuView("categories");
+          }}
         />
       )}
 
@@ -224,7 +251,10 @@ function Header() {
         <div className="flex items-center justify-between p-4 border-b border-primary flex-shrink-0">
           <img src="/icons/Logo-mobile.svg" alt="Market Closeby" className="w-12" />
           <button 
-            onClick={toggleMobileMenu}
+            onClick={() => {
+              toggleMobileMenu();
+              setMobileMenuView("categories");
+            }}
             className="p-2"
           >
             <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -268,19 +298,101 @@ function Header() {
         <div className="flex-1 overflow-y-auto min-h-0">
           {/* Categories Section */}
           <div className="border-b border-primary">
-            {categories.map((category) => (
-              <Link
-                key={category.name}
-                to={`/category/${category.name.toLowerCase().replace(/&/g,'and').replace(/\s+/g, '-')}`}
-                className="flex items-center justify-between p-4 hover:bg-gray-50 border-b border-gray-100"
-                onClick={toggleMobileMenu}
-              >
-                <span className="text-primary font-medium">{category.name}</span>
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-            ))}
+            {mobileMenuView === "categories" ? (
+              <div className="py-2">
+                <div className="px-4 pt-3 pb-2">
+                  <p className="text-xs font-semibold tracking-wide text-text-grey uppercase">Shop by category</p>
+                </div>
+
+                {categories.map((category, index) => (
+                  <button
+                    key={category.name}
+                    type="button"
+                    onClick={() => openMobileSubMenu(index)}
+                    className="w-full flex items-center justify-between px-4 py-4 border-b border-gray-100 hover:bg-gray-50 transition"
+                  >
+                    <span className="text-primary font-semibold text-left">{category.name}</span>
+                    <span className="w-9 h-9 rounded-full bg-background-alt flex items-center justify-center">
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="py-2">
+                {/* Submenu header */}
+                <div className="px-4 pt-2 pb-3 border-b border-gray-100 bg-white sticky top-0 z-10">
+                  <button
+                    type="button"
+                    onClick={closeMobileSubMenu}
+                    className="inline-flex items-center gap-2 text-primary font-semibold"
+                  >
+                    <span className="w-9 h-9 rounded-full bg-background-alt flex items-center justify-center">
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </span>
+                    Back
+                  </button>
+
+                  <div className="mt-3">
+                    <p className="text-lg font-bold text-text-primary leading-tight">
+                      {categories[mobileActiveCategoryIndex]?.name}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => handleMobileCategoryNavigation(categories[mobileActiveCategoryIndex]?.name)}
+                      className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-secondary"
+                    >
+                      View all
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Submenu content */}
+                <div className="px-4 py-4 space-y-5">
+                  {(categories[mobileActiveCategoryIndex]?.sections || []).length === 0 ? (
+                    <div className="p-4 rounded-2xl bg-background-alt text-text-grey">
+                      No subcategories available.
+                    </div>
+                  ) : (
+                    (categories[mobileActiveCategoryIndex]?.sections || []).map((section) => (
+                      <div key={section.title} className="rounded-2xl border border-gray-100 overflow-hidden">
+                        <button
+                          type="button"
+                          onClick={() => handleMobileSearchNavigation(section.title)}
+                          className="w-full flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 transition"
+                        >
+                          <span className="text-text-primary font-semibold text-left">{section.title}</span>
+                          <span className="text-xs text-text-grey">Search</span>
+                        </button>
+
+                        <div className="bg-white px-4 pb-3">
+                          <div className="h-px bg-gray-100 mb-3" />
+                          <div className="flex flex-col">
+                            {(section.items || []).map((item) => (
+                              <button
+                                key={item}
+                                type="button"
+                                onClick={() => handleMobileSearchNavigation(item)}
+                                className="text-left py-2 text-sm font-medium text-text-secondary hover:text-primary transition"
+                              >
+                                {item}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Additional Menu Items */}

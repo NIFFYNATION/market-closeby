@@ -137,9 +137,9 @@ const SearchResultsPage = () => {
   };
 
   return (
-    <div className="pt-40 md:pt-48  min-h-screen py-8 ">
+    <div className="pt-18 md:pt-40  min-h-screen py-8 ">
       {/* Breadcrumb */}
-    <div className='bg-background shadow-xl py-8 px-0 md:px-6 lg:px-10'>
+    <div className='bg-background shadow-lg py-8 px-0 md:px-6 lg:px-10'>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between text-xs text-text-grey px-6 pt- pb-6 gap-4">
         <div>
           <Link to="/" className="hover:underline">Market CloseBy</Link>
@@ -225,7 +225,7 @@ const SearchResultsPage = () => {
           {isLoading ? (
             <GridSkeleton count={12} />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.length === 0 ? (
                 <div className="col-span-full text-center text-text-grey py-20">
                   {searchTerm ? (

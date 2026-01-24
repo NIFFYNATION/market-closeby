@@ -145,6 +145,7 @@ const DashboardLayout = () => {
           theme === 'dark' ? 'bg-[#121212] text-slate-100' : 'bg-[#f8fafc] text-slate-900'
         }`}
       >
+        <MobileBottomNav theme={theme} />
         {isSidebarOpen && (
           <div
             className="fixed inset-0 backdrop-blur-sm bg-black/10 z-40 lg:hidden"
