@@ -7,18 +7,18 @@ const MobileBottomNav = ({ theme }) => {
   const navigate = useNavigate();
 
   const navItems = [
-    { id: 'home', label: 'Home', icon: FiHome, path: '/seller-dashboard' },
-    { id: 'products', label: 'Products', icon: FiShoppingBag, path: '/seller-dashboard/products' },
-    { id: 'add', label: 'Add', icon: FiPlus, path: '/seller-dashboard/add-product', isPrimary: true },
-    { id: 'orders', label: 'Orders', icon: FiClipboard, path: '/seller-dashboard/orders' },
-    { id: 'support', label: 'Support', icon: FiMessageSquare, path: '/seller-dashboard/support' },
+    { id: 'home', icon: FiHome, path: '/seller-dashboard' },
+    { id: 'products', icon: FiShoppingBag, path: '/seller-dashboard/products' },
+    { id: 'add', icon: FiPlus, path: '/seller-dashboard/add-product', isPrimary: true },
+    { id: 'orders', icon: FiClipboard, path: '/seller-dashboard/orders' },
+    { id: 'support', icon: FiMessageSquare, path: '/seller-dashboard/support' },
   ];
 
   return (
-    <div className={`fixed bottom-4 left-4 right-4 h-16 rounded-2xl flex items-center justify-between px-6 shadow-2xl z-50 transition-all duration-300 lg:hidden ${
+    <div className={`fixed bottom-0 left-0 right-0 h-16 flex items-center justify-around px-2 z-50 lg:hidden border-t backdrop-blur-xl transition-all duration-300 ${
       theme === 'dark' 
-        ? 'bg-[#1e1e1e]/95 backdrop-blur-md border border-white/10 text-slate-400 shadow-black/50' 
-        : 'bg-white/95 backdrop-blur-md border border-slate-200 text-slate-500 shadow-slate-200/50'
+        ? 'bg-[#121212]/90 border-white/5 text-slate-400' 
+        : 'bg-white/90 border-slate-200 text-slate-500'
     }`}>
       {navItems.map((item) => {
         const isActive = location.pathname === item.path;
@@ -29,10 +29,10 @@ const MobileBottomNav = ({ theme }) => {
              <button
                key={item.id}
                onClick={() => navigate(item.path)}
-               className={`relative -top-8 w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105 active:scale-95 ring-4 ${
+               className={`relative -top-5 w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105 active:scale-95 ${
                  theme === 'dark' 
-                    ? 'bg-amber-500 text-[#1a1a4b] ring-[#121212]' 
-                    : 'bg-amber-500 text-white ring-[#f8fafc]'
+                    ? 'bg-amber-500 text-[#1a1a4b] shadow-amber-500/20' 
+                    : 'bg-amber-500 text-white shadow-amber-500/30'
                }`}
              >
                <Icon className="w-6 h-6" />
@@ -44,15 +44,15 @@ const MobileBottomNav = ({ theme }) => {
           <button
             key={item.id}
             onClick={() => navigate(item.path)}
-            className={`flex flex-col items-center justify-center w-12 h-full gap-1 transition-colors relative ${
+            className={`flex flex-col items-center justify-center w-12 h-full gap-1 transition-all ${
               isActive 
                 ? theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
                 : 'hover:text-amber-500/70'
             }`}
           >
-            <Icon className={`w-5 h-5 ${isActive ? 'fill-current' : ''}`} />
+            <Icon className={`w-5 h-5 transition-all ${isActive ? 'scale-110' : ''}`} />
             {isActive && (
-                <span className={`absolute -bottom-1 w-1 h-1 rounded-full ${
+                <span className={`w-1 h-1 rounded-full ${
                     theme === 'dark' ? 'bg-amber-400' : 'bg-amber-600'
                 }`} />
             )}

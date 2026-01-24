@@ -145,7 +145,7 @@ const DashboardLayout = () => {
           theme === 'dark' ? 'bg-[#121212] text-slate-100' : 'bg-[#f8fafc] text-slate-900'
         }`}
       >
-        {/* <MobileBottomNav theme={theme} /> */}
+        <MobileBottomNav theme={theme} />
         {isSidebarOpen && (
           <div
             className="fixed inset-0 backdrop-blur-sm bg-black/10 z-40 lg:hidden"
@@ -392,8 +392,8 @@ const DashboardLayout = () => {
                 <button
                   type="button"
                   onClick={toggleSidebar}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    theme === 'dark' ? 'bg-white/10 hover:bg-white/20' : 'bg-slate-100 hover:bg-slate-200'
+                  className={`w-10 h-10 rounded-full flex items-center justify-center bg-black ${
+                    theme === 'dark' ? 'bg-white/10 hover:bg-white/20' : 'bg-primary hover:bg-slate-200'
                   }`}
                 >
                   <img
@@ -446,28 +446,19 @@ const DashboardLayout = () => {
                     )}
                   </button>
                 </div>
-                <button
-                  type="button"
-                  className={`size-10 flex items-center justify-center rounded-lg transition-all shadow-sm ${
-                    theme === 'dark'
-                      ? 'bg-[#1e1e1e] border border-white/10 text-slate-300 hover:border-amber-400'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:border-amber-400'
-                  }`}
-                >
-                  <img src="/icons/calendar.svg" alt="Calendar" className="w-5 h-5" />
-                </button>
+               
                 <button
                   type="button"
                   className={`size-10 relative flex items-center justify-center rounded-lg transition-all shadow-sm ${
                     theme === 'dark'
                       ? 'bg-[#1e1e1e] border border-white/10 text-slate-300 hover:border-amber-400'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:border-amber-400'
+                      : 'bg-black border border-slate-200 text-black-600 hover:border-amber-400'
                   }`}
                 >
                   <img src="/icons/bell.svg" alt="Notifications" className="w-5 h-5" />
                   <span
                     className={`absolute top-2.5 right-2.5 size-2 rounded-full ${
-                      theme === 'dark' ? 'bg-amber-400 border-2 border-[#1e1e1e]' : 'bg-amber-400 border-2 border-white'
+                      theme === 'dark' ? 'bg-amber-400 border-2 border-[#1e1e1e]' : 'bg-red-400 border-2 border-white'
                     }`}
                   />
                 </button>
@@ -486,7 +477,7 @@ const DashboardLayout = () => {
                 </div>
               </div>
             </header>
-            <main className="px-4 lg:px-8 py-6 lg:py-8 flex-1 overflow-y-auto min-w-0">
+            <main className="px-4 lg:px-8 py-6 lg:py-8 flex-1 overflow-y-auto min-w-0 pb-20 lg:pb-8">
               <Outlet />
             </main>
           </div>
